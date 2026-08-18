@@ -1,0 +1,61 @@
+.hero{
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 60%, #0d4e8a 100%);
+  color: var(--blanco);
+  padding: 90px 0 70px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  background: rgba(0,180,216,.13);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; left: -60px;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: rgba(0,180,216,.08);
+  pointer-events: none;
+}
+
+.hero:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+}
+.hero i {
+    transition: transform .3s ease;
+}
+
+.hero:hover i {
+    transform: scale(1.1);
+}
+
+.card:hover{
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.card{
+    transition: 0.3s;
+}
+
+.card:hover{
+    transform: translateY(-5px);
+}
+.dashboard-card{
+    transition: .3s;
+    border-radius: 20px;
+}
+
+.dashboard-card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,.15);
+}
+
