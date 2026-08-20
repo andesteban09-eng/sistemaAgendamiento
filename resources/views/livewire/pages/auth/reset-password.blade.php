@@ -10,10 +10,10 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new #[Layout('layouts.guest')] class extends Component {
     #[Locked]
     public string $token = '';
+
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -39,24 +39,17 @@ new #[Layout('layouts.guest')] class extends Component
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $this->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) {
-                $user->forceFill([
+        $status = Password::reset($this->only('email', 'password', 'password_confirmation', 'token'), function ($user) {
+            $user
+                ->forceFill([
                     'password' => Hash::make($this->password),
                     'remember_token' => Str::random(60),
-                ])->save();
+                ])
+                ->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+            event(new PasswordReset($user));
+        });
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
         if ($status != Password::PASSWORD_RESET) {
             $this->addError('email', __($status));
 
@@ -67,39 +60,147 @@ new #[Layout('layouts.guest')] class extends Component
 
         $this->redirectRoute('login', navigate: true);
     }
-}; ?>
+};
+?>
 
-<div>
-    <form wire:submit="resetPassword">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+<div class="min-vh-100 bg-light d-flex align-items-center justify-content-center py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-12 col-md-8 col-lg-5">
+
+                {{-- Encabezado --}}
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-shield-lock display-4 text-primary">
+                    </i>
+
+                    <h1 class="fw-bold mt-3" style="color: #0a2558;">
+                        Restablecer contraseña
+                    </h1>
+
+                    <p class="text-muted mb-0">
+                        Crea una nueva contraseña para recuperar
+                        el acceso a tu cuenta.
+                    </p>
+
+                </div>
+
+
+                {{-- Tarjeta --}}
+                <div class="card border-0 shadow-lg rounded-4">
+
+                    <div class="card-body px-4 px-md-5 py-5">
+
+                        <form wire:submit="resetPassword">
+
+                            {{-- Correo --}}
+                            <div class="mb-4">
+
+                                <label for="email" class="form-label fw-semibold" style="color: #0a2558;">
+
+                                    <i class="bi bi-envelope me-1"></i>
+                                    Correo electrónico
+
+                                </label>
+
+                                <input wire:model="email" id="email" type="email" name="email"
+                                    class="form-control form-control-lg rounded-3" required autofocus
+                                    autocomplete="username">
+
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+
+                            </div>
+
+
+                            {{-- Nueva contraseña --}}
+                            <div class="mb-4">
+
+                                <label for="password" class="form-label fw-semibold" style="color: #0a2558;">
+
+                                    <i class="bi bi-lock me-1"></i>
+                                    Nueva contraseña
+
+                                </label>
+
+                                <input wire:model="password" id="password" type="password" name="password"
+                                    class="form-control form-control-lg rounded-3" required autocomplete="new-password">
+
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+
+                            </div>
+
+
+                            {{-- Confirmar contraseña --}}
+                            <div class="mb-4">
+
+                                <label for="password_confirmation" class="form-label fw-semibold"
+                                    style="color: #0a2558;">
+
+                                    <i class="bi bi-lock-fill me-1"></i>
+                                    Confirmar contraseña
+
+                                </label>
+
+                                <input wire:model="password_confirmation" id="password_confirmation" type="password"
+                                    name="password_confirmation" class="form-control form-control-lg rounded-3" required
+                                    autocomplete="new-password">
+
+                                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+
+                            </div>
+
+
+                            {{-- Botón --}}
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 fw-bold">
+
+                                <i class="bi bi-key me-2"></i>
+
+                                Restablecer contraseña
+
+                            </button>
+
+
+                            {{-- Volver al login --}}
+                            <div class="text-center mt-4">
+
+                                <a href="{{ route('login') }}" wire:navigate class="text-decoration-none fw-semibold"
+                                    style="color: #0077b6;">
+
+                                    <i class="bi bi-arrow-left me-1"></i>
+
+                                    Volver a iniciar sesión
+
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+                {{-- Mensaje de seguridad --}}
+                <div class="text-center mt-4">
+
+                    <small class="text-muted">
+
+                        <i class="bi bi-shield-check me-1"></i>
+
+                        Tu nueva contraseña se almacenará de forma segura.
+
+                    </small>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+    </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
-                          type="password"
-                          name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
 </div>

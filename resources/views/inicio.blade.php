@@ -1,96 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Carvajal Laboratorios IPS</title>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <!-- Estilos propios -->
-  <link rel="stylesheet" href="{{ asset('css/principal.css') }}"/>
-  <link rel="stylesheet" href="{{ asset('css/footer.css') }}"/>
-</head>
-<body>
-
-  <!-- ═══ TOPBAR ═══ -->
-  <div class="topbar">
-    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-1">
-      <span><i class="bi bi-telephone-fill"></i> PBX: 6087493280 &nbsp;|&nbsp; <i class="bi bi-phone-fill"></i> 3009122674</span>
-      <div>
-        <a href="#"><i class="bi bi-file-earmark-text"></i>Certificados</a>
-        <a href="#"><i class="bi bi-clipboard2-pulse"></i>Resultados</a>
-        <a href="#"><i class="bi bi-whatsapp"></i>Escríbenos</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ NAVBAR ═══ -->
-  <nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container-fluid row">
-      <img src="{{ asset('img/LOGO-CARVAJAL-LABORATORIOS-IPS-3-1.webp') }}" alt="logo-carvajal-laboratorios-ips" class="col-lg-4 col-md-5 col-sm-6 col-xs-7 d-flex align-items-center justify-content-center">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-      </a>
-    </div>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
-
-          <!-- SERVICIOS con submenu -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Servicios</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"><i class="bi bi-flask me-2 text-muted"></i>Laboratorio Clínico</a></li>
-
-              <!-- Consulta Médica con botón agendar cita -->
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item fw-bold" href="#">
-                  <i class="bi bi-person-heart me-2 text-muted"></i>Consulta Médica
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item btn-agendar" href="#agendar-cita">
-                  <i class="bi bi-calendar2-check-fill"></i> Agendar Cita Médica
-                </a>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-
-              <li><a class="dropdown-item" href="#"><i class="bi bi-car-front me-2 text-muted"></i>C.R.C. Conductores</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-shield-heart me-2 text-muted"></i>Salud Ocupacional</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-house-heart me-2 text-muted"></i>Cuidado en Casa</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-camera-video me-2 text-muted"></i>Telemedicina</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-radioactive me-2 text-muted"></i>Imagenología</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-droplet-half me-2 text-muted"></i>Vacunación</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-truck me-2 text-muted"></i>Ambulancia</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item"><a class="nav-link" href="#">Sedes</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-          <li class="nav-item ms-lg-2">
-            <a class="nav-link btn btn-sm px-3 py-2 text-white fw-bold rounded-3"
-               style="background:var(--aqua);font-size:.8rem;" href="#agendar-cita">
-              <i class="bi bi-calendar2-check me-1"></i>Agendar Cita
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+@extends('layouts.app')
+@section('contenido')
 
   <!-- ═══ HERO ═══ -->
   <section class="hero">
-    <div class="container.fluid">
+    <div class="container-fluid">
       <div class="row align-items-center">
         <div class="col-lg-7">
           <h1>Laboratorio Clínico<br>Especializado en <span>Boyacá</span></h1>
@@ -361,63 +274,6 @@
       </div>
     </div>
   </section>
+@endsection
 
-    <footer>
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="d-flex align-items-center">
-                        <div class="footer-logo">
-                            <i class="bi-hospital text-white"></i>
-                        </div>
-                        <h3>Carvajal Laboratorios</h3>
-                    </div>
-                    <div >
-                        <h2 class="footer-info">
-                            Carvajal Laboratorios IPS
-                        </h2>
-                        <h2 class="footer-info">
-                         Boyacá, Colombia
-                        </h2>
-                    </div>
-                    <div class="footer-social">
-                        <a href="" class="bi-facebook"></a>
-                        <a href="" class="bi-instagram"></a>
-                        <a href="" class="bi-whatsapp"></a>
-                    </div>
-                </div>
 
-                <div class="col-6 col-lg-4">
-                    <h3>Enlaces Útiles</h3>
-                    <a href="../index.php">Inicio</a>
-                    <a href="#">Nosotros</a>
-                    <a href="#">Contacto</a>
-                    <a href="#">Políticas de Privacidad</a>
-                </div>
-
-                <div class="col-6 col-lg-4">
-                    <h3>Reguladores</h3>
-                    <div class="row">
-                        <div class="col-4 text-center">
-                            <img src="./img/supersalud.png" class="img-fluid" style="width: 130px; height: auto;">
-                        </div>
-                        <div class="col-4 text-center">
-                            <img src="./img/Minsalud.png" class="img-fluid" style="width: 130px; height: auto;">
-                        </div>
-                        <div class="col-4 text-center">
-                            <img src="./img/goberBoyaca.png" class="img-fluid" style="width: 130px; height: auto;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-  <!-- WhatsApp flotante -->
-  <a href="https://api.whatsapp.com/send?phone=573188881314" class="whatsapp-float" target="_blank" title="Escríbenos por WhatsApp">
-    <i class="bi bi-whatsapp"></i>
-  </a>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

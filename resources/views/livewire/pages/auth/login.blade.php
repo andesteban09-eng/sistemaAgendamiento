@@ -2,16 +2,11 @@
 
 use App\Livewire\Forms\LoginForm;
 use Illuminate\Support\Facades\Session;
-use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new class extends Component {
     public LoginForm $form;
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function login(): void
     {
         $this->validate();
@@ -23,49 +18,111 @@ new #[Layout('layouts.guest')] class extends Component
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
+<div class="bg-light">
 
-<div>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <main class="container min-vh-100 d-flex align-items-center py-5">
 
-    <form wire:submit="login">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
+        <div class="row w-100 justify-content-center">
+
+            <div class="col-lg-6 col-md-8 mx-auto">
+
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-calendar2-check display-4 text-primary"></i>
+
+                    <h1 class="display-5 fw-bold mt-3">
+                        Laboratorios Carvajal
+                    </h1>
+
+                    <p class="lead text-muted">
+                        Acceso para usuarios registrados. Por favor,
+                        ingresa tus credenciales para iniciar sesión
+                        y gestionar tus citas médicas.
+                    </p>
+
+                </div>
+
+                {{-- Login --}}
+                <form wire:submit="login" class="bg-white p-4 shadow-lg rounded-3 px-5 py-4">
+
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                    <div class="mb-3">
+
+                        <label for="email" class="form-label">
+
+                            <i class="bi bi-envelope"></i>
+                            Correo electrónico
+
+                        </label>
+
+                        <input wire:model="form.email" type="email" id="email" name="email"
+                            class="form-control form-control-lg" required autofocus autocomplete="username">
+
+                        <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label for="password" class="form-label">
+
+                            <i class="bi bi-lock"></i>
+                            Contraseña
+
+                        </label>
+
+                        <input wire:model="form.password" type="password" id="password" name="password"
+                            class="form-control form-control-lg" required autocomplete="current-password">
+
+                        <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
+
+                    </div>
+
+                    <div class="mb-3 form-check">
+
+                        <input wire:model="form.remember" type="checkbox" class="form-check-input" id="remember">
+
+                        <label class="form-check-label" for="remember">
+
+                            Recuérdame
+
+                        </label>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+
+                        Iniciar sesión
+
+                    </button>
+
+                    <div class="d-flex justify-content-between mt-3">
+
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" wire:navigate class="text-decoration-none">
+
+                                Crear cuenta
+
+                            </a>
+                        @endif
+
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" wire:navigate class="text-decoration-none">
+
+                                ¿Olvidaste tu contraseña?
+
+                            </a>
+                        @endif
+
+                    </div>
+
+                </form>
+
+            </div>
+
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    </main>
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
 </div>

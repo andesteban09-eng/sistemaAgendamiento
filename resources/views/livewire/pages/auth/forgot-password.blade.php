@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new #[Layout('layouts.guest')] class extends Component {
     public string $email = '';
 
     /**
@@ -17,12 +16,7 @@ new #[Layout('layouts.guest')] class extends Component
             'email' => ['required', 'string', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $this->only('email')
-        );
+        $status = Password::sendResetLink($this->only('email'));
 
         if ($status != Password::RESET_LINK_SENT) {
             $this->addError('email', __($status));
@@ -36,26 +30,93 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<div class="bg-light min-vh-100 d-flex align-items-center justify-content-center">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-12 col-md-8 col-lg-5">
+
+                {{-- Encabezado --}}
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-envelope-open display-4 text-primary"></i>
+
+                    <h1 class="fw-bold mt-3">
+                        Recuperar contraseña
+                    </h1>
+
+                    <p class="text-muted">
+                        Ingresa tu correo electrónico y te enviaremos
+                        un enlace para restablecer tu contraseña.
+                    </p>
+
+                </div>
+
+                {{-- Tarjeta --}}
+                <div class="bg-white shadow-lg rounded-3 p-4 px-md-5 py-md-5">
+
+                    {{-- Estado --}}
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                    <form wire:submit="sendPasswordResetLink">
+
+                        {{-- Correo --}}
+                        <div class="mb-4">
+
+                            <label for="email" class="form-label fw-semibold">
+
+                                <i class="bi bi-envelope me-1"></i>
+                                Correo electrónico
+
+                            </label>
+
+                            <input wire:model="email" id="email" type="email" name="email"
+                                class="form-control form-control-lg" placeholder="correo@ejemplo.com" required autofocus
+                                autocomplete="email">
+
+                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+
+                        </div>
+
+                        {{-- Botón --}}
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+
+                            <i class="bi bi-send me-2"></i>
+                            Enviar enlace
+
+                        </button>
+
+                    </form>
+
+                    {{-- Regresar --}}
+                    <div class="text-center mt-4">
+
+                        <a href="{{ route('login') }}" wire:navigate class="text-decoration-none">
+
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Volver a iniciar sesión
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {{-- Identidad --}}
+                <div class="text-center mt-4">
+
+                    <small class="text-muted">
+                        Laboratorios Carvajal IPS
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form wire:submit="sendPasswordResetLink">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
 </div>
