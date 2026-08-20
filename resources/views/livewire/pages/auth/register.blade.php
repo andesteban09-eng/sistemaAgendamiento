@@ -9,10 +9,10 @@ use Livewire\Volt\Component;
 
 new class extends Component {
     public string $name = '';
+    public string $last_name = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
-
     /**
      * Handle an incoming registration request.
      */
@@ -20,13 +20,14 @@ new class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
-        event(new Registered(($user = User::create($validated))));
+       $user = User::create($validated);
 
         Auth::login($user);
 
@@ -83,7 +84,7 @@ new class extends Component {
                             <label for="name" class="form-label">
 
                                 <i class="bi bi-person"></i>
-                                Nombre completo
+                                Nombre
 
                             </label>
 
@@ -93,7 +94,22 @@ new class extends Component {
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
 
                         </div>
+                        {{-- apellido --}}
+                        <div class="mb-3">
 
+                            <label for="last_name" class="form-label">
+
+                                <i class="bi bi-person"></i>
+                                Apellido
+
+                            </label>
+
+                            <input wire:model="last_name" id="last_name" type="text" name="last_name"
+                                class="form-control form-control-lg" required autofocus autocomplete="last_name">
+
+                            <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
+
+                        </div>
 
                         {{-- Correo --}}
                         <div class="mb-3">
