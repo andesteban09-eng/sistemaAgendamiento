@@ -60,8 +60,8 @@
           <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
           <li class="nav-item ms-lg-2">
             <a class="nav-link btn btn-sm px-3 py-2 text-white fw-bold rounded-3"
-               style="background:var(--aqua);font-size:.8rem;" href="#agendar-cita">
-              <i class="bi bi-calendar2-check me-1"></i>Agendar Cita
+               style="background:var(--aqua);font-size:.8rem;" href="{{ route('login') }}"> 
+               <i class="bi bi-box-arrow-in-right"></i>Inicio sesion
             </a>
           </li>
         </ul>
