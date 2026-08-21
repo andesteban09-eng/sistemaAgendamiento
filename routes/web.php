@@ -2,33 +2,31 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Actions\Logout;
 
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
 
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-Route::post('logout', Logout::class)
-    ->middleware('auth')
-    ->name('logout');
-Route::get('dashboard', function () {
+    Route::middleware(['auth', 'role:Administrador'])->group(function () {
 
-    $user = Auth::user();
+    Route::get('/admin', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
 
-    return match ($user->rol) {
-        'administrador' => view('dashboards.administrador'),
-        'profesional' => view('dashboards.profesional'),
-        'paciente' => view('dashboards.paciente'),
-        default => abort(403),
-    };
+    Route::get('/admin/usuarios', function () {
+        return view('admin.usuarios');
+    })->name('admin.usuarios');
 
-
-
-})->middleware(['auth', 'verified'])->name('dashboard');
+});
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+
