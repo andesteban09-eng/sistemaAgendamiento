@@ -225,6 +225,8 @@ alter table paciente add idusuario number not null;
 alter table paciente
    add constraint fk_paciente_user foreign key ( idusuario )
       references users ( id );
+      alter table paciente
+      add constraint uq_paciente unique (idusuario);
 
 
 -- =========================================================
@@ -239,6 +241,9 @@ alter table profesionalsalud
    add constraint fk_profesionalsalud_user foreign key ( idusuario )
       references users ( id );
 
+      alter table profesionalsalud
+      add constraint uq_profesionalsalud unique (idusuario);
+
 alter table paciente drop column nombre;
 
 alter table paciente drop column apellido;
@@ -246,5 +251,5 @@ alter table paciente drop column apellido;
 alter table profesionalsalud drop column nombre;
 
 alter table profesionalsalud drop column apellido;
-
+commit;
 

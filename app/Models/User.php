@@ -35,11 +35,11 @@ class User extends Authenticatable
 
     public function paciente(): HasOne
 {
-    return $this->hasOne(Paciente::class, 'iduser', 'id');
+    return $this->hasOne(Paciente::class, 'idusuario', 'id');
 }
 
 public function profesional(): HasOne
 {
-    return $this->hasOne(ProfesionalSalud::class, 'iduser', 'id');
+    return $this->hasOne(ProfesionalSalud::class, 'idusuario', 'id');
 }
 }

@@ -15,6 +15,6 @@ class ProfesionalSalud extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'iduser', 'id');
+        return $this->belongsTo(User::class, 'idusuario', 'id');
     }
 }
