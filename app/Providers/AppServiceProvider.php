@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,18 +16,28 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Livewire::setScriptRoute(function ($handle) {
-            return Route::get(
-                '/sistemaAgendamiento/public/livewire/livewire.js',
-                $handle
-            );
+        $appUrl = config('app.url');
+
+        if ($appUrl) {
+            // Fuerza que route(), url(), redirect(), etc. usen APP_URL como raíz,
+            // sin depender de cómo Apache reporte el subdirectorio.
+            URL::forceRootUrl($appUrl);
+
+            if (str_starts_with($appUrl, 'https://')) {
+                URL::forceScheme('https');
+            }
+        }
+
+        // Prefijo dinámico (ej. "/sistemaAgendamiento/public") sacado de APP_URL,
+        // en vez de tenerlo escrito a mano.
+        $basePath = rtrim((string) parse_url($appUrl, PHP_URL_PATH), '/');
+
+        Livewire::setScriptRoute(function ($handle) use ($basePath) {
+            return Route::get("{$basePath}/livewire/livewire.js", $handle);
         });
 
-        Livewire::setUpdateRoute(function ($handle) {
-            return Route::post(
-                '/sistemaAgendamiento/public/livewire/update',
-                $handle
-            );
+        Livewire::setUpdateRoute(function ($handle) use ($basePath) {
+            return Route::post("{$basePath}/livewire/update", $handle);
         });
     }
 }
