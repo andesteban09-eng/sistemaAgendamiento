@@ -2,31 +2,29 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-<<<<<<<<< Temporary merge branch 1
 use App\Http\Controllers\dashboardController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
-=========
 use App\Livewire\Actions\Logout;
->>>>>>>>> Temporary merge branch 2
+
 
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
 
-<<<<<<<<< Temporary merge branch 1
+
 Route::get('dashboard', [dashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware(['auth', 'role:Administrador'])->group(function () {
-=========
+
 
 Route::post('logout', Logout::class)
     ->middleware('auth')
     ->name('logout');
 Route::get('dashboard', function () {
->>>>>>>>> Temporary merge branch 2
+
 
     $user = Auth::user();
 
@@ -52,7 +50,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
-<<<<<<<<< Temporary merge branch 1
+
 
 
 
