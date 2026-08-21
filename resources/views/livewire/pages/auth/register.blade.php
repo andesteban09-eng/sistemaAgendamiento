@@ -13,6 +13,8 @@ new class extends Component {
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $rol = 'paciente';
+    public string $estado = 'activo';
     /**
      * Handle an incoming registration request.
      */
@@ -27,7 +29,7 @@ new class extends Component {
 
         $validated['password'] = Hash::make($validated['password']);
 
-       $user = User::create($validated);
+        $user = User::create($validated);
 
         Auth::login($user);
 
