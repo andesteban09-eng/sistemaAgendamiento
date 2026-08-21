@@ -55,5 +55,4 @@ require __DIR__.'/auth.php';
 
 
 
-=========
->>>>>>>>> Temporary merge branch 2
+
