@@ -5,54 +5,34 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\dashboardController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
-use App\Livewire\Actions\Logout;
-
 
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
 
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('dashboard', [dashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    Route::get('dashboard', function () {
 
-Route::middleware(['auth', 'role:Administrador'])->group(function () {
+        $user = Auth::user();
 
+        return match ($user->rol) {
+            'administrador' => view('dashboards.administrador'),
+            'profesional' => view('dashboards.profesional'),
+            'paciente' => view('dashboards.paciente'),
+            default => abort(403),
+        };
 
-Route::post('logout', Logout::class)
-    ->middleware('auth')
-    ->name('logout');
-Route::get('dashboard', function () {
+    })->name('dashboard');
 
+    Route::post('logout', function (Request $request, Logout $logout) {
+        $logout();
 
-    $user = Auth::user();
+        return redirect('/');
+    })->name('logout');
 
-    return match ($user->rol) {
-        'administrador' => view('dashboards.administrador'),
-        'profesional' => view('dashboards.profesional'),
-        'paciente' => view('dashboards.paciente'),
-        default => abort(403),
-    };
-
-
-
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::post('logout', function (Request $request, Logout $logout) {
-    $logout();
-
-    return redirect('/');
-})->middleware('auth')->name('logout');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+    Route::view('profile', 'profile')
+        ->name('profile');
+});
 
 require __DIR__.'/auth.php';
-
-
-
-
-
-
