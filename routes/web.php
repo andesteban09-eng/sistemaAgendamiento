@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\dashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
 
@@ -12,18 +12,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('dashboard', function () {
-
-        $user = Auth::user();
-
-        return match ($user->rol) {
-            'administrador' => view('dashboards.administrador'),
-            'profesional' => view('dashboards.profesional'),
-            'paciente' => view('dashboards.paciente'),
-            default => abort(403),
-        };
-
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
     Route::post('logout', function (Request $request, Logout $logout) {
         $logout();

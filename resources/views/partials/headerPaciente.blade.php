@@ -18,7 +18,7 @@
             Bienvenido(a), {{ auth()->user()->name }}
         </span>
 
-        <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+       <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle"></i>
         </button>
 
@@ -34,10 +34,9 @@
             <li>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="dropdown-item text-danger">
+                     <button type="submit" class="dropdown-item text-danger">
                         Cerrar sesión
                     </button>
-                </form>
             </li>
         </ul>
     </div>
