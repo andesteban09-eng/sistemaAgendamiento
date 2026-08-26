@@ -25,12 +25,12 @@ class DashboardController extends Controller
             if ($paciente) {
 
                 $totalPendientes = Cita::where(
-                    'IDPACIENTE',
+                    'idpaciente',
                     $paciente->idpaciente
                 )
-                    ->where('ESTADOCITA', 'Pendiente')
+                    ->where('estadocita', 'Pendiente')
                     ->where(
-                        'FECHACITA',
+                        'fechacita',
                         '>=',
                         DB::raw('SYSDATE')
                     )
@@ -43,19 +43,19 @@ class DashboardController extends Controller
                     'agenda.sede',
                 ])
                     ->where(
-                        'IDPACIENTE',
+                        'idpaciente',
                         $paciente->idpaciente
                     )
                     ->where(
-                        'ESTADOCITA',
+                        'estadocita',
                         'Pendiente'
                     )
                     ->where(
-                        'FECHACITA',
+                        'fechacita',
                         '>=',
                         DB::raw('SYSDATE')
                     )
-                    ->orderBy('FECHACITA')
+                    ->orderBy('fechacita')
                     ->first();
             }
 
