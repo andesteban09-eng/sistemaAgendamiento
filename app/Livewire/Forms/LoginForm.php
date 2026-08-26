@@ -30,8 +30,11 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
+        if (! Auth::attempt([
+            'email' => $this->email,
+            'password' => $this->password,
+            'estado' => 'activo',
+        ], $this->remember)) {
 
             throw ValidationException::withMessages([
                 'form.email' => trans('auth.failed'),
@@ -67,6 +70,6 @@ class LoginForm extends Form
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }

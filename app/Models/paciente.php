@@ -13,6 +13,17 @@ class Paciente extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'tipodoc',
+        'numdoc',
+        'telefono',
+        'direccion',
+        'ciudad',
+        'fecharegistro',
+        'estadopaciente',
+        'idusuario',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'idusuario', 'id');

@@ -14,7 +14,8 @@ class DashboardController extends Controller
         return match ($rol) {
             'paciente' => view('Paciente.dashboardPaciente'),
             'profesional' => view('profesionales.dashboard'),
-            'administrador' => view('admin.dashboard'),
+            'administrador' => view('admin.dashboard-admin'),
+            'auxiliar' => view('auxiliar.dashboard-auxiliar'),
             default => view('dashboard'),
         };
     }

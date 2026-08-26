@@ -14,7 +14,15 @@ class AdminUserSeeder extends Seeder
             'name' => 'Administrador',
             'last_name' => 'Sistema',
             'email' => 'admin2@carvajal.com',
-            'password' => Hash::make('Admin12345'),
+            'password' => Hash::make('admin12345'),
+            'rol' => 'administrador',
+            'estado' => 'activo',
+        ]);
+        User::create([
+            'name' => 'Administrador',
+            'last_name' => 'Sistema',
+            'email' => 'admin@carvajal.com',
+            'password' => Hash::make('admin123'),
             'rol' => 'administrador',
             'estado' => 'activo',
         ]);

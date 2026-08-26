@@ -6,28 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ProfesionalSalud extends Model
+class Servicio extends Model
 {
-    protected $table = 'profesionalsalud';
+    protected $table = 'SERVICIO';
 
-    protected $primaryKey = 'idprofesionalsalud';
+    protected $primaryKey = 'idservicio';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'tipodoc',
-        'numdoc',
-        'telefono',
-        'estadoprofesionalsalud',
-        'idusuario',
+        'idtiposervicio',
+        'nombre',
+        'precio',
+        'prerequisitos',
+        'estadoservicio',
     ];
 
-    public function user(): BelongsTo
+    public function tipoServicio(): BelongsTo
     {
         return $this->belongsTo(
-            User::class,
-            'idusuario',
-            'id'
+            TipoServicio::class,
+            'idtiposervicio',
+            'idtiposervicio'
         );
     }
 
@@ -35,8 +35,8 @@ class ProfesionalSalud extends Model
     {
         return $this->hasMany(
             PerfilServicio::class,
-            'idprofesionalsalud',
-            'idprofesionalsalud'
+            'idservicio',
+            'idservicio'
         );
     }
 }

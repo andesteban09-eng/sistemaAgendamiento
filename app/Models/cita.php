@@ -7,25 +7,59 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cita extends Model
 {
-    protected $table = 'CITA'; // Oracle suele guardar en mayúsculas si no se citó al crear la tabla
+    protected $table = 'CITA';
 
     protected $primaryKey = 'IDCITA';
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'IDPACIENTE',
+        'IDTIPOSERVICIO',
+        'IDHORARIODISPO',
+        'IDSERVICIO',
+        'FECHACITA',
+        'DETALLE',
+        'ESTADOCITA',
+    ];
+
+    protected $casts = [
+        'FECHACITA' => 'datetime',
+    ];
+
     public function paciente(): BelongsTo
     {
-        return $this->belongsTo(Paciente::class, 'IDPACIENTE', 'IDPACIENTE');
+        return $this->belongsTo(
+            Paciente::class,
+            'IDPACIENTE',
+            'IDPACIENTE'
+        );
     }
 
-    public function profesional(): BelongsTo
+    public function agenda(): BelongsTo
     {
-        return $this->belongsTo(ProfesionalSalud::class, 'IDPROFESIONALSALUD', 'IDPROFESIONALSALUD');
+        return $this->belongsTo(
+            Agenda::class,
+            'IDHORARIODISPO',
+            'IDHORARIODISPO'
+        );
     }
 
-    public function sede(): BelongsTo
+    public function servicio(): BelongsTo
     {
-        // según tu SQL, la sede está enlazada vía "agenda" (idhorariodispo), no directo en cita
-        return $this->belongsTo(Sede::class, 'IDSEDE', 'IDSEDE');
+        return $this->belongsTo(
+            Servicio::class,
+            'IDSERVICIO',
+            'idservicio'
+        );
+    }
+
+    public function tipoServicio(): BelongsTo
+    {
+        return $this->belongsTo(
+            TipoServicio::class,
+            'IDTIPOSERVICIO',
+            'IDTIPOSERVICIO'
+        );
     }
 }

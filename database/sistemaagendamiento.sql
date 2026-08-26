@@ -1,255 +1,405 @@
+-- =========================================================
 -- 02_Crear_Base_Datos.sql
--- Ejecutar conectado como SISTEMAAGENDAMIENTO
-
-create table paciente (
-   idpaciente     number generated always as identity,
-   tipodoc        varchar2(40) not null,
-   numdoc         varchar2(45) not null,
-   nombre         varchar2(80) not null,
-   apellido       varchar2(80) not null,
-   telefono       varchar2(20) not null,
-   direccion      varchar2(150) not null,
-   ciudad         varchar2(60) not null,
-   contrasena     varchar2(250) not null,
-   fecharegistro  timestamp default current_timestamp,
-   estadopaciente varchar2(10) default 'Activo' not null,
-   constraint pk_paciente primary key ( idpaciente ),
-   constraint uq_paciente_numdoc unique ( numdoc ),
-   constraint chk_paciente_tipodoc
-      check ( tipodoc in ( 'Cedula Ciudadania',
-                           'Tarjeta Identidad',
-                           'Cedula Extranjeria',
-                           'Pasaporte',
-                           'Registro Civil',
-                           'Permiso Proteccion Temporal',
-                           'Otro' ) ),
-   constraint chk_paciente_estado check ( estadopaciente in ( 'Activo',
-                                                              'Inactivo' ) )
-);
-
-create table profesionalsalud (
-   idprofesionalsalud     number generated always as identity,
-   tipodoc                varchar2(40) not null,
-   numdoc                 varchar2(45) not null,
-   nombre                 varchar2(80) not null,
-   apellido               varchar2(80) not null,
-   telefono               varchar2(20) not null,
-   correo                 varchar2(300) not null,
-   estadoprofesionalsalud varchar2(10) default 'Activo' not null,
-   contrasena             varchar2(250),
-   constraint pk_profesionalsalud primary key ( idprofesionalsalud ),
-   constraint uq_prof_numdoc unique ( numdoc ),
-   constraint uq_prof_correo unique ( correo ),
-   constraint chk_prof_tipodoc
-      check ( tipodoc in ( 'Cedula Ciudadania',
-                           'Tarjeta Identidad',
-                           'Cedula Extranjeria',
-                           'Pasaporte',
-                           'Registro Civil',
-                           'Permiso Proteccion Temporal',
-                           'Otro' ) ),
-   constraint chk_prof_estado check ( estadoprofesionalsalud in ( 'Activo',
-                                                                  'Inactivo' ) )
-);
-
-create table sede (
-   idsede     number generated always as identity,
-   nombre     varchar2(80) not null,
-   ciudad     varchar2(100) not null,
-   direccion  varchar2(60) not null,
-   detalles   varchar2(150) not null,
-   estadosede varchar2(10) default 'Activo' not null,
-   constraint pk_sede primary key ( idsede ),
-   constraint chk_sede_estado check ( estadosede in ( 'Activo',
-                                                      'Inactivo' ) )
-);
-
-create table tiposervicio (
-   idtiposervicio     number generated always as identity,
-   nombre             varchar2(80) not null,
-   descripcion        clob not null,
-   estadotiposervicio varchar2(10) default 'Activo' not null,
-   constraint pk_tiposervicio primary key ( idtiposervicio ),
-   constraint chk_tiposerv_estado check ( estadotiposervicio in ( 'Activo',
-                                                                  'Inactivo' ) )
-);
-
-create table servicio (
-   idservicio     number generated always as identity,
-   idtiposervicio number not null,
-   nombre         varchar2(80) not null,
-   precio         number(10,2) not null,
-   prerequisitos  clob,
-   estadoservicio varchar2(10) default 'Activo' not null,
-   constraint pk_servicio primary key ( idservicio ),
-   constraint fk_serv_tiposerv foreign key ( idtiposervicio )
-      references tiposervicio ( idtiposervicio ),
-   constraint chk_serv_estado check ( estadoservicio in ( 'Activo',
-                                                          'Inactivo' ) )
-);
-
-create table agenda (
-   idhorariodispo     number generated always as identity,
-   idprofesionalsalud number not null,
-   idsede             number not null,
-   fecha              date not null,
-   horainicio         interval day(0) to second(0) not null,
-   consultorio        varchar2(45) not null,
-   constraint pk_agenda primary key ( idhorariodispo ),
-   constraint fk_agenda_prof foreign key ( idprofesionalsalud )
-      references profesionalsalud ( idprofesionalsalud ),
-   constraint fk_agenda_sede foreign key ( idsede )
-      references sede ( idsede )
-);
-
-create table cita (
-   idcita         number generated always as identity,
-   idpaciente     number not null,
-   idtiposervicio number not null,
-   idhorariodispo number not null,
-   idservicio     number not null,
-   fechacita      timestamp not null,
-   detalle        varchar2(100) not null,
-   estadocita     varchar2(10) default 'Pendiente' not null,
-   constraint pk_cita primary key ( idcita ),
-   constraint fk_cita_paciente foreign key ( idpaciente )
-      references paciente ( idpaciente ),
-   constraint fk_cita_agenda foreign key ( idhorariodispo )
-      references agenda ( idhorariodispo ),
-   constraint fk_cita_tipo foreign key ( idtiposervicio )
-      references tiposervicio ( idtiposervicio ),
-   constraint chk_cita_estado
-      check ( estadocita in ( 'Pendiente',
-                              'Realizada',
-                              'Cancelada' ) )
-);
-
-create table ordenlaboratorio (
-   idordenlaboratorio number generated always as identity,
-   idcita             number not null,
-   idsede             number not null,
-   fechaorden         timestamp default current_timestamp,
-   estadoorden        varchar2(10) default 'Activo' not null,
-   constraint pk_ordenlaboratorio primary key ( idordenlaboratorio ),
-   constraint fk_orden_cita foreign key ( idcita )
-      references cita ( idcita ),
-   constraint fk_orden_sede foreign key ( idsede )
-      references sede ( idsede ),
-   constraint chk_orden_estado
-      check ( estadoorden in ( 'Activo',
-                               'Inactivo',
-                               'Cancelada' ) )
-);
-
-create table ordenlaboratorioservicio (
-   idordenlaboratorio number not null,
-   idservicio         number not null,
-   constraint pk_ordenserv primary key ( idordenlaboratorio,
-                                         idservicio ),
-   constraint fk_ordenserv_orden foreign key ( idordenlaboratorio )
-      references ordenlaboratorio ( idordenlaboratorio )
-         on delete cascade,
-   constraint fk_ordenserv_serv foreign key ( idservicio )
-      references servicio ( idservicio )
-);
-
-create table perfilservicio (
-   idperfilservicio   number generated always as identity,
-   idprofesionalsalud number not null,
-   idservicio         number not null,
-   idtiposervicio     number not null,
-   fechaasignacion    timestamp default current_timestamp,
-   estadoperfil       varchar2(10) default 'Activo' not null,
-   constraint pk_perfilservicio primary key ( idperfilservicio ),
-   constraint fk_perfilservicio_prof foreign key ( idprofesionalsalud )
-      references profesionalsalud ( idprofesionalsalud ),
-   constraint fk_servicio_perfilservicio foreign key ( idservicio )
-      references servicio ( idservicio ),
-   constraint fk_perfilservicio_tiposervicio foreign key ( idtiposervicio )
-      references tiposervicio ( idtiposervicio ),
-   constraint uq_perfilservicio unique ( idprofesionalsalud,
-                                         idservicio ),
-   constraint chk_perfilservicio_estado check ( estadoperfil in ( 'Activo',
-                                                                  'Inactivo' ) )
-);
-
-
-alter table cita
-   add constraint fk_cita_servicio foreign key ( idservicio )
-      references servicio ( idservicio );
-
-alter table cita add idhorariodispo number not null;
-alter table cita
-   add constraint fk_cita_agenda foreign key ( idhorariodispo )
-      references agenda ( idhorariodispo );
-describe cita;
-
-delete from cita;
-
-delete from ordenlaboratorio;
-
-select p.idprofesionalsalud,
-       p.nombre,
-       p.apellido
-  from profesionalsalud p
-  join perfilservicio ps
-on ps.idprofesionalsalud = p.idprofesionalsalud
- where ps.idservicio = :idservicio
-   and ps.estadoperfil = 'Activo'
-   and p.estadoprofesionalsalud = 'Activo';
-
-alter table perfilservicio add idtiposervicio number not null;
-alter table perfilservicio
-   add constraint fk_perfilservicio_tiposervicio foreign key ( idtiposervicio )
-      references tiposervicio ( idtiposervicio );
-
-alter table cita add idservicio number not null;
-alter table cita
-   add constraint fk_cita_servicio foreign key ( idservicio )
-      references servicio ( idservicio );
-commit;
-
-  -- =========================================================
--- USERS
+-- Base de datos: SIGAP - Sistema de Gestión de Agendamiento
+-- Motor: Oracle Database
+-- Usuario: SISTEMAAGENDAMIENTO
 -- =========================================================
 
 
 -- =========================================================
--- PACIENTE
+-- TABLA: USERS
+-- Usuarios del sistema y control de autenticación/roles
 -- =========================================================
 
-alter table paciente drop column contrasena;
+CREATE TABLE users (
+    id                  NUMBER GENERATED ALWAYS AS IDENTITY,
+    name                VARCHAR2(255) NOT NULL,
+    last_name           VARCHAR2(255) NOT NULL,
+    email               VARCHAR2(255) NOT NULL,
+    email_verified_at   TIMESTAMP,
+    password            VARCHAR2(255) NOT NULL,
+    rol                 VARCHAR2(255) NOT NULL,
+    estado              VARCHAR2(255) NOT NULL,
+    remember_token      VARCHAR2(100),
+    created_at          TIMESTAMP,
+    updated_at          TIMESTAMP,
 
-alter table paciente add idusuario number not null;
+    CONSTRAINT users_id_pk
+        PRIMARY KEY (id),
 
-alter table paciente
-   add constraint fk_paciente_user foreign key ( idusuario )
-      references users ( id );
-      alter table paciente
-      add constraint uq_paciente unique (idusuario);
+    CONSTRAINT users_email_uk
+        UNIQUE (email)
+);
 
 
 -- =========================================================
--- PROFESIONALSALUD
+-- TABLA: PACIENTE
+-- Información complementaria de los usuarios con rol paciente
 -- =========================================================
 
-alter table profesionalsalud drop column contrasena;
+CREATE TABLE paciente (
+    idpaciente       NUMBER GENERATED ALWAYS AS IDENTITY,
+    tipodoc          VARCHAR2(40) NOT NULL,
+    numdoc           VARCHAR2(45) NOT NULL,
+    telefono         VARCHAR2(20) NOT NULL,
+    direccion        VARCHAR2(150) NOT NULL,
+    ciudad           VARCHAR2(60) NOT NULL,
+    fecharegistro    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estadopaciente   VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+    idusuario        NUMBER NOT NULL,
 
-alter table profesionalsalud add idusuario number not null;
+    CONSTRAINT pk_paciente
+        PRIMARY KEY (idpaciente),
 
-alter table profesionalsalud
-   add constraint fk_profesionalsalud_user foreign key ( idusuario )
-      references users ( id );
+    CONSTRAINT fk_paciente_user
+        FOREIGN KEY (idusuario)
+        REFERENCES users (id),
 
-      alter table profesionalsalud
-      add constraint uq_profesionalsalud unique (idusuario);
+    CONSTRAINT uq_paciente
+        UNIQUE (idusuario),
 
-alter table paciente drop column nombre;
+    CONSTRAINT uq_paciente_numdoc
+        UNIQUE (numdoc),
 
-alter table paciente drop column apellido;
+    CONSTRAINT chk_paciente_tipodoc
+        CHECK (
+            tipodoc IN (
+                'Cedula Ciudadania',
+                'Tarjeta Identidad',
+                'Cedula Extranjeria',
+                'Pasaporte',
+                'Registro Civil',
+                'Permiso Proteccion Temporal',
+                'Otro'
+            )
+        ),
 
-alter table profesionalsalud drop column nombre;
+    CONSTRAINT chk_paciente_estado
+        CHECK (estadopaciente IN ('Activo', 'Inactivo'))
+);
 
-alter table profesionalsalud drop column apellido;
-commit;
 
+-- =========================================================
+-- TABLA: PROFESIONALSALUD
+-- Información complementaria de los usuarios profesionales
+-- =========================================================
+
+CREATE TABLE profesionalsalud (
+    idprofesionalsalud       NUMBER GENERATED ALWAYS AS IDENTITY,
+    tipodoc                  VARCHAR2(40) NOT NULL,
+    numdoc                   VARCHAR2(45) NOT NULL,
+    telefono                 VARCHAR2(20) NOT NULL,
+    estadoprofesionalsalud   VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+    idusuario                NUMBER NOT NULL,
+
+    CONSTRAINT pk_profesionalsalud
+        PRIMARY KEY (idprofesionalsalud),
+
+    CONSTRAINT fk_profesionalsalud_user
+        FOREIGN KEY (idusuario)
+        REFERENCES users (id),
+
+    CONSTRAINT uq_profesionalsalud
+        UNIQUE (idusuario),
+
+    CONSTRAINT uq_prof_numdoc
+        UNIQUE (numdoc),
+
+    CONSTRAINT chk_prof_tipodoc
+        CHECK (
+            tipodoc IN (
+                'Cedula Ciudadania',
+                'Tarjeta Identidad',
+                'Cedula Extranjeria',
+                'Pasaporte',
+                'Registro Civil',
+                'Permiso Proteccion Temporal',
+                'Otro'
+            )
+        ),
+
+    CONSTRAINT chk_prof_estado
+        CHECK (
+            estadoprofesionalsalud IN ('Activo', 'Inactivo')
+        )
+);
+
+
+-- =========================================================
+-- TABLA: SEDE
+-- Sedes de atención de los laboratorios
+-- =========================================================
+
+CREATE TABLE sede (
+    idsede       NUMBER GENERATED ALWAYS AS IDENTITY,
+    nombre       VARCHAR2(80) NOT NULL,
+    ciudad       VARCHAR2(100) NOT NULL,
+    direccion    VARCHAR2(60) NOT NULL,
+    detalles     VARCHAR2(150) NOT NULL,
+    estadosede   VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+
+    CONSTRAINT pk_sede
+        PRIMARY KEY (idsede),
+
+    CONSTRAINT chk_sede_estado
+        CHECK (estadosede IN ('Activo', 'Inactivo'))
+);
+
+
+-- =========================================================
+-- TABLA: TIPOSERVICIO
+-- Categorías o tipos de servicios ofrecidos
+-- =========================================================
+
+CREATE TABLE tiposervicio (
+    idtiposervicio       NUMBER GENERATED ALWAYS AS IDENTITY,
+    nombre               VARCHAR2(80) NOT NULL,
+    descripcion          CLOB NOT NULL,
+    estadotiposervicio   VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+
+    CONSTRAINT pk_tiposervicio
+        PRIMARY KEY (idtiposervicio),
+
+    CONSTRAINT chk_tiposerv_estado
+        CHECK (
+            estadotiposervicio IN ('Activo', 'Inactivo')
+        )
+);
+
+
+-- =========================================================
+-- TABLA: SERVICIO
+-- Servicios/exámenes ofrecidos por el laboratorio
+-- =========================================================
+
+CREATE TABLE servicio (
+    idservicio       NUMBER GENERATED ALWAYS AS IDENTITY,
+    idtiposervicio   NUMBER NOT NULL,
+    nombre           VARCHAR2(80) NOT NULL,
+    precio           NUMBER(10,2) NOT NULL,
+    prerequisitos    CLOB,
+    estadoservicio   VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+
+    CONSTRAINT pk_servicio
+        PRIMARY KEY (idservicio),
+
+    CONSTRAINT fk_serv_tiposerv
+        FOREIGN KEY (idtiposervicio)
+        REFERENCES tiposervicio (idtiposervicio),
+
+    CONSTRAINT chk_serv_estado
+        CHECK (
+            estadoservicio IN ('Activo', 'Inactivo')
+        )
+);
+
+
+-- =========================================================
+-- TABLA: AGENDA
+-- Horarios disponibles de los profesionales
+-- =========================================================
+
+CREATE TABLE agenda (
+    idhorariodispo       NUMBER GENERATED ALWAYS AS IDENTITY,
+    idprofesionalsalud   NUMBER NOT NULL,
+    idsede               NUMBER NOT NULL,
+    fecha                DATE NOT NULL,
+    horainicio           INTERVAL DAY(0) TO SECOND(0) NOT NULL,
+    consultorio         VARCHAR2(45) NOT NULL,
+
+    CONSTRAINT pk_agenda
+        PRIMARY KEY (idhorariodispo),
+
+    CONSTRAINT fk_agenda_prof
+        FOREIGN KEY (idprofesionalsalud)
+        REFERENCES profesionalsalud (idprofesionalsalud),
+
+    CONSTRAINT fk_agenda_sede
+        FOREIGN KEY (idsede)
+        REFERENCES sede (idsede)
+);
+
+
+-- =========================================================
+-- TABLA: PERFILSERVICIO
+-- Servicios para los cuales está capacitado cada profesional
+-- =========================================================
+
+CREATE TABLE perfilservicio (
+    idperfilservicio      NUMBER GENERATED ALWAYS AS IDENTITY,
+    idprofesionalsalud    NUMBER NOT NULL,
+    idservicio            NUMBER NOT NULL,
+    idtiposervicio        NUMBER NOT NULL,
+    fechaasignacion       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estadoperfil          VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+
+    CONSTRAINT pk_perfilservicio
+        PRIMARY KEY (idperfilservicio),
+
+    CONSTRAINT fk_perfilservicio_prof
+        FOREIGN KEY (idprofesionalsalud)
+        REFERENCES profesionalsalud (idprofesionalsalud),
+
+    CONSTRAINT fk_servicio_perfilservicio
+        FOREIGN KEY (idservicio)
+        REFERENCES servicio (idservicio),
+
+    CONSTRAINT fk_perfilservicio_tiposervicio
+        FOREIGN KEY (idtiposervicio)
+        REFERENCES tiposervicio (idtiposervicio),
+
+    CONSTRAINT uq_perfilservicio
+        UNIQUE (idprofesionalsalud, idservicio),
+
+    CONSTRAINT chk_perfilservicio_estado
+        CHECK (
+            estadoperfil IN ('Activo', 'Inactivo')
+        )
+);
+
+
+-- =========================================================
+-- TABLA: CITA
+-- Citas agendadas por los pacientes
+-- =========================================================
+
+CREATE TABLE cita (
+    idcita           NUMBER GENERATED ALWAYS AS IDENTITY,
+    idpaciente       NUMBER NOT NULL,
+    idtiposervicio   NUMBER NOT NULL,
+    idhorariodispo   NUMBER NOT NULL,
+    idservicio       NUMBER NOT NULL,
+    fechacita        TIMESTAMP NOT NULL,
+    detalle          VARCHAR2(100) NOT NULL,
+    estadocita       VARCHAR2(10) DEFAULT 'Pendiente' NOT NULL,
+
+    CONSTRAINT pk_cita
+        PRIMARY KEY (idcita),
+
+    CONSTRAINT fk_cita_paciente
+        FOREIGN KEY (idpaciente)
+        REFERENCES paciente (idpaciente),
+
+    CONSTRAINT fk_cita_agenda
+        FOREIGN KEY (idhorariodispo)
+        REFERENCES agenda (idhorariodispo),
+
+    CONSTRAINT fk_cita_tipo
+        FOREIGN KEY (idtiposervicio)
+        REFERENCES tiposervicio (idtiposervicio),
+
+    CONSTRAINT fk_cita_servicio
+        FOREIGN KEY (idservicio)
+        REFERENCES servicio (idservicio),
+
+    CONSTRAINT chk_cita_estado
+        CHECK (
+            estadocita IN (
+                'Pendiente',
+                'Realizada',
+                'Cancelada'
+            )
+        )
+);
+
+
+-- =========================================================
+-- TABLA: ORDENLABORATORIO
+-- Órdenes generadas a partir de una cita
+-- =========================================================
+
+CREATE TABLE ordenlaboratorio (
+    idordenlaboratorio   NUMBER GENERATED ALWAYS AS IDENTITY,
+    idcita               NUMBER NOT NULL,
+    idsede               NUMBER NOT NULL,
+    fechaorden           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estadoorden          VARCHAR2(10) DEFAULT 'Activo' NOT NULL,
+
+    CONSTRAINT pk_ordenlaboratorio
+        PRIMARY KEY (idordenlaboratorio),
+
+    CONSTRAINT fk_orden_cita
+        FOREIGN KEY (idcita)
+        REFERENCES cita (idcita),
+
+    CONSTRAINT fk_orden_sede
+        FOREIGN KEY (idsede)
+        REFERENCES sede (idsede),
+
+    CONSTRAINT chk_orden_estado
+        CHECK (
+            estadoorden IN (
+                'Activo',
+                'Inactivo',
+                'Cancelada'
+            )
+        )
+);
+
+
+-- =========================================================
+-- TABLA: ORDENLABORATORIOSERVICIO
+-- Servicios incluidos en cada orden de laboratorio
+-- =========================================================
+
+CREATE TABLE ordenlaboratorioservicio (
+    idordenlaboratorio   NUMBER NOT NULL,
+    idservicio           NUMBER NOT NULL,
+
+    CONSTRAINT pk_ordenserv
+        PRIMARY KEY (
+            idordenlaboratorio,
+            idservicio
+        ),
+
+    CONSTRAINT fk_ordenserv_orden
+        FOREIGN KEY (idordenlaboratorio)
+        REFERENCES ordenlaboratorio (idordenlaboratorio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_ordenserv_serv
+        FOREIGN KEY (idservicio)
+        REFERENCES servicio (idservicio)
+);
+
+
+-- =========================================================
+-- VISTA: VW_PROFESIONAL_SERVICIOS
+-- Relación legible entre profesionales y servicios asignados
+-- =========================================================
+
+CREATE OR REPLACE VIEW vw_profesional_servicios AS
+SELECT
+    ps.idperfilservicio,
+    ps.idprofesionalsalud,
+    u.name || ' ' || u.last_name AS profesional,
+    ps.idservicio,
+    s.nombre AS servicio,
+    ps.idtiposervicio,
+    ts.nombre AS tipo_servicio,
+    ps.fechaasignacion,
+    ps.estadoperfil
+FROM perfilservicio ps
+INNER JOIN profesionalsalud p
+    ON p.idprofesionalsalud = ps.idprofesionalsalud
+INNER JOIN users u
+    ON u.id = p.idusuario
+INNER JOIN servicio s
+    ON s.idservicio = ps.idservicio
+INNER JOIN tiposervicio ts
+    ON ts.idtiposervicio = ps.idtiposervicio;
+
+
+
+DESC AGENDA;
+
+
+desc servicio;
+
+
+SELECT
+    constraint_name,
+    constraint_type
+FROM user_constraints
+WHERE table_name = 'AGENDA'
+ORDER BY constraint_name;
