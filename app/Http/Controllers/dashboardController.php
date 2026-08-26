@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Http\Controllers\Profesional\ProfesionalDashboardController;
 
 class DashboardController extends Controller
 {
@@ -13,7 +14,7 @@ class DashboardController extends Controller
 
         return match ($rol) {
             'paciente' => view('Paciente.dashboardPaciente'),
-            'profesional' => view('profesionales.dashboard'),
+            'profesional'   => app(ProfesionalDashboardController::class)->index(),
             'administrador' => view('admin.dashboard-admin'),
             'auxiliar' => view('auxiliar.dashboard-auxiliar'),
             default => view('dashboard'),

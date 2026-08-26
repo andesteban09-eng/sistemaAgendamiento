@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])
