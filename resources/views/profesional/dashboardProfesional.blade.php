@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('content')
-
+@section('contenido')
     <div class="container-fluid px-4 py-4">
 
         <div class="mb-4">
@@ -72,25 +71,17 @@
         </div>
 
     </div>
-
 @endsection
 
 @push('styles')
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
-        rel="stylesheet"
-    >
-
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
 @endpush
 
 @push('scripts')
-
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
     <script>
-
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             const calendarEl = document.getElementById('calendar');
 
@@ -117,13 +108,13 @@
 
                 events: @json($citas ?? []),
 
-                eventClick: function (info) {
+                eventClick: function(info) {
 
                     alert(
                         'Cita: ' +
                         info.event.title +
                         '\nEstado: ' +
-                        info.event.extendedProps.estadoCita
+                        info.event.extendedProps.estadocita
                     );
 
                 }
@@ -133,7 +124,5 @@
             calendar.render();
 
         });
-
     </script>
-
 @endpush
