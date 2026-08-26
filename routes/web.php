@@ -15,10 +15,13 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
+
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+        
     Route::get('admin/pacientes', [PacienteController::class, 'index'])
         ->name('admin.pacientes.index');
 
@@ -41,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/pacientes/{paciente}', [PacienteController::class, 'show'])
         ->name('admin.pacientes.show');
 
-        
+
 
 
     Route::get('admin/profesionales', [ProfesionalController::class, 'index'])

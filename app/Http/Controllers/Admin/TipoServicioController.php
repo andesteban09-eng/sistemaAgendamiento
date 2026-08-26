@@ -12,7 +12,7 @@ class TipoServicioController extends Controller
 {
     public function index(): View
     {
-        $tiposServicio = TipoServicio::orderBy('NOMBRE')->get();
+        $tiposServicio = TipoServicio::orderBy('nombre')->get();
 
         return view(
             'admin.tiposervicios.index',
@@ -28,19 +28,19 @@ class TipoServicioController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'NOMBRE' => [
+            'nombre' => [
                 'required',
                 'string',
                 'max:80',
             ],
 
-            'DESCRIPCION' => [
+            'descripcion' => [
                 'nullable',
                 'string',
             ],
         ]);
 
-        $validated['ESTADOTIPOSERVICIO'] = 'Activo';
+        $validated['estadotiposervicio'] = 'Activo';
 
         TipoServicio::create($validated);
 
@@ -65,13 +65,13 @@ class TipoServicioController extends Controller
         TipoServicio $tipoServicio
     ): RedirectResponse {
         $validated = $request->validate([
-            'NOMBRE' => [
+            'nombre' => [
                 'required',
                 'string',
                 'max:80',
             ],
 
-            'DESCRIPCION' => [
+            'descripcion' => [
                 'nullable',
                 'string',
             ],
@@ -90,12 +90,12 @@ class TipoServicioController extends Controller
     public function toggleEstado(
         TipoServicio $tipoServicio
     ): RedirectResponse {
-        $nuevoEstado = $tipoServicio->ESTADOTIPOSERVICIO === 'Activo'
+        $nuevoEstado = $tipoServicio->estadotiposervicio === 'Activo'
             ? 'Inactivo'
             : 'Activo';
 
         $tipoServicio->update([
-            'ESTADOTIPOSERVICIO' => $nuevoEstado,
+            'estadotiposervicio' => $nuevoEstado,
         ]);
 
         return redirect()

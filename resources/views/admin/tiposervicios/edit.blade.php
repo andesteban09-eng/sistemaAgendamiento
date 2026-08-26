@@ -2,6 +2,7 @@
 
 @section('contenido')
     <div class="container-fluid px-4 py-4">
+
         <div class="mb-4">
 
             <h1 class="fw-bold mb-1">
@@ -25,15 +26,15 @@
 
                     <div class="mb-3">
 
-                        <label for="NOMBRE" class="form-label">
+                        <label for="nombre" class="form-label">
                             Nombre
                         </label>
 
-                        <input type="text" name="NOMBRE" id="NOMBRE"
-                            class="form-control @error('NOMBRE') is-invalid @enderror"
-                            value="{{ old('NOMBRE', $tipoServicio->NOMBRE) }}" maxlength="80" required>
+                        <input type="text" name="nombre" id="nombre"
+                            class="form-control @error('nombre') is-invalid @enderror"
+                            value="{{ old('nombre', $tipoServicio->nombre) }}" maxlength="80" required>
 
-                        @error('NOMBRE')
+                        @error('nombre')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
@@ -43,14 +44,14 @@
 
                     <div class="mb-3">
 
-                        <label for="DESCRIPCION" class="form-label">
+                        <label for="descripcion" class="form-label">
                             Descripción
                         </label>
 
-                        <textarea name="DESCRIPCION" id="DESCRIPCION" rows="4"
-                            class="form-control @error('DESCRIPCION') is-invalid @enderror">{{ old('DESCRIPCION', $tipoServicio->DESCRIPCION) }}</textarea>
+                        <textarea name="descripcion" id="descripcion" rows="4"
+                            class="form-control @error('descripcion') is-invalid @enderror">{{ old('descripcion', $tipoServicio->descripcion) }}</textarea>
 
-                        @error('DESCRIPCION')
+                        @error('descripcion')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>

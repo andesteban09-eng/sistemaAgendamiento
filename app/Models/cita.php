@@ -9,30 +9,30 @@ class Cita extends Model
 {
     protected $table = 'CITA';
 
-    protected $primaryKey = 'IDCITA';
+    protected $primaryKey = 'idcita';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'IDPACIENTE',
-        'IDTIPOSERVICIO',
-        'IDHORARIODISPO',
-        'IDSERVICIO',
-        'FECHACITA',
-        'DETALLE',
-        'ESTADOCITA',
+        'idpaciente',
+        'idtiposervicio',
+        'idhorariodispo',
+        'idservicio',
+        'fechacita',
+        'detalle',
+        'estadocita',
     ];
 
     protected $casts = [
-        'FECHACITA' => 'datetime',
+        'fechacita' => 'datetime',
     ];
 
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(
             Paciente::class,
-            'IDPACIENTE',
-            'IDPACIENTE'
+            'idpaciente',
+            'idpaciente'
         );
     }
 
@@ -40,8 +40,8 @@ class Cita extends Model
     {
         return $this->belongsTo(
             Agenda::class,
-            'IDHORARIODISPO',
-            'IDHORARIODISPO'
+            'idhorariodispo',
+            'idhorariodispo'
         );
     }
 
@@ -49,7 +49,7 @@ class Cita extends Model
     {
         return $this->belongsTo(
             Servicio::class,
-            'IDSERVICIO',
+            'idservicio',
             'idservicio'
         );
     }
@@ -58,8 +58,8 @@ class Cita extends Model
     {
         return $this->belongsTo(
             TipoServicio::class,
-            'IDTIPOSERVICIO',
-            'IDTIPOSERVICIO'
+            'idtiposervicio',
+            'idtiposervicio'
         );
     }
 }
