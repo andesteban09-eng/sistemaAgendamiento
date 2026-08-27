@@ -34,7 +34,7 @@
                         Calendario de citas
                     </div>
                     <div class="card-body">
-                        <div id="calendar" style="min-height: 600px;"></div>
+                        <div id="calendario" style="min-height: 600px;"></div>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
+            const calendarEl = document.getElementById('calendario');
 
             if (!calendarEl) {
                 console.error("No se encontró el elemento #calendar en el DOM.");
