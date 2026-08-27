@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Agenda extends Model
 {
@@ -42,4 +43,12 @@ class Agenda extends Model
             'idsede'
         );
     }
+    public function cita(): HasOne
+{
+    return $this->hasOne(
+        Cita::class,
+        'idhorariodispo',
+        'idhorariodispo'
+    );
+}
 }

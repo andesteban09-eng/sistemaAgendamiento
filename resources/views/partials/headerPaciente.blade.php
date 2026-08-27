@@ -37,6 +37,7 @@
                      <button type="submit" class="dropdown-item text-danger">
                         Cerrar sesión
                     </button>
+                </form>
             </li>
         </ul>
     </div>

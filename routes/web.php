@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AuxiliarController;
 use App\Http\Controllers\Auxiliar\AgendaController;
 use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\ServicioController;
+use App\Http\Controllers\Paciente\CitaController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-        
+
     Route::get('admin/pacientes', [PacienteController::class, 'index'])
         ->name('admin.pacientes.index');
 
@@ -127,44 +128,95 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('auxiliar.agenda.destroy');
 
 
-   Route::get('admin/tiposervicios', [TipoServicioController::class, 'index'])
-    ->name('admin.tiposervicios.index');
+    Route::get('admin/tiposervicios', [TipoServicioController::class, 'index'])
+        ->name('admin.tiposervicios.index');
 
-Route::get('admin/tiposervicios/create', [TipoServicioController::class, 'create'])
-    ->name('admin.tiposervicios.create');
+    Route::get('admin/tiposervicios/create', [TipoServicioController::class, 'create'])
+        ->name('admin.tiposervicios.create');
 
-Route::post('admin/tiposervicios', [TipoServicioController::class, 'store'])
-    ->name('admin.tiposervicios.store');
+    Route::post('admin/tiposervicios', [TipoServicioController::class, 'store'])
+        ->name('admin.tiposervicios.store');
 
-Route::get('admin/tiposervicios/{tipoServicio}/edit', [TipoServicioController::class, 'edit'])
-    ->name('admin.tiposervicios.edit');
+    Route::get('admin/tiposervicios/{tipoServicio}/edit', [TipoServicioController::class, 'edit'])
+        ->name('admin.tiposervicios.edit');
 
-Route::put('admin/tiposervicios/{tipoServicio}', [TipoServicioController::class, 'update'])
-    ->name('admin.tiposervicios.update');
+    Route::put('admin/tiposervicios/{tipoServicio}', [TipoServicioController::class, 'update'])
+        ->name('admin.tiposervicios.update');
 
-Route::patch('admin/tiposervicios/{tipoServicio}/estado', [TipoServicioController::class, 'toggleEstado'])
-    ->name('admin.tiposervicios.toggleEstado');
-
-
+    Route::patch('admin/tiposervicios/{tipoServicio}/estado', [TipoServicioController::class, 'toggleEstado'])
+        ->name('admin.tiposervicios.toggleEstado');
 
 
-Route::get('admin/servicios', [ServicioController::class, 'index'])
-    ->name('admin.servicios.index');
 
-Route::get('admin/servicios/create', [ServicioController::class, 'create'])
-    ->name('admin.servicios.create');
 
-Route::post('admin/servicios', [ServicioController::class, 'store'])
-    ->name('admin.servicios.store');
+    Route::get('admin/servicios', [ServicioController::class, 'index'])
+        ->name('admin.servicios.index');
 
-Route::get('admin/servicios/{servicio}/edit', [ServicioController::class, 'edit'])
-    ->name('admin.servicios.edit');
+    Route::get('admin/servicios/create', [ServicioController::class, 'create'])
+        ->name('admin.servicios.create');
 
-Route::put('admin/servicios/{servicio}', [ServicioController::class, 'update'])
-    ->name('admin.servicios.update');
+    Route::post('admin/servicios', [ServicioController::class, 'store'])
+        ->name('admin.servicios.store');
 
-Route::patch('admin/servicios/{servicio}/estado', [ServicioController::class, 'toggleEstado'])
-    ->name('admin.servicios.toggleEstado');
+    Route::get('admin/servicios/{servicio}/edit', [ServicioController::class, 'edit'])
+        ->name('admin.servicios.edit');
+
+    Route::put('admin/servicios/{servicio}', [ServicioController::class, 'update'])
+        ->name('admin.servicios.update');
+
+    Route::patch('admin/servicios/{servicio}/estado', [ServicioController::class, 'toggleEstado'])
+        ->name('admin.servicios.toggleEstado');
+
+    });
+
+
+    Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::get(
+        '/paciente/citas',
+        [CitaController::class, 'index']
+    )->name('Paciente.citas.index');
+
+Route::get(
+    'paciente/citas/create',
+    [CitaController::class, 'create']
+)->name('Paciente.citas.create');
+
+Route::get(
+    '/paciente/citas/horarios/{idservicio}',
+    [CitaController::class, 'horarios']
+)->name('Paciente.citas.horarios');
+
+Route::post(
+    '/paciente/citas',
+    [CitaController::class, 'store']
+)->name('Paciente.citas.store');
+
+Route::get(
+    '/paciente/citas/{cita}/edit',
+    [CitaController::class, 'edit']
+)->name('Paciente.citas.edit');
+
+Route::put(
+    '/paciente/citas/{cita}',
+    [CitaController::class, 'update']
+)->name('Paciente.citas.update');
+
+Route::patch(
+    '/paciente/citas/{cita}',
+    [CitaController::class, 'cancelar']
+)->name('Paciente.citas.cancelar');
+
+Route::get(
+    '/paciente/citas/{cita}',
+    [CitaController::class, 'show']
+)->name('Paciente.citas.show');
+
+});
+
 
     Route::post('logout', function (Request $request, Logout $logout) {
         $logout();
@@ -174,6 +226,6 @@ Route::patch('admin/servicios/{servicio}/estado', [ServicioController::class, 't
 
     Route::view('profile', 'profile')
         ->name('profile');
-});
+
 
 require __DIR__ . '/auth.php';

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PerfilServicio extends Model
 {
-    protected $table = 'PERFILSERVICIO';
+    protected $table = 'perfilservicio';
 
     protected $primaryKey = 'idperfilservicio';
 

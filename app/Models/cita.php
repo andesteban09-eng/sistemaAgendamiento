@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cita extends Model
 {
-    protected $table = 'CITA';
+    protected $table = 'cita';
 
     protected $primaryKey = 'idcita';
 
