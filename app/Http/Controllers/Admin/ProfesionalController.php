@@ -112,19 +112,19 @@ class ProfesionalController extends Controller
                 }
 
                 PerfilServicio::create([
-                    'IDPROFESIONALSALUD' =>
+                    'idprofesionalsalud' =>
                     $profesional->idprofesionalsalud,
 
-                    'IDSERVICIO' =>
+                    'idservicio' =>
                     $servicio->idservicio,
 
-                    'IDTIPOSERVICIO' =>
+                    'idtiposervicio' =>
                     $servicio->idtiposervicio,
 
-                    'FECHAASIGNACION' =>
+                    'fechaasignacion' =>
                     now(),
 
-                    'ESTADOPERFIL' =>
+                    'estadoperfil' =>
                     'Activo',
                 ]);
             }
@@ -158,8 +158,8 @@ class ProfesionalController extends Controller
             ->get();
 
         $serviciosAsignados = $profesional->perfilesServicio()
-            ->where('ESTADOPERFIL', 'Activo')
-            ->pluck('IDSERVICIO')
+            ->where('estadoperfil', 'Activo')
+            ->pluck('idservicio')
             ->toArray();
 
         return view(
@@ -195,7 +195,7 @@ class ProfesionalController extends Controller
 
             'servicios.*' => [
                 'integer',
-                'exists:SERVICIO,idservicio',
+                'exists:servicio,idservicio',
             ],
         ]);
 
@@ -250,15 +250,15 @@ class ProfesionalController extends Controller
         */
 
             PerfilServicio::where(
-                'IDPROFESIONALSALUD',
+                'idprofesionalsalud',
                 $profesional->idprofesionalsalud
             )
                 ->whereNotIn(
-                    'IDSERVICIO',
+                    'idservicio',
                     $serviciosSeleccionados
                 )
                 ->update([
-                    'ESTADOPERFIL' => 'Inactivo',
+                    'estadoperfil' => 'Inactivo',
                 ]);
 
             /*
@@ -277,20 +277,20 @@ class ProfesionalController extends Controller
 
                 PerfilServicio::updateOrCreate(
                     [
-                        'IDPROFESIONALSALUD' =>
+                        'idprofesionalsalud' =>
                         $profesional->idprofesionalsalud,
 
-                        'IDSERVICIO' =>
+                        'idservicio' =>
                         $servicio->idservicio,
                     ],
                     [
-                        'IDTIPOSERVICIO' =>
+                        'idtiposervicio' =>
                         $servicio->idtiposervicio,
 
-                        'FECHAASIGNACION' =>
+                        'fechaasignacion' =>
                         now(),
 
-                        'ESTADOPERFIL' =>
+                        'estadoperfil' =>
                         'Activo',
                     ]
                 );
