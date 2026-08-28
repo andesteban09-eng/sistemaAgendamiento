@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Agenda extends Model
 {
-    protected $table = 'AGENDA';
+    protected $table = 'agenda';
 
     protected $primaryKey = 'idhorariodispo';
 
