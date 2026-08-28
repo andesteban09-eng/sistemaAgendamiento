@@ -13,11 +13,15 @@ class RoleMiddleware
         Closure $next,
         ...$roles
     ): Response {
-        if (! $request->user()) {
-            abort(403);
-        }
+        $usuario = $request->user();
 
-        if (! in_array($request->user()->rol, $roles)) {
+        if (
+            !$usuario ||
+            !in_array(
+                strtolower($usuario->rol),
+                array_map('strtolower', $roles)
+            )
+        ) {
             abort(403);
         }
 
