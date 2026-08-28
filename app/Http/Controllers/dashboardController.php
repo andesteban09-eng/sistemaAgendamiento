@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Profesional\ProfesionalDashboardController;
 use App\Models\Cita;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,10 @@ class DashboardController extends Controller
                     'idpaciente',
                     $paciente->idpaciente
                 )
-                    ->where('estadocita', 'Pendiente')
+                    ->where(
+                        'estadocita',
+                        'Pendiente'
+                    )
                     ->where(
                         'fechacita',
                         '>=',
@@ -55,7 +59,7 @@ class DashboardController extends Controller
                         '>=',
                         DB::raw('SYSDATE')
                     )
-                    ->orderBy('fechacita')
+                    ->orderBy('fechacita', 'asc')
                     ->first();
             }
 
@@ -72,16 +76,18 @@ class DashboardController extends Controller
         return match ($rol) {
 
             'profesional' =>
-            view('profesionales.dashboard'),
+                app(
+                    ProfesionalDashboardController::class
+                )->index(),
 
             'administrador' =>
-            view('admin.dashboard-admin'),
+                view('admin.dashboard-admin'),
 
             'auxiliar' =>
-            view('auxiliar.dashboard-auxiliar'),
+                view('auxiliar.dashboard-auxiliar'),
 
             default =>
-            view('dashboard'),
+                view('dashboard'),
         };
     }
 }
