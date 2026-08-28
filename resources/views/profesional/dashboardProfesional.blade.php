@@ -21,8 +21,8 @@
                             Editar cita
                         </button>
                         <button type="button" class="btn btn-danger">
-                            <i class="bi bi-trash me-1"></i>
-                            Eliminar cita
+                            <i class="bi bi-calendar-x"></i>
+                            Cancelar cita
                         </button>
                     </div>
                 </div>
