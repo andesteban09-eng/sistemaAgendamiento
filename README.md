@@ -1,58 +1,564 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIGAP - Sistema de Gestión de Agendamiento
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para la gestión de usuarios, servicios, profesionales, disponibilidad y agendamiento de citas médicas para Instituciones Prestadoras de Servicios de Salud (IPS).
 
-## About Laravel
+SIGAP nace como proyecto formativo del programa **Tecnólogo en Análisis y Desarrollo de Software del SENA** y está orientado a centralizar y facilitar el proceso de agendamiento de citas, respetando las responsabilidades y permisos definidos para cada rol de usuario.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> **Estado del proyecto:** 🚧 En desarrollo
+> **Objetivo de versión:** SIGAP 1.0 - Diciembre de 2026
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 📋 Descripción
 
-## Learning Laravel
+SIGAP permite gestionar el proceso de agendamiento de citas médicas desde diferentes roles dentro de una IPS.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+El sistema centraliza la información relacionada con:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* Usuarios y roles.
+* Pacientes.
+* Profesionales de la salud.
+* Auxiliares.
+* Sedes.
+* Tipos de servicio.
+* Servicios médicos.
+* Disponibilidad y agendas.
+* Citas médicas.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+El diseño del sistema busca separar las responsabilidades de cada actor y garantizar que las citas sean programadas únicamente sobre disponibilidades válidas.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🎯 Objetivo
 
-```bash
-composer require laravel/boost --dev
+Desarrollar un sistema web que permita a una IPS gestionar de forma organizada el proceso de agendamiento de citas médicas, desde la administración de usuarios y servicios hasta la creación, consulta, modificación y cancelación de citas.
 
-php artisan boost:install
+El proyecto se enfoca exclusivamente en la **gestión de usuarios y el agendamiento de citas médicas**, sin incluir módulos propios de un ERP hospitalario como facturación, contabilidad, nómina o inventario.
+
+---
+
+## 👥 Roles del sistema
+
+SIGAP contempla cuatro roles principales:
+
+| Rol               | Responsabilidad                                                                                      |
+| ----------------- | ---------------------------------------------------------------------------------------------------- |
+| **Administrador** | Gestión de usuarios, profesionales, pacientes, auxiliares, servicios y configuración administrativa. |
+| **Auxiliar**      | Gestión de la disponibilidad y agenda de los profesionales.                                          |
+| **Profesional**   | Consulta y gestión de las citas asociadas a su actividad profesional.                                |
+| **Paciente**      | Consulta de servicios, selección de disponibilidad, agendamiento y gestión de sus citas.             |
+
+---
+
+## ⚙️ Funcionalidades
+
+### 🔐 Autenticación
+
+* Inicio de sesión mediante correo y contraseña.
+* Manejo de sesiones.
+* Cierre de sesión.
+* Verificación de correo.
+* Acceso condicionado por autenticación.
+
+### 👤 Gestión de usuarios
+
+El administrador puede gestionar los principales perfiles del sistema:
+
+* Pacientes.
+* Profesionales de la salud.
+* Auxiliares.
+
+Las funcionalidades administrativas incluyen creación, consulta, actualización y manejo de estados según corresponda.
+
+### 🏥 Servicios
+
+SIGAP maneja dos niveles para los servicios:
+
+```text
+Tipo de servicio
+       │
+       └── Servicio
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Esto permite organizar los servicios ofrecidos por la IPS y mantener su estado activo o inactivo.
 
-## Contributing
+### 👨‍⚕️ Asignación de servicios a profesionales
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+La tabla `PERFILSERVICIO` determina los servicios para los cuales un profesional se encuentra autorizado.
 
-## Code of Conduct
+La relación principal es:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```text
+Profesional
+     │
+     ▼
+PERFILSERVICIO
+     │
+     ▼
+Servicio
+```
 
-## Security Vulnerabilities
+De esta manera, el sistema puede determinar qué profesionales están habilitados para atender un servicio determinado.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 📅 Gestión de agenda
 
-## License
+El auxiliar puede administrar las disponibilidades de los profesionales.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Cada disponibilidad contiene información como:
+
+* Profesional.
+* Sede.
+* Fecha.
+* Hora.
+* Consultorio.
+
+La agenda constituye la fuente de disponibilidad sobre la cual los pacientes pueden solicitar una cita.
+
+### 🗓️ Agendamiento de citas
+
+El paciente realiza el proceso de forma progresiva:
+
+```text
+Tipo de servicio
+        ↓
+Servicio
+        ↓
+Disponibilidades
+        ↓
+Selección de horario
+        ↓
+Detalle
+        ↓
+Confirmación
+        ↓
+Cita registrada
+```
+
+El paciente no necesita seleccionar manualmente al profesional. El profesional y la sede se determinan a partir de la disponibilidad seleccionada en la agenda.
+
+### 📌 Gestión de citas del paciente
+
+El paciente puede:
+
+* Consultar sus citas.
+* Ver el detalle de una cita.
+* Reprogramar una cita pendiente.
+* Modificar el detalle.
+* Cancelar una cita pendiente.
+
+Las citas canceladas no se eliminan físicamente de la base de datos, sino que cambian su estado a `Cancelada`.
+
+### ⏱️ Control de disponibilidad
+
+El sistema evita mostrar horarios:
+
+* Que ya hayan pasado.
+* Que estén ocupados por una cita activa.
+* Que no correspondan a un profesional autorizado para el servicio.
+
+Cuando una cita es cancelada, el horario puede volver a estar disponible.
+
+---
+
+## 🧠 Modelo funcional del agendamiento
+
+El núcleo del agendamiento se basa en tres entidades principales:
+
+```text
+PERFILSERVICIO
+      │
+      │ determina qué servicios puede prestar
+      ▼
+PROFESIONALSALUD
+      │
+      │ genera disponibilidades
+      ▼
+AGENDA
+      │
+      │ representa fecha, hora, sede y consultorio
+      ▼
+CITA
+      │
+      │ relaciona al paciente con la disponibilidad
+      ▼
+PACIENTE
+```
+
+De esta forma:
+
+* `PERFILSERVICIO` determina la capacidad del profesional.
+* `AGENDA` determina cuándo y dónde está disponible.
+* `CITA` registra quién reservó esa disponibilidad.
+
+---
+
+## 🗃️ Base de datos
+
+SIGAP utiliza **Oracle Database** como sistema gestor de base de datos.
+
+Entre las principales tablas se encuentran:
+
+```text
+USERS
+PACIENTE
+PROFESIONALSALUD
+SEDE
+TIPOSERVICIO
+SERVICIO
+AGENDA
+PERFILSERVICIO
+CITA
+ORDENLABORATORIO
+ORDENLABORATORIOSERVICIO
+```
+
+También se utiliza la vista:
+
+```text
+VW_PROFESIONAL_SERVICIOS
+```
+
+para consultar de forma legible la relación entre profesionales y servicios asignados.
+
+---
+
+## 🛠️ Tecnologías
+
+### Backend
+
+* PHP
+* Laravel 13
+* Laravel Eloquent
+* Livewire
+* Livewire Volt
+
+### Base de datos
+
+* Oracle Database
+* Yajra Laravel OCI8
+
+### Frontend
+
+* HTML5
+* CSS3
+* Bootstrap 5
+* Bootstrap Icons
+* JavaScript
+
+### Herramientas
+
+* Git
+* GitHub
+* Composer
+* Node.js
+* npm
+* Laragon
+* Visual Studio Code
+
+El proyecto utiliza Yajra OCI8 para la integración entre Laravel y Oracle.
+
+---
+
+## 🏗️ Arquitectura
+
+El proyecto utiliza la estructura de Laravel basada en:
+
+```text
+app/
+├── Http/
+│   └── Controllers/
+├── Models/
+└── ...
+
+resources/
+└── views/
+
+routes/
+└── web.php
+
+public/
+└── ...
+
+database/
+└── ...
+```
+
+Los controladores están organizados según el contexto funcional:
+
+```text
+Controllers/
+├── Admin/
+├── Auxiliar/
+├── Paciente/
+└── Profesional/
+```
+
+Esto permite mantener separadas las responsabilidades correspondientes a cada rol.
+
+---
+
+## 🚀 Instalación
+
+### Requisitos
+
+Antes de instalar SIGAP se recomienda contar con:
+
+* PHP 8.3 o superior.
+* Composer.
+* Node.js y npm.
+* Oracle Database.
+* Extensión OCI8 para PHP.
+* Git.
+
+### Clonar el proyecto
+
+```bash
+git clone https://github.com/andesteban09-eng/sistemaAgendamiento.git
+cd sistemaAgendamiento
+```
+
+### Instalar dependencias PHP
+
+```bash
+composer install
+```
+
+### Instalar dependencias frontend
+
+```bash
+npm install
+```
+
+### Configurar entorno
+
+Copiar el archivo de ejemplo:
+
+```bash
+cp .env.example .env
+```
+
+En Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Generar la clave de la aplicación:
+
+```bash
+php artisan key:generate
+```
+
+### Configuración de Oracle
+
+Configurar en `.env` los parámetros correspondientes a la conexión Oracle utilizada por el proyecto.
+
+Ejemplo:
+
+```env
+DB_CONNECTION=oracle
+DB_HOST=127.0.0.1
+DB_PORT=1521
+DB_DATABASE=XE
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_contraseña
+```
+
+> No subir nunca el archivo `.env` al repositorio.
+
+---
+
+## ▶️ Ejecución
+
+Para ejecutar el proyecto localmente:
+
+```bash
+php artisan serve
+```
+
+También puede ejecutarse mediante un entorno local como Laragon.
+
+Para compilar los recursos frontend:
+
+```bash
+npm run build
+```
+
+---
+
+## 📊 Estado actual del proyecto
+
+### ✅ Implementado
+
+* Autenticación y manejo de sesiones.
+* Gestión administrativa de pacientes.
+* Gestión administrativa de profesionales.
+* Gestión administrativa de auxiliares.
+* Gestión de tipos de servicio.
+* Gestión de servicios.
+* Gestión de agendas.
+* Dashboard del paciente.
+* Dashboard del profesional.
+* Agendamiento de citas por parte del paciente.
+* Consulta de citas del paciente.
+* Visualización del detalle de una cita.
+* Edición y reprogramación de citas.
+* Cancelación de citas.
+* Validación de disponibilidad.
+* Asociación automática del profesional mediante la agenda.
+
+### 🚧 En desarrollo
+
+* Gestión de citas desde el rol auxiliar.
+* Gestión de citas desde el rol profesional.
+* Reglas completas de reasignación y atención de citas.
+* Pruebas integrales del sistema.
+* Mejoras de seguridad y validaciones.
+* Documentación funcional y técnica.
+
+### 📌 Objetivo de SIGAP 1.0
+
+La meta es disponer de una versión funcional, probada y documentada del sistema durante **diciembre de 2026**, con capacidad para ser presentada como solución tecnológica para una IPS o laboratorio clínico.
+
+---
+
+## 📋 Requerimientos funcionales
+
+El proyecto contempla como alcance principal:
+
+1. Inicio de sesión mediante correo y contraseña.
+2. Gestión de usuarios por parte del administrador.
+3. Actualización de información de usuarios.
+4. Agendamiento de citas.
+5. Reasignación y cancelación de citas según las reglas definidas.
+6. Gestión de estados.
+7. Prevención de duplicidad de horarios.
+8. Asignación de servicios a profesionales autorizados.
+9. Consulta de citas registradas.
+10. Gestión de la disponibilidad y agenda por parte del auxiliar.
+
+El estado de cada requerimiento se irá actualizando conforme avance el desarrollo.
+
+---
+
+## 🔄 Flujo general de una cita
+
+```text
+Administrador
+     │
+     ├── registra profesionales
+     ├── registra servicios
+     └── administra usuarios
+             │
+             ▼
+        PERFILSERVICIO
+             │
+             ▼
+          Profesional
+             │
+             ▼
+        Auxiliar crea
+          AGENDA
+             │
+             ▼
+          Paciente
+             │
+             ▼
+    selecciona servicio
+             │
+             ▼
+    selecciona disponibilidad
+             │
+             ▼
+          crea CITA
+             │
+             ▼
+      Profesional / Auxiliar
+             │
+             ▼
+       gestión de la cita
+```
+
+---
+
+## 📚 Documentación
+
+La documentación del proyecto se complementará progresivamente con:
+
+* Requerimientos funcionales.
+* Casos de uso.
+* Modelo de datos.
+* Diagramas UML.
+* Prototipos de interfaz.
+* Casos de prueba.
+* Manual de usuario.
+* Manual técnico.
+* Guía de instalación y despliegue.
+
+---
+
+## 🔒 Seguridad
+
+Las credenciales y configuraciones sensibles del entorno local deben mantenerse fuera del repositorio.
+
+El archivo `.env` se utiliza para la configuración local de la aplicación y debe permanecer fuera del control de versiones.
+
+El repositorio mantiene un archivo `.env.example` como referencia para la configuración inicial del proyecto.
+
+---
+
+## 📅 Hoja de ruta
+
+### Fase 1 - Núcleo del sistema
+
+* [x] Autenticación.
+* [x] Gestión básica de usuarios.
+* [x] Servicios y tipos de servicio.
+* [x] Profesionales y perfiles de servicio.
+* [x] Agenda.
+* [x] Agendamiento de citas del paciente.
+
+### Fase 2 - Gestión de citas
+
+* [x] Consulta de citas.
+* [x] Detalle de citas.
+* [x] Reprogramación.
+* [x] Cancelación.
+* [ ] Gestión por auxiliar.
+* [ ] Gestión por profesional.
+* [ ] Reglas finales de reasignación.
+
+### Fase 3 - Calidad
+
+* [ ] Pruebas funcionales.
+* [ ] Pruebas de integración.
+* [ ] Validaciones adicionales.
+* [ ] Revisión de seguridad.
+* [ ] Optimización.
+
+### Fase 4 - SIGAP 1.0
+
+* [ ] Documentación completa.
+* [ ] Manual de usuario.
+* [ ] Manual técnico.
+* [ ] Preparación para despliegue.
+* [ ] Demo funcional.
+* [ ] Presentación a una IPS.
+
+---
+
+## 👨‍💻 Autores
+
+Proyecto desarrollado como parte del programa:
+
+**Tecnólogo en Análisis y Desarrollo de Software - SENA**
+
+Repositorio:
+
+**andesteban09-eng/sistemaAgendamiento**
+
+---
+
+## 📄 Licencia
+
+Este proyecto se encuentra actualmente en desarrollo como proyecto formativo. La licencia definitiva será definida según la evolución y propósito de distribución de SIGAP.
