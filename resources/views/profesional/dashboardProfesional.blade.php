@@ -2,9 +2,8 @@
 
 @section('contenido')
     <div class="container-fluid px-4 py-4">
-
         <div class="mb-4">
-            <h1 class="fw-bold mb-1">               
+            <h1 class="fw-bold mb-1">
                 Consulta y gestiona tus citas programadas.
             </h1>
         </div>
@@ -21,7 +20,7 @@
                             Editar cita
                         </button>
                         <button type="button" class="btn btn-danger">
-                            <i class="bi bi-calendar-x"></i>
+                            <i class="bi bi-calendar-x me-1"></i>
                             Cancelar cita
                         </button>
                     </div>
@@ -43,27 +42,23 @@
 @endsection
 
 @push('scripts')
-    <!-- CDN del calendario que se descarga automáticamente(no hace falta librerias en el proyecto) -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendario');
+        function inicializarCalendario() {
+            const miCalendario = document.getElementById('calendario');
 
-            if (!calendarEl) {
-                console.error("No se encontró el elemento #calendar en el DOM.");
+            if (!miCalendario) {
                 return;
             }
 
-            // Inicialización de la librería FullCalendar
-            const calendar = new FullCalendar.Calendar(calendarEl, {
+            // Se incia el calendario
+            const calendar = new FullCalendar.Calendar(miCalendario, {
                 initialView: 'dayGridMonth',
                 locale: 'es',
                 height: 'auto',
                 headerToolbar: {
                     left: 'prev,next today',
-                    center: 'title',                
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'  
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 buttonText: {
                     today: 'Hoy',
@@ -71,7 +66,7 @@
                     week: 'Semana',
                     day: 'Día'
                 },
-                // Insertar la consulta de las citas
+                // Trae arreglo de citas del controlador
                 events: @json($citas ?? []),
 
                 // Evento al hacer clic sobre una cita agendada
@@ -83,8 +78,10 @@
                 }
             });
 
-            // Con esto se muestra en la pantalla
+            // Muestra el calendario
             calendar.render();
-        });
+        }
+        document.addEventListener('DOMContentLoaded', inicializarCalendario);
+        document.addEventListener('livewire:navigated', inicializarCalendario);
     </script>
 @endpush
