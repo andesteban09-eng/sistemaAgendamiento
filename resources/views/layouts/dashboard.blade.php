@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 
+    <!-- cargar fullcalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
     @livewireStyles
 </head>
 
