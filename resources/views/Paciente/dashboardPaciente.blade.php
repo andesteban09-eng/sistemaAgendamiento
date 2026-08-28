@@ -1,128 +1,387 @@
 @extends('layouts.dashboard')
 
 @section('contenido')
+    <div class="container py-4">
 
-@php
-    use App\Models\Cita;
-    use Illuminate\Support\Facades\DB;
+        {{-- ========================================================= --}}
+        {{-- BIENVENIDA --}}
+        {{-- ========================================================= --}}
 
-    $paciente = auth()->user()->paciente; // relación User -> Paciente
+        <section class="hero rounded-4 shadow-sm mb-4 p-4 p-lg-5">
 
-    $totalPendientes = Cita::where('IDPACIENTE', $paciente?->IDPACIENTE)
-        ->where('ESTADOCITA', 'Pendiente')
-        ->where('FECHACITA', '>=', DB::raw('SYSDATE'))
-        ->count();
+            <div class="row align-items-center">
 
-    $proximaCita = Cita::with(['profesional'])
-        ->where('IDPACIENTE', $paciente?->IDPACIENTE)
-        ->where('FECHACITA', '>=', DB::raw('SYSDATE'))
-        ->orderBy('FECHACITA')
-        ->first();
-@endphp
+                <div class="col-md-8">
 
-<div class="container mt-4 mb-4">
-    <section class="hero shadow justify-content-around border-0 rounded-4 mb-2 p-4 p-lg-5 shadow-sm">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="fw-bold">Hola, {{ auth()->user()->name }}</h1>
-                <p class="lead">Bienvenido al Portal de Pacientes de Carvajal Laboratorios IPS</p>
-                <p>Desde aquí podrás gestionar tus citas, consultar resultados y realizar seguimiento a tus procedimientos.</p>
+                    <p class="text-uppercase small fw-bold mb-2">
+                        Portal de pacientes
+                    </p>
+
+                    <h1 class="fw-bold mb-3">
+                        Hola, {{ auth()->user()->name }}
+                    </h1>
+
+                    <p class="lead mb-2">
+                        Bienvenido al portal de pacientes de
+                        Laboratorios Carvajal IPS.
+                    </p>
+
+                    <p class="mb-0">
+                        Gestiona tus citas, consulta tus pruebas de laboratorio
+                        y revisa tus resultados desde un solo lugar.
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 text-center mt-4 mt-md-0">
+
+                    <i class="bi bi-person-heart display-1"></i>
+
+                </div>
+
             </div>
-            <div class="col-md-4 text-center">
-                <i class="bi bi-person-heart display-1"></i>
+
+        </section>
+
+
+        {{-- ========================================================= --}}
+        {{-- RESUMEN --}}
+        {{-- ========================================================= --}}
+
+        <div class="row g-4 mb-4">
+
+            {{-- CITAS --}}
+            <div class="col-md-4">
+
+                <div class="card dashboard-card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Citas pendientes
+                                </p>
+
+                                <h2 class="fw-bold mb-0">
+                                    {{ $totalPendientes }}
+                                </h2>
+
+                            </div>
+
+                            <i class="bi bi-calendar-check fs-1 text-primary"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-        </div>
-    </section>
-</div>
 
-<div class="row d-flex gap-4 m-4 justify-content-center flex-lg-row flex-column">
 
-    <div class="card border-0 shadow-sm m-3 col-lg-3">
-        <div class="card-body text-center">
-            @if($totalPendientes > 0)
-                <div class="alert text-center">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    Tienes {{ $totalPendientes }} citas pendientes.
+            {{-- PRUEBAS --}}
+            <div class="col-md-4">
+
+                <div class="card dashboard-card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Pruebas de laboratorio
+                                </p>
+
+                                <h2 class="fw-bold mb-0">
+                                    —
+                                </h2>
+
+                                <small class="text-muted">
+                                    Próximamente
+                                </small>
+
+                            </div>
+
+                            <i class="bi bi-droplet fs-1 text-success"></i>
+
+                        </div>
+
+                    </div>
+
                 </div>
-            @else
-                <div class="alert">
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    <h2>{{ $totalPendientes }}</h2>
-                    <small>Solicitudes nuevas</small>
-                </div>
-            @endif
-        </div>
-    </div>
 
-    <div class="card border-0 shadow-sm m-3 col-lg-3">
-        <div class="card-body text-center">
-            <i class="bi bi-file-earmark-medical text-primary"></i>
-            <h2>{{ $totalPendientes }}</h2>
-            <small>Resultados pendientes</small>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm m-3 col-lg-3">
-        <div class="card-body text-center">
-            <i class="bi bi-journal-medical text-primary"></i>
-            <h2>{{ $totalPendientes }}</h2>
-            <small>Solicitudes nuevas</small>
-        </div>
-    </div>
-</div>
-
-<div class="row g-4 mx-4">
-
-    <div class="col-md-4">
-        <a href="{{ url('gestionarcitas') }}" class="text-decoration-none">
-            <div class="card shadow-sm border-0 h-100 text-center">
-                <div class="card-body p-4">
-                    <i class="bi bi-calendar-check display-2 text-primary"></i>
-                    <h4 class="mt-3">Gestionar Citas</h4>
-                    <p class="text-muted">Agenda, consulta o cancela tus citas médicas.</p>
-                </div>
             </div>
-        </a>
-    </div>
 
-    <div class="col-md-4">
-        <a href="{{ url('examenes') }}" class="text-decoration-none">
-            <div class="card shadow-sm border-0 h-100 text-center">
-                <div class="card-body p-4">
-                    <i class="bi bi-clipboard-data display-2 text-success"></i>
-                    <h4 class="mt-3">Solicitar Exámenes</h4>
-                    <p class="text-muted">Consulta y solicita procedimientos de laboratorio.</p>
+
+            {{-- RESULTADOS --}}
+            <div class="col-md-4">
+
+                <div class="card dashboard-card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Resultados
+                                </p>
+
+                                <h2 class="fw-bold mb-0">
+                                    —
+                                </h2>
+
+                                <small class="text-muted">
+                                    Próximamente
+                                </small>
+
+                            </div>
+
+                            <i class="bi bi-file-earmark-medical fs-1 text-danger"></i>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
-        </a>
-    </div>
 
-    <div class="col-md-4">
-        <a href="{{ url('reportecitas') }}" target="_blank" class="text-decoration-none">
-            <div class="card shadow-sm border-0 h-100 text-center">
-                <div class="card-body p-4">
-                    <i class="bi bi-file-earmark-medical display-2 text-danger"></i>
-                    <h4 class="mt-3">Ver Resultados</h4>
-                    <p class="text-muted">Consulta los resultados de tus exámenes.</p>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="card border-0 shadow-sm mx-auto col-lg-11">
-        <div class="card-body">
-            <h5><i class="bi bi-calendar-event"></i> Próxima cita</h5>
-
-            @if($proximaCita)
-                <div class="alert alert-info">
-                    <p><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($proximaCita->FECHACITA)->format('d/m/Y h:i A') }}</p>
-                    <p><strong>Profesional:</strong> {{ $proximaCita->profesional?->NOMBRE }} {{ $proximaCita->profesional?->APELLIDO }}</p>
-                </div>
-            @else
-                <p class="mb-0">No tienes citas programadas.</p>
-            @endif
         </div>
-    </div>
-</div>
 
+
+        {{-- ========================================================= --}}
+        {{-- ACCIONES PRINCIPALES --}}
+        {{-- ========================================================= --}}
+
+        <div class="row g-4 mb-4">
+
+            {{-- AGENDAR CITA --}}
+            <div class="col-md-6">
+
+                <a href="#" class="text-decoration-none">
+
+                    <div class="card dashboard-card border-0 shadow-sm h-100">
+
+                        <div class="card-body p-4 p-lg-5">
+
+                            <i class="bi bi-calendar-plus display-4 text-primary"></i>
+
+                            <h3 class="fw-bold mt-3">
+                                Agendar una cita
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Selecciona el servicio que necesitas y
+                                encuentra una disponibilidad con un profesional
+                                autorizado.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            {{-- PRUEBAS --}}
+            <div class="col-md-6">
+
+                <a href="#" class="text-decoration-none">
+
+                    <div class="card dashboard-card border-0 shadow-sm h-100">
+
+                        <div class="card-body p-4 p-lg-5">
+
+                            <i class="bi bi-clipboard2-pulse display-4 text-success"></i>
+
+                            <h3 class="fw-bold mt-3">
+                                Pruebas de laboratorio
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Consulta y gestiona las pruebas y procedimientos
+                                de laboratorio disponibles.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        {{-- ========================================================= --}}
+        {{-- PRÓXIMA CITA --}}
+        {{-- ========================================================= --}}
+
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <h4 class="fw-bold mb-0">
+
+                        <i class="bi bi-calendar-event me-2"></i>
+
+                        Próxima cita
+
+                    </h4>
+
+                    @if ($proximaCita)
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            Ver mis citas
+                        </a>
+                    @endif
+
+                </div>
+
+
+                @if ($proximaCita)
+                    <div class="row g-4">
+
+                        {{-- SERVICIO --}}
+                        <div class="col-md-6">
+
+                            <p class="text-muted mb-1">
+                                Servicio
+                            </p>
+
+                            <h5 class="fw-bold">
+                                {{ $proximaCita->servicio?->nombre ?? 'Sin información' }}
+                            </h5>
+
+                        </div>
+
+
+                        {{-- FECHA --}}
+                        <div class="col-md-6">
+
+                            <p class="text-muted mb-1">
+                                Fecha y hora
+                            </p>
+
+                            <h5 class="fw-bold">
+
+                                {{ $proximaCita->fechacita?->format('d/m/Y h:i A') }}
+
+                            </h5>
+
+                        </div>
+
+
+                        {{-- PROFESIONAL --}}
+                        <div class="col-md-6">
+
+                            <p class="text-muted mb-1">
+                                Profesional
+                            </p>
+
+                            <h5 class="fw-bold">
+
+                                {{ $proximaCita->agenda?->profesional?->user?->name }}
+
+                                {{ $proximaCita->agenda?->profesional?->user?->last_name }}
+
+                            </h5>
+
+                        </div>
+
+
+                        {{-- SEDE --}}
+                        <div class="col-md-6">
+
+                            <p class="text-muted mb-1">
+                                Sede
+                            </p>
+
+                            <h5 class="fw-bold">
+
+                                {{ $proximaCita->agenda?->sede?->nombre ?? 'Sin información' }}
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+                @else
+                    <div class="text-center py-4">
+
+                        <i class="bi bi-calendar-x display-5 text-muted"></i>
+
+                        <h5 class="mt-3">
+                            No tienes citas programadas
+                        </h5>
+
+                        <p class="text-muted">
+                            Cuando agendes una cita, aparecerá aquí.
+                        </p>
+
+                        <a href="#" class="btn btn-primary">
+
+                            <i class="bi bi-calendar-plus me-2"></i>
+
+                            Agendar una cita
+
+                        </a>
+
+                    </div>
+                @endif
+
+            </div>
+
+        </div>
+
+
+        {{-- ========================================================= --}}
+        {{-- INFORMACIÓN --}}
+        {{-- ========================================================= --}}
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-1 text-center">
+
+                        <i class="bi bi-info-circle display-6 text-primary"></i>
+
+                    </div>
+
+                    <div class="col-md-11">
+
+                        <h5 class="fw-bold">
+                            ¿Necesitas realizarte un procedimiento?
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Puedes consultar los servicios disponibles y
+                            seleccionar el procedimiento que necesitas.
+                            El sistema te mostrará las disponibilidades
+                            correspondientes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 @endsection
