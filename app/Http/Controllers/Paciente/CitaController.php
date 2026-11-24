@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Paciente;
 use App\Http\Controllers\Controller;
 use App\Models\Agenda;
 use App\Models\Cita;
+use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\TipoServicio;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Services\Citas\GestionCitasService;
 
 class CitaController extends Controller
 {
@@ -63,20 +65,40 @@ class CitaController extends Controller
 
     public function horarios($idservicio): \Illuminate\Http\JsonResponse
     {
+        $servicio = Servicio::query()
+            ->where('idservicio', $idservicio)
+            ->where('estadoservicio', 'Activo')
+            ->whereHas('tipoServicio', function ($query) {
+                $query->where('estadotiposervicio', 'Activo');
+            })
+            ->first();
+
+        if (!$servicio) {
+            return response()->json([]);
+        }
         $ahora = now();
+        $segundosActuales =
+            ($ahora->hour * 3600) +
+            ($ahora->minute * 60) +
+            $ahora->second;
 
         $horarios = Agenda::whereHas(
             'profesional.perfilesServicio',
             function ($query) use ($idservicio) {
-
                 $query->where('idservicio', $idservicio)
                     ->where('estadoperfil', 'Activo');
             }
         )
+            ->whereHas('profesional', function ($query) {
+                $query->where('estadoprofesionalsalud', 'Activo')
+                    ->whereHas('user', function ($query) {
+                        $query->where('estado', 'activo');
+                    });
+            })
             ->whereDoesntHave('cita', function ($query) {
                 $query->where('estadocita', '!=', 'Cancelada');
             })
-            ->where(function ($query) use ($ahora) {
+            ->where(function ($query) use ($ahora, $segundosActuales) {
 
                 $query->where(
                     'fecha',
@@ -84,7 +106,7 @@ class CitaController extends Controller
                     $ahora->toDateString()
                 )
 
-                    ->orWhere(function ($query) use ($ahora) {
+                    ->orWhere(function ($query) use ($ahora, $segundosActuales) {
 
                         $query->where(
                             'fecha',
@@ -92,11 +114,7 @@ class CitaController extends Controller
                         )
                             ->whereRaw(
                                 "horainicio > NUMTODSINTERVAL(?, 'SECOND')",
-                                [
-                                    $ahora->diffInSeconds(
-                                        $ahora->copy()->startOfDay()
-                                    )
-                                ]
+                                [$segundosActuales]
                             );
                     });
             })
@@ -149,14 +167,12 @@ class CitaController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $servicio = Servicio::where(
-            'idservicio',
-            $request->idservicio
-        )
-            ->where(
-                'estadoservicio',
-                'Activo'
-            )
+        $servicio = Servicio::query()
+            ->where('idservicio', $request->idservicio)
+            ->where('estadoservicio', 'Activo')
+            ->whereHas('tipoServicio', function ($query) {
+                $query->where('estadotiposervicio', 'Activo');
+            })
             ->first();
 
         if (!$servicio) {
@@ -225,25 +241,20 @@ class CitaController extends Controller
             | OBTENER Y BLOQUEAR EL HORARIO
             |--------------------------------------------------------------------------
             */
-
                 $agenda = Agenda::where(
                     'idhorariodispo',
                     $request->idhorariodispo
                 )
-                    ->whereHas(
-                        'profesional.perfilesServicio',
-                        function ($query) use ($request) {
-
-                            $query->where(
-                                'idservicio',
-                                $request->idservicio
-                            )
-                                ->where(
-                                    'estadoperfil',
-                                    'Activo'
-                                );
-                        }
-                    )
+                    ->whereHas('profesional.perfilesServicio', function ($query) use ($servicio) {
+                        $query->where('idservicio', $servicio->idservicio)
+                            ->where('estadoperfil', 'Activo');
+                    })
+                    ->whereHas('profesional', function ($query) {
+                        $query->where('estadoprofesionalsalud', 'Activo')
+                            ->whereHas('user', function ($query) {
+                                $query->where('estado', 'activo');
+                            });
+                    })
                     ->where(function ($query) use (
                         $ahora,
                         $segundosActuales
@@ -425,20 +436,43 @@ class CitaController extends Controller
             );
     }
 
+    public function show(Cita $cita)
+    {
+        $paciente = Paciente::where('idusuario', Auth::id())
+            ->firstOrFail();
+
+        abort_unless(
+            (string) $cita->idpaciente === (string) $paciente->idpaciente,
+            403
+        );
+
+        return view('Paciente.citas.show', compact('cita'));
+    }
+
+
     public function edit(Cita $cita): View | RedirectResponse
     {
         $paciente = Auth::user()->paciente;
 
-        if (!$paciente || $cita->idpaciente != $paciente->idpaciente) {
+        if (
+            !$paciente ||
+            (string) $cita->idpaciente !== (string) $paciente->idpaciente
+        ) {
             abort(403);
         }
 
         if ($cita->estadocita !== 'Pendiente') {
             return redirect()
                 ->route('Paciente.citas.show', $cita)
+                ->with('error', 'Esta cita no puede ser modificada.');
+        }
+
+        if (!$this->tienePlazoParaModificar($cita)) {
+            return redirect()
+                ->route('Paciente.citas.show', $cita)
                 ->with(
                     'error',
-                    'Esta cita no puede ser modificada.'
+                    'Solo puedes modificar tu cita hasta 24 horas antes de su inicio.'
                 );
         }
 
@@ -448,95 +482,87 @@ class CitaController extends Controller
             'agenda',
         ]);
 
-        $ahora = now();
+        // Después de tres reprogramaciones, se permite
+        // editar el detalle, pero no cambiar el horario.
+        $puedeReprogramar = (int) $cita->numreprogramaciones < 3;
 
-        $segundosActuales =
-            ($ahora->hour * 3600) +
-            ($ahora->minute * 60) +
-            $ahora->second;
+        $horarios = collect();
 
-        $horarios = Agenda::whereHas(
-            'profesional.perfilesServicio',
-            function ($query) use ($cita) {
+        if ($puedeReprogramar) {
+            $limite = now()->addHours(24);
 
-                $query->where(
-                    'idservicio',
-                    $cita->idservicio
-                )
-                    ->where(
-                        'estadoperfil',
-                        'Activo'
-                    );
-            }
-        )
-            ->where(function ($query) use (
-                $ahora,
-                $segundosActuales
-            ) {
+            $segundosLimite =
+                ($limite->hour * 3600) +
+                ($limite->minute * 60) +
+                $limite->second;
 
-                $query->where(
-                    'fecha',
-                    '>',
-                    $ahora->toDateString()
-                )
-                    ->orWhere(function ($query) use (
-                        $ahora,
-                        $segundosActuales
-                    ) {
-
-                        $query->where(
-                            'fecha',
-                            $ahora->toDateString()
-                        )
-                            ->whereRaw(
-                                "horainicio > NUMTODSINTERVAL(?, 'SECOND')",
-                                [
-                                    $segundosActuales
-                                ]
-                            );
-                    });
-            })
-            ->where(function ($query) use ($cita) {
-
-                $query->whereDoesntHave('cita', function ($query) {
-
-                    $query->where(
-                        'estadocita',
-                        '!=',
-                        'Cancelada'
-                    );
+            $horarios = Agenda::whereHas(
+                'profesional.perfilesServicio',
+                function ($query) use ($cita) {
+                    $query->where('idservicio', $cita->idservicio)
+                        ->where('estadoperfil', 'Activo');
+                }
+            )
+                ->whereHas('profesional', function ($query) {
+                    $query->where('estadoprofesionalsalud', 'Activo')
+                        ->whereHas('user', function ($query) {
+                            $query->where('estado', 'activo');
+                        });
                 })
-                    ->orWhere(
-                        'idhorariodispo',
-                        $cita->idhorariodispo
-                    );
-            })
-            ->with([
-                'profesional.user',
-                'sede',
-            ])
-            ->orderBy('fecha')
-            ->orderBy('horainicio')
-            ->get();
+                ->where(function ($query) use ($limite, $segundosLimite) {
+                    $query->where('fecha', '>', $limite->toDateString())
+                        ->orWhere(function ($query) use ($limite, $segundosLimite) {
+                            $query->where('fecha', $limite->toDateString())
+                                ->whereRaw(
+                                    "horainicio >= NUMTODSINTERVAL(?, 'SECOND')",
+                                    [$segundosLimite]
+                                );
+                        });
+                })
+                ->where(function ($query) use ($cita) {
+                    $query->whereDoesntHave('cita', function ($query) {
+                        $query->where('estadocita', '!=', 'Cancelada');
+                    })
+                        ->orWhere(
+                            'idhorariodispo',
+                            $cita->idhorariodispo
+                        );
+                })
+                ->with([
+                    'profesional.user',
+                    'sede',
+                ])
+                ->orderBy('fecha')
+                ->orderBy('horainicio')
+                ->get();
+        }
 
         return view(
             'Paciente.citas.edit',
-            compact(
-                'cita',
-                'horarios'
-            )
+            compact('cita', 'horarios', 'puedeReprogramar')
         );
     }
-    public function update(
-        Request $request,
-        Cita $cita
-    ): RedirectResponse {
-        $request->validate([
+
+    private function tienePlazoParaModificar(Cita $cita): bool
+    {
+        $inicio = Carbon::parse(
+            $cita->fechacita,
+            'America/Bogota'
+        );
+
+        return now()->lte(
+            $inicio->copy()->subHours(24)
+        );
+    }
+
+
+    public function update(Request $request, Cita $cita): RedirectResponse
+    {
+        $datosValidados = $request->validate([
             'idhorariodispo' => [
                 'required',
                 'integer',
             ],
-
             'detalle' => [
                 'nullable',
                 'string',
@@ -548,108 +574,127 @@ class CitaController extends Controller
 
         if (
             !$paciente ||
-            $cita->idpaciente != $paciente->idpaciente
+            (string) $cita->idpaciente !== (string) $paciente->idpaciente
         ) {
             abort(403);
         }
 
-        if ($cita->estadocita !== 'Pendiente') {
-
-            return back()
-                ->with(
-                    'error',
-                    'Esta cita no puede ser modificada.'
-                );
-        }
-
-        $ahora = now();
-
-        $segundosActuales =
-            ($ahora->hour * 3600) +
-            ($ahora->minute * 60) +
-            $ahora->second;
-
         try {
-
             DB::transaction(function () use (
-                $request,
+                $datosValidados,
                 $cita,
-                $ahora,
-                $segundosActuales
+                $paciente
             ) {
+                // Bloquear la cita para evitar modificaciones simultáneas.
+                $citaActual = Cita::where('idcita', $cita->idcita)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-                /*
-            |--------------------------------------------------------------------------
-            | SERVICIO ORIGINAL
-            |--------------------------------------------------------------------------
-            */
+                // Comprobar nuevamente el propietario.
+                if (
+                    (string) $citaActual->idpaciente !==
+                    (string) $paciente->idpaciente
+                ) {
+                    abort(403);
+                }
 
+                if ($citaActual->estadocita !== 'Pendiente') {
+                    throw new \RuntimeException(
+                        'Esta cita ya no puede ser modificada.'
+                    );
+                }
+
+                // La cita original debe estar al menos a 24 horas.
+                if (!$this->tienePlazoParaModificar($citaActual)) {
+                    throw new \RuntimeException(
+                        'Solo puedes modificar tu cita hasta 24 horas antes de su inicio.'
+                    );
+                }
+
+                $nuevoIdHorario = (int) $datosValidados['idhorariodispo'];
+
+                $reprogramar = $nuevoIdHorario !==
+                    (int) $citaActual->idhorariodispo;
+
+                // Normalizar el detalle para Oracle.
+                $detalle = trim(
+                    (string) ($datosValidados['detalle'] ?? '')
+                );
+
+                if ($detalle === '') {
+                    $detalle = 'Sin observaciones';
+                }
+
+                // Si no cambia el horario, solo se actualiza el detalle.
+                // Esto no consume ninguna reprogramación.
+                if (!$reprogramar) {
+                    $citaActual->update([
+                        'detalle' => $detalle,
+                    ]);
+
+                    return;
+                }
+
+                // Comprobar el máximo de tres reprogramaciones.
+                if ((int) $citaActual->numreprogramaciones >= 3) {
+                    throw new \RuntimeException(
+                        'Has alcanzado el máximo de 3 reprogramaciones.'
+                    );
+                }
+
+                // Verificar que el servicio original sigue activo.
                 $servicio = Servicio::where(
                     'idservicio',
-                    $cita->idservicio
+                    $citaActual->idservicio
                 )
-                    ->where(
-                        'estadoservicio',
-                        'Activo'
-                    )
+                    ->where('estadoservicio', 'Activo')
+                    ->whereHas('tipoServicio', function ($query) {
+                        $query->where('estadotiposervicio', 'Activo');
+                    })
                     ->first();
 
                 if (!$servicio) {
-
                     throw new \RuntimeException(
                         'El servicio de la cita ya no está disponible.'
                     );
                 }
 
+                // Calcular el límite para el nuevo horario.
+                $limite = now()->addHours(24);
 
-                /*
-            |--------------------------------------------------------------------------
-            | OBTENER NUEVO HORARIO
-            |--------------------------------------------------------------------------
-            */
+                $segundosLimite =
+                    ($limite->hour * 3600) +
+                    ($limite->minute * 60) +
+                    $limite->second;
 
+                // Obtener y bloquear el nuevo horario.
                 $agenda = Agenda::where(
                     'idhorariodispo',
-                    $request->idhorariodispo
+                    $nuevoIdHorario
                 )
                     ->whereHas(
                         'profesional.perfilesServicio',
-                        function ($query) use ($cita) {
-
+                        function ($query) use ($citaActual) {
                             $query->where(
                                 'idservicio',
-                                $cita->idservicio
+                                $citaActual->idservicio
                             )
-                                ->where(
-                                    'estadoperfil',
-                                    'Activo'
-                                );
+                                ->where('estadoperfil', 'Activo');
                         }
                     )
-                    ->where(function ($query) use (
-                        $ahora,
-                        $segundosActuales
-                    ) {
-
-                        $query->where(
-                            'fecha',
-                            '>',
-                            $ahora->toDateString()
-                        )
-                            ->orWhere(function ($query) use (
-                                $ahora,
-                                $segundosActuales
-                            ) {
-
-                                $query->where(
-                                    'fecha',
-                                    $ahora->toDateString()
-                                )
+                    ->whereHas('profesional', function ($query) {
+                        $query->where('estadoprofesionalsalud', 'Activo')
+                            ->whereHas('user', function ($query) {
+                                $query->where('estado', 'activo');
+                            });
+                    })
+                    ->where(function ($query) use ($limite, $segundosLimite) {
+                        $query->where('fecha', '>', $limite->toDateString())
+                            ->orWhere(function ($query) use ($limite, $segundosLimite) {
+                                $query->where('fecha', $limite->toDateString())
                                     ->whereRaw(
-                                        "horainicio > NUMTODSINTERVAL(?, 'SECOND')",
-                                        [
-                                            $segundosActuales
-                                        ]
+                                        "horainicio >= NUMTODSINTERVAL(?, 'SECOND')",
+                                        [$segundosLimite]
                                     );
                             });
                     })
@@ -657,180 +702,103 @@ class CitaController extends Controller
                     ->first();
 
                 if (!$agenda) {
-
                     throw new \RuntimeException(
                         'El horario seleccionado ya no está disponible.'
                     );
                 }
 
-
-                /*
-            |--------------------------------------------------------------------------
-            | COMPROBAR SI EL NUEVO HORARIO YA ESTÁ OCUPADO
-            |--------------------------------------------------------------------------
-            */
-
+                // Verificar que ninguna otra cita activa ocupe el horario.
                 $horarioOcupado = Cita::where(
                     'idhorariodispo',
                     $agenda->idhorariodispo
                 )
-                    ->where(
-                        'idcita',
-                        '!=',
-                        $cita->idcita
-                    )
-                    ->where(
-                        'estadocita',
-                        '!=',
-                        'Cancelada'
-                    )
+                    ->where('idcita', '!=', $citaActual->idcita)
+                    ->where('estadocita', '!=', 'Cancelada')
                     ->exists();
 
                 if ($horarioOcupado) {
-
                     throw new \RuntimeException(
                         'El horario seleccionado ya fue reservado por otro paciente.'
                     );
                 }
 
+                // Obtener la hora del INTERVAL DAY TO SECOND de Oracle.
+                $hora = $agenda->getRawOriginal('horainicio');
 
-                /*
-            |--------------------------------------------------------------------------
-            | OBTENER HORA
-            |--------------------------------------------------------------------------
-            */
-
-                $hora = $agenda->getRawOriginal(
-                    'horainicio'
-                );
-
-                preg_match(
+                if (!preg_match(
                     '/(\d{2}):(\d{2}):(\d{2})/',
-                    $hora,
+                    (string) $hora,
                     $partes
-                );
-
-                if (!$partes) {
-
+                )) {
                     throw new \RuntimeException(
                         'No fue posible determinar la hora del horario seleccionado.'
                     );
                 }
 
-
-                /*
-            |--------------------------------------------------------------------------
-            | CONSTRUIR FECHA
-            |--------------------------------------------------------------------------
-            */
-
+                // Construir la nueva fecha y hora de la cita.
                 $fechacita = Carbon::create(
                     $agenda->fecha->year,
                     $agenda->fecha->month,
                     $agenda->fecha->day,
                     (int) $partes[1],
                     (int) $partes[2],
-                    (int) $partes[3]
+                    (int) $partes[3],
+                    'America/Bogota'
                 );
 
-
-                /*
-            |--------------------------------------------------------------------------
-            | DETALLE
-            |--------------------------------------------------------------------------
-            */
-
-                $detalle = trim(
-                    (string) $request->input(
-                        'detalle',
-                        ''
-                    )
-                );
-
-                if ($detalle === '') {
-                    $detalle = 'Sin observaciones';
+                // Validación final de las 24 horas.
+                if ($fechacita->lt(now()->addHours(24))) {
+                    throw new \RuntimeException(
+                        'El nuevo horario debe estar al menos a 24 horas de distancia.'
+                    );
                 }
 
-
-                /*
-            |--------------------------------------------------------------------------
-            | ACTUALIZAR CITA
-            |--------------------------------------------------------------------------
-            */
-
-                $cita->update([
+                // Actualizar la cita y aumentar el contador
+                // dentro de la misma transacción.
+                $citaActual->update([
                     'idhorariodispo' => $agenda->idhorariodispo,
                     'fechacita' => $fechacita,
                     'detalle' => $detalle,
+                    'numreprogramaciones' =>
+                    (int) $citaActual->numreprogramaciones + 1,
                 ]);
             });
         } catch (\RuntimeException $e) {
-
             return back()
                 ->withInput()
-                ->with(
-                    'error',
-                    $e->getMessage()
-                );
+                ->with('error', $e->getMessage());
         }
 
-
         return redirect()
-            ->route(
-                'Paciente.citas.show',
-                $cita
-            )
+            ->route('Paciente.citas.show', $cita)
             ->with(
                 'success',
                 'La cita fue actualizada correctamente.'
             );
     }
 
-    public function cancelar(Cita $cita): RedirectResponse
-    {
+    public function cancelar(
+        Cita $cita,
+        GestionCitasService $gestionCitas
+    ): RedirectResponse {
         $paciente = Auth::user()->paciente;
 
-        if (!$paciente || $cita->idpaciente != $paciente->idpaciente) {
+        if (
+            ! $paciente ||
+            (string) $cita->idpaciente !== (string) $paciente->idpaciente
+        ) {
             abort(403);
         }
 
-        if ($cita->estadocita !== 'Pendiente') {
-            return back()
-                ->with(
-                    'error',
-                    'Esta cita no puede ser cancelada.'
-                );
+        try {
+            $gestionCitas->cancelar($cita, (int) $paciente->idpaciente);
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
-        $cita->update([
-            'estadocita' => 'Cancelada',
-        ]);
-
-        return redirect()
-            ->route('Paciente.citas.index')
-            ->with(
-                'success',
-                'La cita fue cancelada correctamente.'
-            );
-    }
-    public function show(Cita $cita): View
-    {
-        $paciente = Auth::user()->paciente;
-
-        if (!$paciente || $cita->idpaciente != $paciente->idpaciente) {
-            abort(403);
-        }
-
-        $cita->load([
-            'servicio',
-            'tipoServicio',
-            'agenda.profesional.user',
-            'agenda.sede',
-        ]);
-
-        return view(
-            'Paciente.citas.show',
-            compact('cita')
+        return back()->with(
+            'success',
+            'La cita fue cancelada correctamente.'
         );
     }
 }

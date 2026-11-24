@@ -51,7 +51,7 @@ new class extends Component {
                     <i class="bi bi-person-plus display-4 text-primary"></i>
 
                     <h1 class="display-5 fw-bold mt-3">
-                        Laboratorios Carvajal
+                        SIGAC
                     </h1>
 
                     <p class="lead text-muted">

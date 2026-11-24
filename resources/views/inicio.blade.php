@@ -6,12 +6,12 @@
     <div class="container-fluid">
       <div class="row align-items-center">
         <div class="col-lg-7">
-          <h1>Laboratorio Clínico<br>Especializado en <span>Boyacá</span></h1>
-          <p>En Carvajal Laboratorios IPS cuidamos tu salud con innovación, empatía y calidad. Agenda tu cita médica de forma fácil y rápida, sin filas ni llamadas.</p>
+          <h1>Sistema Integral de Gestión de Citas Medicas<br>Para IPS en <span>Boyacá</span></h1>
+          <p> Con SIGAC, Agenda tu cita médica de forma fácil y rápida, sin filas ni llamadas.</p>
           <div class="hero-badges">
             <span class="hero-badge"><i class="bi bi-patch-check-fill"></i> Certificados ISO 9001</span>
             <span class="hero-badge"><i class="bi bi-people-fill"></i> +3.500 reseñas 5 estrellas</span>
-            <span class="hero-badge"><i class="bi bi-geo-alt-fill"></i> Múltiples sedes en Boyacá</span>
+            <span class="hero-badge"><i class="bi bi-geo-alt-fill"></i> Pensado para multiples sedes</span>
           </div>
           <div class="hero-ctas">
             <a href="#agendar-cita" class="btn-hero-primary">
@@ -24,7 +24,8 @@
         </div>
         <div class="col-lg-5 d-none d-lg-flex justify-content-center mt-4 mt-lg-0">
           <div style="width:340px;height:300px;background:rgba(255,255,255,.07);border-radius:20px;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
-            <i class="bi bi-hospital" style="font-size:5rem;color:var(--aqua-claro);opacity:.7;"></i>
+            <img src="{{ asset('img/favicon.png') }}" alt="Hero Illustration" class="img-fluid">
+
             <span style="color:rgba(255,255,255,.5);font-size:.85rem;"></span>
           </div>
         </div>
@@ -38,29 +39,29 @@
       <div class="row justify-content-center align-items-center g-3">
         <div class="col-6 col-md-3">
           <div class="stat-item">
-            <div class="num">+20<span>años</span></div>
-            <p>Experiencia clínica</p>
+            <div class="num">3 <span>años</span></div>
+            <p>Experiencia creando sistemas</p>
           </div>
         </div>
         <div class="col-auto d-none d-md-block"><div class="stat-divider"></div></div>
         <div class="col-6 col-md-3">
           <div class="stat-item">
-            <div class="num">3.5<span>K+</span></div>
-            <p>Pacientes satisfechos</p>
+            <div class="num">###<span>K+</span></div>
+            <p>usuarios satisfechos</p>
           </div>
         </div>
         <div class="col-auto d-none d-md-block"><div class="stat-divider"></div></div>
         <div class="col-6 col-md-3">
           <div class="stat-item">
-            <div class="num">12<span>+</span></div>
+            <div class="num">adaptable a<span>+</span></div>
             <p>Especialidades médicas</p>
           </div>
         </div>
         <div class="col-auto d-none d-md-block"><div class="stat-divider"></div></div>
         <div class="col-6 col-md-3">
           <div class="stat-item">
-            <div class="num">5<span>★</span></div>
-            <p>Calificación Google</p>
+            <div class="num">5<span><i class="bi bi-star-fill"></i></span></div>
+            <p>Calificación promedio</p>
           </div>
         </div>
       </div>
@@ -143,13 +144,13 @@
     <div class="container">
       <div class="text-center mb-5">
         <h2>Nuestros Servicios</h2>
-        <p class="subtitle">¡Cuidamos bien de ti, de tu familia y de tu empresa!</p>
+        <p class="subtitle">adaptable a los servicios de su empresa</p>
       </div>
       <div class="row g-4">
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#0a2558,#1a5f8a);">🔬</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#0a2558,#1a5f8a);"><i class="bi bi-clipboard2-pulse"></i></div>
             <div class="servicio-body">
               <p class="tag">Laboratorio</p>
               <h5>Laboratorio Clínico Especializado</h5>
@@ -159,7 +160,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#00796b,#00b4d8);">🩺</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#00796b,#00b4d8);"><i class="bi bi-person-check"></i></div>
             <div class="servicio-body">
               <p class="tag">Consulta Médica</p>
               <h5>Especialistas Clínicos</h5>
@@ -169,7 +170,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#5c35c9,#00b4d8);">🏠</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#5c35c9,#00b4d8);"><i class="bi bi-house"></i></div>
             <div class="servicio-body">
               <p class="tag">Home Care</p>
               <h5>Cuidado en Casa</h5>
@@ -179,7 +180,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#1565c0,#42a5f5);">🚗</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#1565c0,#42a5f5);"><i class="bi bi-car-front-fill"></i></div>
             <div class="servicio-body">
               <p class="tag">CRC</p>
               <h5>Exámenes para Conductores</h5>
@@ -189,7 +190,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#1a3a7a,#00b4d8);">💻</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#1a3a7a,#00b4d8);"><i class="bi bi-telephone"></i></div>
             <div class="servicio-body">
               <p class="tag">Telesalud</p>
               <h5>Atención de Telemedicina</h5>
@@ -199,7 +200,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#b71c1c,#e53935);">🩻</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#b71c1c,#e53935);"><i class="bi bi-file-earmark-image-fill"></i></div>
             <div class="servicio-body">
               <p class="tag">Imágenes</p>
               <h5>Imágenes Diagnósticas</h5>
@@ -209,7 +210,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#2e7d32,#66bb6a);">💉</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#2e7d32,#66bb6a);"><i class="bi bi-shield-shaded"></i></div>
             <div class="servicio-body">
               <p class="tag">Prevención</p>
               <h5>Vacunación</h5>
@@ -219,7 +220,7 @@
 
         <div class="col-6 col-md-4 col-lg-3">
           <div class="servicio-card">
-            <div class="servicio-img" style="background:linear-gradient(135deg,#e65100,#ff9800);">🚑</div>
+            <div class="servicio-img" style="background:linear-gradient(135deg,#e65100,#ff9800);"><i class="bi bi-truck-front-fill"></i></div>
             <div class="servicio-body">
               <p class="tag">Emergencias</p>
               <h5>Traslado en Ambulancia</h5>

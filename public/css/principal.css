@@ -4,7 +4,7 @@
 }
 
 /* ══════════════════════════════════════════
-   Carvajal Laboratorios IPS — Estilos globales
+SIGAC— Estilos globales
    ══════════════════════════════════════════ */
 
 /* ── VARIABLES ── */
@@ -49,12 +49,24 @@ body {
    NAVBAR
    ══════════════════════════════════════════ */
 .navbar {
-  background-color: var(--blanco);
-  box-shadow: 0 2px 12px rgba(0,0,0,.10);
-  padding: 10px 0;
+    background-color: var(--blanco);
+    box-shadow: 0 2px 12px rgba(0,0,0,.10);
+    padding: 6px 0;
 }
-.navbar-brand img { height:max-content; 
-width: max-content;}
+@media (min-width: 768px) {
+    .navbar {
+        padding: .5rem 0;
+    }
+
+    .navbar-brand img {
+        max-height: auto;
+    }
+}
+.navbar-brand img {
+    max-height: 55px;
+    width: auto;
+    display: block;
+}
 .navbar-brand h1 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
@@ -83,6 +95,22 @@ width: max-content;}
 .navbar .nav-link:hover,
 .navbar .nav-link.active { color: var(--aqua) !important; }
 
+/* ══════════════════════════════════════════
+   DROPDOWN
+   ══════════════════════════════════════════ */
+   .navbar .nav-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--blanco) !important;
+  padding: 8px 12px;
+  transition: color .2s;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.navbar .nav-btn:hover,
+.navbar .nav-btn.active { color: var(--gris-claro) !important; background: var(--azul-oscuro)!important; box-shadow: 0 8px 24px rgba(0,0,0,.12);transform: translateY(-1.5px) translateX(-2px); }
+
 .dropdown-menu {
   border: none;
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
@@ -100,6 +128,7 @@ width: max-content;}
 .dropdown-item:hover {
   background: var(--gris-claro);
   color: var(--aqua);
+
 }
 
 /* Botón agendar cita dentro del dropdown */

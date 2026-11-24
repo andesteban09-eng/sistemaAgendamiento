@@ -10,7 +10,7 @@
             </h1>
 
             <p class="text-muted mb-0">
-                Bienvenido al sistema de gestión de Laboratorios Carvajal IPS.
+                Bienvenido a SIGAC.
                 Desde este panel podrá gestionar la disponibilidad de los profesionales
                 y consultar las citas registradas.
             </p>
@@ -163,7 +163,7 @@
                                 fecha y hora.
                             </p>
 
-                            <a href="#" class="btn btn-warning">
+                            <a href="{{ route('auxiliar.citas.index') }}" class="btn btn-warning">
                                 Consultar citas
                             </a>
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Servicio extends Model
 {
-    protected $table = 'SERVICIO';
+    protected $table = 'servicio';
 
     protected $primaryKey = 'idservicio';
 

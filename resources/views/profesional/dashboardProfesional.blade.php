@@ -32,7 +32,7 @@
             {{-- Calendario --}}
             <div class="col-md-9 mb-4">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-primary text-white text-center fw-bold fs-3">
+                    <div class="card-header bg-primary text-white text-center fw-bold calendario-titulo">
                         Calendario de citas
                     </div>
                     <div class="card-body">
@@ -52,7 +52,8 @@
                     <h5 class="modal-title fw-bold" id="modalDetalleCitaLabel">
                         <i class="bi bi-calendar-event me-2"></i>Detalle de la Cita
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-3">
@@ -131,14 +132,16 @@
                     document.getElementById('modalPaciente').textContent = props.paciente || 'Sin paciente';
                     document.getElementById('modalServicio').textContent = props.servicio || 'Sin servicio';
                     document.getElementById('modalHora').textContent = props.hora || 'Sin hora registrada';
-                    document.getElementById('modalObservacion').textContent = props.observacion || 'Sin observaciones';
+                    document.getElementById('modalObservacion').textContent = props.observacion ||
+                        'Sin observaciones';
 
                     // Formato del Badge según estado
                     const badgeEstado = document.getElementById('modalEstado');
                     badgeEstado.textContent = props.estadoCita || 'Sin estado';
                     badgeEstado.className = 'badge fs-6 ' + (
                         props.estadoCita === 'Pendiente' ? 'bg-warning text-dark' :
-                        (props.estadoCita === 'Atendida' || props.estadoCita === 'Realizada') ? 'bg-success' :
+                        (props.estadoCita === 'Atendida' || props.estadoCita === 'Realizada') ?
+                        'bg-success' :
                         props.estadoCita === 'Cancelada' ? 'bg-danger' : 'bg-primary'
                     );
 

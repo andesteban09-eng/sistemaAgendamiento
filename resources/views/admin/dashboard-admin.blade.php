@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
+    <div class="container-fluid dashboard-container px-4 py-4">
 
         {{-- Encabezado --}}
         <div class="mb-4">
@@ -10,7 +10,7 @@
             </h1>
 
             <p class="text-muted mb-0">
-                Bienvenido al sistema de gestión de Laboratorios Carvajal IPS.
+                Bienvenido a SIGAC.
             </p>
         </div>
 
@@ -191,7 +191,7 @@
                                 registradas en el sistema.
                             </p>
 
-                            <a href="#" class="btn btn-warning">
+                            <a href="{{ route('admin.citas.index') }}" class="btn btn-warning">
                                 Gestionar citas
                             </a>
                         </div>

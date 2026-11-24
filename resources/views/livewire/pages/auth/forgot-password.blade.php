@@ -108,7 +108,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <div class="text-center mt-4">
 
                     <small class="text-muted">
-                        Laboratorios Carvajal IPS
+                        SIGAC: Sistema integral web de gestión, automatización y agendamiento de citas médicas para IPS
                     </small>
 
                 </div>

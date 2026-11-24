@@ -1,6 +1,6 @@
 -- =========================================================
 -- 02_Crear_Base_Datos.sql
--- Base de datos: SIGAP - Sistema de Gestión de Agendamiento
+-- Base de datos: SIGAC - Sistema de Gestión de Agendamiento
 -- Motor: Oracle Database
 -- Usuario: SISTEMAAGENDAMIENTO
 -- =========================================================
@@ -330,3 +330,62 @@ select constraint_name,
   from user_constraints
  where table_name = 'AGENDA'
  order by constraint_name;
+
+
+
+-- Ampliación de ORDENLABORATORIO
+
+alter table ordenlaboratorio add (
+   numeroprescripcion    varchar2(20),
+   fuenteorden           varchar2(20),
+   fechaprescripcion     timestamp(6) with time zone,
+   estadovalidacion      varchar2(20) default 'PENDIENTE' not null,
+   metodovalidacion      varchar2(20),
+   fechavalidacion       timestamp(6) with time zone,
+   observacionvalidacion varchar2(500)
+);
+
+alter table ordenlaboratorio
+   add constraint chk_orden_fuente check ( fuenteorden in ( 'MIPRES',
+                                                            'OTRA' ) );
+
+alter table ordenlaboratorio
+   add constraint chk_orden_validacion
+      check ( estadovalidacion in ( 'PENDIENTE',
+                                    'VERIFICADA',
+                                    'NO_CONFORME',
+                                    'REVISION_MANUAL',
+                                    'ERROR_CONSULTA' ) );
+
+alter table ordenlaboratorio
+   add constraint chk_orden_metodo
+      check ( metodovalidacion in ( 'SIMULADA',
+                                    'OFICIAL',
+                                    'MANUAL' ) );
+
+-- Ampliación de ORDENLABORATORIOSERVICIO
+
+alter table ordenlaboratorioservicio add (
+   tipotecnologia   varchar2(1),
+   conorden         number(2),
+   codigotecnologia varchar2(20)
+);
+
+alter table ordenlaboratorioservicio
+   add constraint chk_ordenserv_conorden check ( conorden between 1 and 99 );
+
+alter table cita add (
+   numreprogramaciones number(1) default 0 not null
+);
+
+alter table cita
+   add constraint ck_cita_reprogramaciones check ( numreprogramaciones between 0 and 3 );
+
+alter table cita drop constraint chk_cita_estado;
+
+alter table cita
+   add constraint chk_cita_estado
+      check ( estadocita in ( 'Pendiente',
+                              'Confirmada',
+                              'Realizada',
+                              'Cancelada' ) );

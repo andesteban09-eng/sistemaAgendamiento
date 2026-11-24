@@ -10,8 +10,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>
-        {{ config('app.name', 'Laboratorios Carvajal') }}
+        {{ config('app.name', 'SIGAC') }}
     </title>
+
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

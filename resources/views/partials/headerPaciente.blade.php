@@ -1,44 +1,65 @@
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-    <div class="container col-3 d-flex flex-column flex-lg-row align-items-center gap-2">
-        <p class="text-secondary mb-0">
-            <i class="bi bi-calendar3"></i>
-            {{ ucfirst(now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')) }}
-        </p>
-    </div>
+<nav class="navbar bg-white shadow-sm dashboard-role-header">
+    <div class="container-fluid px-4">
 
-    <div class="container col-6 d-flex align-items-center gap-3">
-        <img src="{{ asset('img/LOGO-CARVAJAL-LABORATORIOS-IPS-3-1.webp') }}"
-             alt="logo"
-             class="d-block"
-             style="height:60px;">
-    </div>
+        <div class="dashboard-role-header-content">
 
-    <div class="dropdown ms-auto d-flex align-items-center gap-2">
-        <span class="text-secondary fw-bold me-2">
-            Bienvenido(a), {{ auth()->user()->name }}
-        </span>
+            {{-- Fecha --}}
+            <div class="dashboard-role-date">
+                <span class="text-secondary">
+                    <i class="bi bi-calendar3 me-2"></i>
+                    {{ ucfirst(now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')) }}
+                </span>
+            </div>
 
-       <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i>
-        </button>
+            {{-- Logo --}}
+            <a href="{{ route('dashboard') }}" class="dashboard-role-logo">
+                <img src="{{ asset('img/logo-SIGAC.png') }}"
+                    alt="SIGAC: Sistema integral web de gestión, automatización y agendamiento de citas medicas para IPS">
+            </a>
 
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a class="dropdown-item" href="{{ route('profile') }}" wire:navigate>
-                    Mi perfil
-                </a>
-            </li>
+            {{-- Usuario --}}
+            <div class="dropdown dashboard-role-user">
 
-            <li><hr class="dropdown-divider"></li>
+                <div class="dashboard-role-welcome">
+                    <span class="text-secondary fw-bold">
+                        Bienvenido(a), {{ auth()->user()->name }}
+                    </span>
+                </div>
 
-            <li>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                     <button type="submit" class="dropdown-item text-danger">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </li>
-        </ul>
+                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+
+                    <li>
+                        <a class="dropdown-item" href="{{ route('profile') }}" wire:navigate>
+                            <i class="bi bi-person me-2"></i>
+                            Mi perfil
+                        </a>
+                    </li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
     </div>
 </nav>

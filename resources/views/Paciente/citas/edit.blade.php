@@ -2,7 +2,6 @@
 
 @section('contenido')
 
-    ```
     <div class="container py-4">
 
         <div class="mb-4">
@@ -76,8 +75,11 @@
                         Selecciona un nuevo horario
                     </h4>
 
-
-                    @if ($horarios->isEmpty())
+                    @if (!$puedeReprogramar)
+                        <p class="text-muted mb-0">
+                            El horario de esta cita ya no puede modificarse.
+                        </p>
+                    @elseif ($horarios->isEmpty())
                         <div class="alert alert-info">
                             No hay horarios disponibles para este servicio.
                         </div>
@@ -103,37 +105,29 @@
 
                                     @foreach ($horariosFecha as $horario)
                                         @php
-                                            $seleccionado = $horario->idhorariodispo == $cita->idhorariodispo;
+                                            $seleccionado =
+                                                old('idhorariodispo', $cita->idhorariodispo) ==
+                                                $horario->idhorariodispo;
                                         @endphp
 
+                                        <input type="radio" class="btn-check" name="idhorariodispo"
+                                            id="horario-{{ $horario->idhorariodispo }}"
+                                            value="{{ $horario->idhorariodispo }}" autocomplete="off"
+                                            @checked($seleccionado)>
 
-                                        <label>
+                                        <label class="btn btn-outline-primary" for="horario-{{ $horario->idhorariodispo }}">
+                                            <i class="bi bi-clock me-1"></i>
 
-                                            <input type="radio" name="idhorariodispo"
-                                                value="{{ $horario->idhorariodispo }}" class="d-none"
-                                                @checked($seleccionado)>
+                                            {{ $horario->horainicio }}
 
-                                            <span
-                                                class="btn
-                                                {{ $seleccionado ? 'btn-primary' : 'btn-outline-primary' }}">
+                                            -
 
-                                                <i class="bi bi-clock me-1"></i>
+                                            {{ $horario->sede?->nombre }}
 
-                                                {{ $horario->horainicio }}
-
-                                                -
-
-                                                {{ $horario->sede?->nombre }}
-
-                                                -
-
-                                                {{ $horario->consultorio }}
-
-                                            </span>
-
+                                            -
+                                            {{ $horario->consultorio }}
                                         </label>
                                     @endforeach
-
                                 </div>
 
                             </div>

@@ -8,10 +8,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
+
+
+
 class DashboardController extends Controller
 {
+
+
     public function index(): View
     {
+
         $usuario = Auth::user();
 
         $rol = strtolower($usuario->rol);
@@ -76,18 +82,17 @@ class DashboardController extends Controller
         return match ($rol) {
 
             'profesional' =>
-                app(
-                    ProfesionalDashboardController::class
-                )->index(),
+            app(
+                ProfesionalDashboardController::class
+            )->index(),
 
             'administrador' =>
-                view('admin.dashboard-admin'),
+            view('admin.dashboard-admin'),
 
             'auxiliar' =>
-                view('auxiliar.dashboard-auxiliar'),
+            view('auxiliar.dashboard-auxiliar'),
 
-            default =>
-                view('dashboard'),
+            default => abort(403, 'Rol no autorizado.'),
         };
     }
 }

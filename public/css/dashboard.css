@@ -24,10 +24,13 @@
   pointer-events: none;
 }
 
-.hero:hover {
-    transform: translateY(-4px);
+@media (min-width: 768px) {
 
-    box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+    .hero:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+    }
+
 }
 .hero i {
     transition: transform .3s ease;
@@ -59,3 +62,272 @@
     box-shadow: 0 15px 30px rgba(0,0,0,.15);
 }
 
+.dashboard-header-content {
+    min-height: 70px;
+
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) auto minmax(500px, 1fr);
+    align-items: center;
+
+    padding: 0 28px;
+}
+
+.dashboard-date {
+    justify-self: start;
+}
+
+.dashboard-logo {
+    justify-self: center;
+}
+
+.dashboard-logo img {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.dashboard-user {
+    justify-self: end;
+}
+
+
+@media (max-width: 767px) {
+
+    .dashboard-header-content {
+        min-height: auto;
+
+        display: grid;
+        grid-template-columns: 1fr auto;
+
+        grid-template-areas:
+            "logo logo"
+            "date user";
+
+        align-items: center;
+        gap: 10px 12px;
+
+        padding: 8px 0;
+    }
+
+    .dashboard-logo {
+        grid-area: logo;
+        justify-self: center;
+    }
+
+    .dashboard-logo img {
+        height: 48px;
+    }
+
+    .dashboard-date {
+        grid-area: date;
+        justify-self: start;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    .dashboard-user {
+        grid-area: user;
+        justify-self: end;
+        margin-left: auto;
+    }
+
+    .dashboard-user .btn {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+    }
+
+    .dashboard-user .btn i {
+        font-size: 1rem !important;
+    }
+}
+
+/* =========================================================
+   HEADER DASHBOARDS DE ROLES
+   ========================================================= */
+
+.dashboard-role-header-content {
+    min-height: 70px;
+
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) auto minmax(500px, 1fr);
+    align-items: center;
+
+    padding: 0 28px;
+}
+
+.dashboard-role-date {
+    justify-self: start;
+}
+
+.dashboard-role-logo {
+    justify-self: center;
+}
+
+.dashboard-role-logo img {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.dashboard-role-user {
+    justify-self: end;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dashboard-role-welcome {
+    white-space: nowrap;
+}
+
+.dashboard-role-user .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 12px;
+}
+
+.dashboard-role-user .btn i {
+    font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+@media (max-width: 767px) {
+
+    .dashboard-role-header-content {
+        min-height: auto;
+
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+
+        grid-template-areas:
+            "logo logo"
+            "date user";
+
+        align-items: center;
+
+        gap: 10px 12px;
+        padding: 8px 0;
+
+        width: 100%;
+    }
+
+    .dashboard-role-logo {
+        grid-area: logo;
+        justify-self: center;
+    }
+
+    .dashboard-role-logo img {
+        height: 48px;
+    }
+
+    .dashboard-role-date {
+        grid-area: date;
+        justify-self: start;
+
+        min-width: 0;
+        max-width: 100%;
+
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    .dashboard-role-user {
+        grid-area: user;
+        justify-self: end;
+
+        margin-left: 0;
+    }
+
+    /* En móvil ocultamos el nombre */
+    .dashboard-role-welcome {
+        display: none;
+    }
+
+    .dashboard-role-user .btn {
+        flex-shrink: 0;
+
+        padding: 6px 9px;
+    }
+
+    .dashboard-role-user .btn i {
+        font-size: 1rem;
+    }
+}
+
+.bi-person-heart{
+    font-size: 6rem;
+}
+
+@media (max-width: 767px) {
+    .bi-person-heart {
+        font-size: 4rem;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .hero {
+        padding: 1.5rem !important;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero .lead {
+        font-size: 1rem;
+    }
+}
+
+.dashboard-appointment h5 {
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   CALENDARIO DEL PROFESIONAL
+   ========================================================= */
+
+.calendario-titulo {
+    font-size: 1.75rem;
+}
+
+@media (max-width: 767px) {
+
+    .calendario-titulo {
+        font-size: 1.25rem;
+    }
+
+    #calendario {
+        font-size: 0.8rem;
+    }
+
+    #calendario .fc-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    #calendario .fc-toolbar-title {
+        font-size: 1.1rem;
+    }
+
+    #calendario .fc-toolbar-chunk {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    #calendario .fc-button {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.75rem;
+    }
+
+    #calendario .fc-header-toolbar {
+        margin-bottom: 1rem;
+    }
+}

@@ -21,10 +21,12 @@ class Cita extends Model
         'fechacita',
         'detalle',
         'estadocita',
+        'numreprogramaciones',
     ];
 
     protected $casts = [
         'fechacita' => 'datetime',
+        'numreprogramaciones' => 'integer',
     ];
 
     public function paciente(): BelongsTo

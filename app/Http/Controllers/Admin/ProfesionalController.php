@@ -10,6 +10,8 @@ use App\Models\PerfilServicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\TipoServicio;
+use Illuminate\Validation\Rule;
 
 class ProfesionalController extends Controller
 {
@@ -23,10 +25,11 @@ class ProfesionalController extends Controller
     }
     public function create()
     {
-        $servicios = Servicio::where(
-            'estadoservicio',
-            'Activo'
-        )
+        $servicios = Servicio::query()
+            ->where('estadoservicio', 'Activo')
+            ->whereHas('tipoServicio', function ($query) {
+                $query->where('estadotiposervicio', 'Activo');
+            })
             ->with('tipoServicio')
             ->orderBy('nombre')
             ->get();
@@ -58,7 +61,18 @@ class ProfesionalController extends Controller
 
             'servicios.*' => [
                 'integer',
-                'exists:SERVICIO,idservicio',
+                'distinct',
+                Rule::exists('servicio', 'idservicio')
+                    ->where(function ($query) {
+                        $query->where('estadoservicio', 'Activo')
+                            ->whereIn(
+                                'idtiposervicio',
+                                TipoServicio::where(
+                                    'estadotiposervicio',
+                                    'Activo'
+                                )->pluck('idtiposervicio')->all()
+                            );
+                    }),
             ],
         ]);
 
@@ -149,14 +163,14 @@ class ProfesionalController extends Controller
     {
         $profesional->load('user');
 
-        $servicios = Servicio::where(
-            'estadoservicio',
-            'Activo'
-        )
+        $servicios = Servicio::query()
+            ->where('estadoservicio', 'Activo')
+            ->whereHas('tipoServicio', function ($query) {
+                $query->where('estadotiposervicio', 'Activo');
+            })
             ->with('tipoServicio')
             ->orderBy('nombre')
             ->get();
-
         $serviciosAsignados = $profesional->perfilesServicio()
             ->where('estadoperfil', 'Activo')
             ->pluck('idservicio')
@@ -195,7 +209,18 @@ class ProfesionalController extends Controller
 
             'servicios.*' => [
                 'integer',
-                'exists:servicio,idservicio',
+                'distinct',
+                Rule::exists('servicio', 'idservicio')
+                    ->where(function ($query) {
+                        $query->where('estadoservicio', 'Activo')
+                            ->whereIn(
+                                'idtiposervicio',
+                                TipoServicio::where(
+                                    'estadotiposervicio',
+                                    'Activo'
+                                )->pluck('idtiposervicio')->all()
+                            );
+                    }),
             ],
         ]);
 
@@ -231,8 +256,11 @@ class ProfesionalController extends Controller
                 'tipodoc' => $datos['tipodoc'],
                 'numdoc' => $datos['numdoc'],
                 'telefono' => $datos['telefono'],
-                'estadoprofesionalsalud' =>
-                $datos['estadoprofesionalsalud'],
+                'estadoprofesionalsalud' => $datos['estadoprofesionalsalud'],
+            ]);
+
+            $usuario->update([
+                'estado' => strtolower($datos['estadoprofesionalsalud']),
             ]);
 
             /*
@@ -242,6 +270,12 @@ class ProfesionalController extends Controller
         */
 
             $serviciosSeleccionados = $datos['servicios'] ?? [];
+            $serviciosDisponibles = Servicio::query()
+                ->where('estadoservicio', 'Activo')
+                ->whereHas('tipoServicio', function ($query) {
+                    $query->where('estadotiposervicio', 'Activo');
+                })
+                ->pluck('idservicio');
 
             /*
         |--------------------------------------------------------------------------
@@ -253,10 +287,8 @@ class ProfesionalController extends Controller
                 'idprofesionalsalud',
                 $profesional->idprofesionalsalud
             )
-                ->whereNotIn(
-                    'idservicio',
-                    $serviciosSeleccionados
-                )
+                ->whereIn('idservicio', $serviciosDisponibles)
+                ->whereNotIn('idservicio', $serviciosSeleccionados)
                 ->update([
                     'estadoperfil' => 'Inactivo',
                 ]);

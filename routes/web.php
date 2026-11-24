@@ -7,8 +7,10 @@ use App\Http\Controllers\Admin\ProfesionalController;
 use App\Http\Controllers\Admin\AuxiliarController;
 use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\ServicioController;
+use App\Http\Controllers\Admin\CitaController as AdminCitaController;
 use App\Http\Controllers\Auxiliar\AgendaController;
 use App\Http\Controllers\Paciente\CitaController;
+use App\Http\Controllers\Auxiliar\CitaController as AuxiliarCitaController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
 
@@ -34,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | DashboardController determina el dashboard según el rol.
     |
     */
+
 
     Route::get(
         'dashboard',
@@ -94,6 +97,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin/pacientes/{paciente}',
             [PacienteController::class, 'show']
         )->name('admin.pacientes.show');
+
+        Route::get(
+            'admin/citas',
+            [AdminCitaController::class, 'index']
+        )->name('admin.citas.index');
+
+        Route::get(
+            'admin/citas/{cita}',
+            [AdminCitaController::class, 'show']
+        )->name('admin.citas.show');
+
+        Route::get(
+            'admin/citas/{cita}/edit',
+            [AdminCitaController::class, 'edit']
+        )->name('admin.citas.edit');
+
+        Route::put(
+            'admin/citas/{cita}',
+            [AdminCitaController::class, 'update']
+        )->name('admin.citas.update');
+
+        Route::patch(
+            'admin/citas/{cita}/cancelar',
+            [AdminCitaController::class, 'cancelar']
+        )->name('admin.citas.cancelar');
 
 
         /*
@@ -188,6 +216,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin/auxiliares/{auxiliar}/estado',
             [AuxiliarController::class, 'toggleEstado']
         )->name('admin.auxiliares.toggleEstado');
+
+
+
 
 
         /*
@@ -302,6 +333,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'auxiliar/agenda/{agenda}',
             [AgendaController::class, 'destroy']
         )->name('auxiliar.agenda.destroy');
+
+        // Gestión de citas médicas del auxiliar
+
+        Route::get(
+            'auxiliar/citas',
+            [AuxiliarCitaController::class, 'index']
+        )->name('auxiliar.citas.index');
+
+        Route::patch(
+            'auxiliar/citas/{cita}/confirmar',
+            [AuxiliarCitaController::class, 'confirmar']
+        )->name('auxiliar.citas.confirmar');
     });
 
 
@@ -324,7 +367,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('Paciente.citas.create');
 
         Route::get(
-            'Paciente/citas/horarios/{idservicio}',
+            'paciente/citas/horarios/{idservicio}',
             [CitaController::class, 'horarios']
         )->name('Paciente.citas.horarios');
 
