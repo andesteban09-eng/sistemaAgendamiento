@@ -20,9 +20,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-
-            $table->string('rol')->default('Paciente');
-            $table->string('estado')->default('Activo');
+            $table->string('rol')->default('paciente');
+            $table->string('estado')->default('activo');
 
             $table->rememberToken();
             $table->timestamps();

@@ -389,3 +389,34 @@ alter table cita
                               'Confirmada',
                               'Realizada',
                               'Cancelada' ) );
+
+
+
+
+update users
+   set
+   estado = lower(trim(estado))
+ where estado <> lower(trim(estado));
+
+update users
+   set
+   rol = lower(trim(rol))
+ where rol <> lower(trim(rol));
+
+
+alter table users modify (
+   rol default 'paciente',
+   estado default 'activo'
+);
+
+alter table users
+   add constraint chk_users_rol
+      check ( rol in ( 'administrador',
+                       'paciente',
+                       'profesional',
+                       'auxiliar' ) );
+
+alter table users
+   add constraint chk_users_estado check ( estado in ( 'activo',
+                                                       'inactivo' ) );
+commit;
