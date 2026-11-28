@@ -15,3 +15,405 @@ input[type="radio"]:checked + .horario-pill {
     color: white;
     border-color: #0d6efd;
 }
+
+/* ==================================================
+   SIGAC — Formularios compartidos
+   ================================================== */
+
+.sigac-form-card {
+    width: 100%;
+    max-width: 1000px;
+    margin-inline: auto;
+}
+.sigac-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.sigac-form-grid > div {
+    min-width: 0;
+}
+
+.sigac-form-full {
+    grid-column: 1 / -1;
+}
+
+/* Etiquetas */
+
+.sigac-form .form-label,
+.sigac-filters .form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--azul-oscuro);
+    margin-bottom: 6px;
+}
+
+/* Campos */
+
+.sigac-form .form-control,
+.sigac-form .form-select,
+.sigac-filters .form-control,
+.sigac-filters .form-select {
+    min-height: 36px;
+    padding: 8px 11px;
+    font-size: 0.85rem;
+    border: 1px solid var(--sigac-border);
+    border-radius: var(--sigac-radius-sm);
+    color: var(--texto);
+    background-color: var(--blanco);
+}
+
+.sigac-form .form-select,
+.sigac-filters .form-select {
+    padding-right: 32px;
+}
+
+.sigac-form textarea.form-control {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* Focus */
+
+.sigac-form .form-control:focus,
+.sigac-form .form-select:focus,
+.sigac-filters .form-control:focus,
+.sigac-filters .form-select:focus {
+    border-color: var(--aqua);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+/* Campos deshabilitados */
+
+.sigac-form .form-control:disabled,
+.sigac-form .form-control[readonly],
+.sigac-form .form-select:disabled {
+    background-color: var(--sigac-surface);
+    color: var(--sigac-muted);
+}
+
+/* Validaciones */
+
+.sigac-form .form-control.is-invalid,
+.sigac-form .form-select.is-invalid {
+    border-color: var(--sigac-danger);
+}
+
+.sigac-form .form-control.is-invalid:focus,
+.sigac-form .form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
+}
+
+.sigac-form .invalid-feedback {
+    font-size: 0.75rem;
+    color: var(--sigac-danger);
+}
+
+.sigac-form .form-text {
+    font-size: 0.75rem;
+    color: var(--sigac-muted);
+}
+
+/* Grupos de campos */
+
+.sigac-form .input-group-text,
+.sigac-filters .input-group-text {
+    background: var(--sigac-surface);
+    border-color: var(--sigac-border);
+    color: var(--sigac-muted);
+    font-size: 0.85rem;
+}
+
+.sigac-form .input-group > .form-control,
+.sigac-filters .input-group > .form-control {
+    min-width: 0;
+}
+
+/* Acciones del formulario */
+
+.sigac-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--sigac-border);
+}
+
+.sigac-form .sigac-alert {
+    margin-top: 18px;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .sigac-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .sigac-form-actions > .btn {
+        flex: 1 1 auto;
+    }
+}
+/* =========================================================
+   SIGAC — Selección de horarios de atención
+   ========================================================= */
+
+.sigac-booking [hidden] {
+    display: none !important;
+}
+
+.sigac-slot-group {
+    margin-bottom: 18px;
+    border: 1px solid var(--sigac-border);
+    border-radius: var(--sigac-radius-md);
+    overflow: hidden;
+}
+
+.sigac-slot-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    margin: 0;
+    background: var(--sigac-surface);
+    color: var(--azul-oscuro);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.sigac-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+    gap: 10px;
+    padding: 14px;
+}
+
+.sigac-slot {
+    position: relative;
+    display: block;
+    min-width: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.sigac-slot-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100%;
+    padding: 12px;
+    background: var(--blanco);
+    border: 1px solid var(--sigac-border);
+    border-radius: var(--sigac-radius-md);
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.sigac-slot-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--azul-oscuro);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.sigac-slot-info {
+    color: var(--sigac-muted);
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+}
+
+.sigac-slot:hover .sigac-slot-content {
+    border-color: var(--aqua);
+    background: var(--sigac-surface);
+}
+
+.sigac-slot-radio:checked + .sigac-slot-content {
+    background: var(--sigac-info-bg);
+    border-color: var(--aqua);
+    box-shadow: 0 0 0 1px var(--aqua);
+}
+
+.sigac-slot-radio:focus-visible + .sigac-slot-content {
+    outline: 2px solid var(--azul-oscuro);
+    outline-offset: 3px;
+}
+
+.sigac-slot-current {
+    margin-bottom: 16px;
+}
+
+.sigac-booking-loading {
+    padding: 28px 12px;
+    text-align: center;
+    color: var(--sigac-muted);
+    font-size: 0.8rem;
+}
+
+.sigac-booking-message {
+    padding: 14px;
+    border-radius: var(--sigac-radius-md);
+    background: var(--sigac-info-bg);
+    color: var(--sigac-info);
+    font-size: 0.8rem;
+}
+
+.sigac-booking-message-error {
+    background: var(--sigac-danger-bg);
+    color: var(--sigac-danger);
+}
+
+@media (max-width: 600px) {
+    .sigac-slot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .sigac-slot-content {
+        padding: 10px;
+    }
+
+    .sigac-slot-time {
+        font-size: 0.85rem;
+    }
+
+    .sigac-slot-info {
+        font-size: 0.72rem;
+    }
+
+    .sigac-slot-group-title {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .sigac-slot-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   SIGAC — FORMULARIOS COMPACTOS
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .sigac-form-card {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .sigac-form .sigac-form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .sigac-form .form-label {
+        font-size: 0.76rem;
+        margin-bottom: 5px;
+    }
+
+    .sigac-form .form-control,
+    .sigac-form .form-select {
+        min-height: 40px;
+        padding: 7px 10px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+
+    .sigac-form .form-select {
+        padding-right: 32px;
+    }
+
+    .sigac-form textarea.form-control {
+        min-height: 75px;
+    }
+
+    .sigac-form .input-group-text {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+    }
+
+    .sigac-form .form-text,
+    .sigac-form .invalid-feedback {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+
+    .sigac-form-actions {
+        margin-top: 12px;
+        padding-top: 12px;
+        gap: 8px;
+    }
+
+    .sigac-form-actions .btn {
+        min-height: 40px;
+        font-size: 0.75rem;
+        padding: 8px 12px;
+    }
+
+    /* Selección de horarios */
+
+    .sigac-slot-group {
+        margin-bottom: 10px;
+        border-radius: 7px;
+    }
+
+    .sigac-slot-group-title {
+        padding: 9px 10px;
+        font-size: 0.75rem;
+        gap: 6px;
+    }
+
+    .sigac-slot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .sigac-slot-content {
+        padding: 8px;
+        gap: 4px;
+        border-radius: 6px;
+    }
+
+    .sigac-slot-time {
+        font-size: 0.85rem;
+    }
+
+    .sigac-slot-info {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+
+    .sigac-slot-current {
+        margin-bottom: 10px;
+    }
+
+    .sigac-booking-loading {
+        padding: 18px 8px;
+        font-size: 0.75rem;
+    }
+
+    .sigac-booking-message {
+        padding: 10px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .sigac-slot-grid {
+        grid-template-columns: 1fr;
+    }
+}

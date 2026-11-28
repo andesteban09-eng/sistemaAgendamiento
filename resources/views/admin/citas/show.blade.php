@@ -1,137 +1,171 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
+    @php
+        $varianteEstado = match ($cita->estadocita) {
+            'Pendiente' => 'warning',
+            'Realizada' => 'success',
+            'Cancelada' => 'danger',
+            default => 'neutral',
+        };
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="fw-bold mb-1">Detalle de la cita</h1>
-                <p class="text-muted mb-0">
-                    Información del agendamiento #{{ $cita->idcita }}
-                </p>
-            </div>
+        $subtitulo = 'Información del agendamiento #' . $cita->idcita;
+    @endphp
 
-            <a href="{{ route('admin.citas.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i>
-                Volver al listado
-            </a>
-        </div>
+    <div class="sigac-page">
 
-        <div class="row g-4">
+        <x-sigac.page-header title="Detalle de la cita" :subtitle="$subtitulo" eyebrow="SIGAC · GESTIÓN DE CITAS">
 
-            {{-- Información de la cita --}}
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">
-                            <i class="bi bi-calendar-check me-2"></i>
-                            Información de la cita
-                        </h4>
+            <x-slot:actions>
 
-                        <p>
-                            <strong>Fecha y hora:</strong>
-                            {{ $cita->fechacita?->format('d/m/Y h:i A') ?? 'Sin información' }}
-                        </p>
+                <a href="{{ route('admin.citas.index') }}" class="btn sigac-btn-light">
 
-                        <p>
-                            <strong>Tipo de servicio:</strong>
-                            {{ $cita->tipoServicio?->nombre ?? 'Sin información' }}
-                        </p>
+                    <i class="bi bi-arrow-left"></i>
+                    Volver al listado
 
-                        <p>
-                            <strong>Servicio:</strong>
-                            {{ $cita->servicio?->nombre ?? 'Sin información' }}
-                        </p>
+                </a>
 
-                        <p>
-                            <strong>Estado:</strong>
+            </x-slot:actions>
 
-                            @php
-                                $color = match ($cita->estadocita) {
-                                    'Pendiente' => 'warning text-dark',
-                                    'Realizada' => 'success',
-                                    'Cancelada' => 'danger',
-                                    default => 'secondary',
-                                };
-                            @endphp
+        </x-sigac.page-header>
 
-                            <span class="badge bg-{{ $color }}">
-                                {{ $cita->estadocita }}
-                            </span>
-                        </p>
+        {{-- Información de la cita --}}
 
-                        <p>
-                            <strong>Reprogramaciones:</strong>
-                            {{ $cita->numreprogramaciones ?? 0 }} de 3
-                        </p>
+        <x-sigac.card>
 
-                        <p class="mb-0">
-                            <strong>Observaciones:</strong>
-                            {{ $cita->detalle ?? 'Sin observaciones' }}
-                        </p>
-                    </div>
+            <div class="sigac-identity">
+
+                <div class="sigac-icon sigac-icon-info">
+
+                    <i class="bi bi-calendar-check" aria-hidden="true"></i>
+
                 </div>
-            </div>
 
-            {{-- Paciente --}}
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">
-                            <i class="bi bi-person me-2"></i>
-                            Paciente
-                        </h4>
+                <div class="sigac-identity-content">
 
-                        <p>
-                            <strong>Nombre:</strong>
-                            {{ $cita->paciente?->user?->name ?? 'Sin información' }}
-                            {{ $cita->paciente?->user?->last_name ?? '' }}
-                        </p>
+                    <h2>
+                        {{ $cita->servicio?->nombre ?? 'Sin información' }}
+                    </h2>
 
-                        <p class="mb-0">
-                            <strong>Identificador:</strong>
-                            {{ $cita->idpaciente }}
-                        </p>
-                    </div>
+                    <p class="sigac-description mb-0">
+                        Cita #{{ $cita->idcita }}
+                    </p>
+
                 </div>
+
+                <x-sigac.status :label="$cita->estadocita" :variant="$varianteEstado" />
+
             </div>
 
-            {{-- Profesional y ubicación --}}
-            <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">
-                            <i class="bi bi-geo-alt me-2"></i>
-                            Profesional y ubicación
-                        </h4>
+            <hr>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>
-                                    <strong>Profesional:</strong>
-                                    {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
-                                    {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
-                                </p>
-                            </div>
+            <dl class="sigac-details">
 
-                            <div class="col-md-4">
-                                <p>
-                                    <strong>Sede:</strong>
-                                    {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
-                                </p>
-                            </div>
+                <div>
+                    <dt>Fecha y hora</dt>
 
-                            <div class="col-md-4">
-                                <p>
-                                    <strong>Consultorio:</strong>
-                                    {{ $cita->agenda?->consultorio ?? 'Sin información' }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <dd>
+                        {{ $cita->fechacita?->format('d/m/Y h:i A') ?? 'Sin información' }}
+                    </dd>
                 </div>
+
+                <div>
+                    <dt>Tipo de servicio</dt>
+
+                    <dd>
+                        {{ $cita->tipoServicio?->nombre ?? 'Sin información' }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Servicio</dt>
+
+                    <dd>
+                        {{ $cita->servicio?->nombre ?? 'Sin información' }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Reprogramaciones realizadas</dt>
+
+                    <dd>
+                        {{ $cita->numreprogramaciones ?? 0 }} de 3
+                    </dd>
+                </div>
+
+                <div class="sigac-details-full">
+                    <dt>Observaciones</dt>
+
+                    <dd>
+                        {{ $cita->detalle ?? 'Sin observaciones' }}
+                    </dd>
+                </div>
+
+            </dl>
+
+        </x-sigac.card>
+
+        {{-- Información del paciente --}}
+
+        <x-sigac.card title="Información del paciente" subtitle="Datos del paciente asociado al agendamiento.">
+
+            <div class="sigac-identity mb-3">
+
+                <div class="sigac-icon sigac-icon-info">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                </div>
+
+                <div class="sigac-identity-content">
+
+                    <h2>
+                        {{ $cita->paciente?->user?->name ?? 'Sin información' }}
+                        {{ $cita->paciente?->user?->last_name ?? '' }}
+                    </h2>
+
+                    <p class="sigac-description mb-0">
+                        Paciente #{{ $cita->idpaciente }}
+                    </p>
+
+                </div>
+
             </div>
 
-        </div>
+        </x-sigac.card>
+
+        {{-- Profesional y ubicación --}}
+
+        <x-sigac.card title="Profesional y ubicación" subtitle="Información del profesional asignado y lugar de atención.">
+
+            <dl class="sigac-details">
+
+                <div>
+                    <dt>Profesional</dt>
+
+                    <dd>
+                        {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
+                        {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Sede</dt>
+
+                    <dd>
+                        {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Consultorio</dt>
+
+                    <dd>
+                        {{ $cita->agenda?->consultorio ?? 'Sin información' }}
+                    </dd>
+                </div>
+
+            </dl>
+
+        </x-sigac.card>
+
     </div>
 @endsection

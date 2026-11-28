@@ -1,136 +1,64 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="mb-4">
+    <div class="sigac-page">
 
-            <h1 class="fw-bold mb-1">
-                Editar servicio
-            </h1>
+        <x-sigac.page-header title="Editar servicio" subtitle="Actualiza la información y las condiciones del servicio."
+            eyebrow="SIGAC · GESTIÓN DE SERVICIOS">
 
-            <p class="text-muted mb-0">
-                Actualiza la información del servicio.
-            </p>
+            <x-slot:actions>
 
-        </div>
+                <a href="{{ route('admin.servicios.index') }}" class="btn sigac-btn-light">
 
-        <div class="card border-0 shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-            <div class="card-body p-4">
+                </a>
 
-                <form action="{{ route('admin.servicios.update', ['servicio' => $servicio->idservicio]) }}" method="POST">
+            </x-slot:actions>
 
-                    @csrf
-                    @method('PUT')
+        </x-sigac.page-header>
 
-                    <div class="row g-4">
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="Revisa la información ingresada">
 
-                        <div class="col-md-6">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                            <label for="IDTIPOSERVICIO" class="form-label">
-                                Tipo de servicio
-                            </label>
+            </x-sigac.alert>
+        @endif
 
-                            <select name="IDTIPOSERVICIO" id="IDTIPOSERVICIO"
-                                class="form-select @error('IDTIPOSERVICIO') is-invalid @enderror" required>
+        <form method="POST" action="{{ route('admin.servicios.update', ['servicio' => $servicio->idservicio]) }}"
+            class="sigac-form sigac-form-card">
 
-                                @foreach ($tiposServicio as $tipo)
-                                    <option value="{{ $tipo->idtiposervicio }}"
-                                        {{ old('IDTIPOSERVICIO', $servicio->idtiposervicio) == $tipo->idtiposervicio ? 'selected' : '' }}>
+            @csrf
+            @method('PUT')
 
-                                        {{ $tipo->nombre }}
+            @include('admin.servicios.partials.form', [
+                'servicio' => $servicio,
+            ])
 
-                                    </option>
-                                @endforeach
+            <div class="sigac-form-actions">
 
-                            </select>
+                <a href="{{ route('admin.servicios.index') }}" class="btn btn-outline-secondary">
 
-                            @error('IDTIPOSERVICIO')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                    Cancelar
 
-                        </div>
+                </a>
 
-                        <div class="col-md-6">
+                <button type="submit" class="btn sigac-btn-primary">
 
-                            <label for="NOMBRE" class="form-label">
-                                Nombre del servicio
-                            </label>
+                    <i class="bi bi-floppy"></i>
+                    Guardar cambios
 
-                            <input type="text" name="NOMBRE" id="NOMBRE"
-                                class="form-control @error('NOMBRE') is-invalid @enderror"
-                                value="{{ old('NOMBRE', $servicio->nombre) }}" maxlength="80" required>
-
-                            @error('NOMBRE')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <label for="PRECIO" class="form-label">
-                                Precio
-                            </label>
-
-                            <input type="number" name="PRECIO" id="PRECIO"
-                                class="form-control @error('PRECIO') is-invalid @enderror"
-                                value="{{ old('PRECIO', $servicio->precio) }}" min="0" step="0.01" required>
-
-                            @error('PRECIO')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                        <div class="col-12">
-
-                            <label for="PREREQUISITOS" class="form-label">
-                                Prerrequisitos
-                            </label>
-
-                            <textarea name="PREREQUISITOS" id="PREREQUISITOS" class="form-control @error('PREREQUISITOS') is-invalid @enderror"
-                                rows="4">{{ old('PREREQUISITOS', $servicio->prerequisitos) }}</textarea>
-
-                            @error('PREREQUISITOS')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    <div class="mt-4 d-flex gap-2">
-
-                        <a href="{{ route('admin.servicios.index') }}" class="btn btn-secondary">
-
-                            Cancelar
-
-                        </a>
-
-                        <button type="submit" class="btn btn-primary">
-
-                            <i class="bi bi-save me-1"></i>
-                            Actualizar servicio
-
-                        </button>
-
-                    </div>
-
-                </form>
+                </button>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
+
 @endsection

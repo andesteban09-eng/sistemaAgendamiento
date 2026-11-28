@@ -1,81 +1,62 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="mb-4">
+    <div class="sigac-page">
 
-            <h1 class="fw-bold mb-1">
-                Nuevo tipo de servicio
-            </h1>
+        <x-sigac.page-header title="Registrar tipo de servicio" subtitle="Registra una nueva categoría de servicios."
+            eyebrow="SIGAC · GESTIÓN DE TIPOS DE SERVICIO">
 
-            <p class="text-muted mb-0">
-                Registra una nueva categoría de servicios.
-            </p>
+            <x-slot:actions>
 
-        </div>
+                <a href="{{ route('admin.tiposervicios.index') }}" class="btn sigac-btn-light">
 
-        <div class="card border-0 shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-            <div class="card-body">
+                </a>
 
-                <form action="{{ route('admin.tiposervicios.store') }}" method="POST">
+            </x-slot:actions>
 
-                    @csrf
+        </x-sigac.page-header>
 
-                    <div class="mb-3">
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="Revisa la información ingresada">
 
-                        <label for="nombre" class="form-label">
-                            Nombre
-                        </label>
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                        <input type="text" name="nombre" id="nombre"
-                            class="form-control @error('nombre') is-invalid @enderror" value="{{ old('nombre') }}"
-                            maxlength="80" required>
+            </x-sigac.alert>
+        @endif
 
-                        @error('nombre')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+        <form action="{{ route('admin.tiposervicios.store') }}" method="POST" class="sigac-form sigac-form-card">
 
-                    </div>
+            @csrf
 
-                    <div class="mb-3">
+            @include('admin.tiposervicios.partials.form', [
+                'tipoServicio' => null,
+            ])
 
-                        <label for="descripcion" class="form-label">
-                            Descripción
-                        </label>
+            <div class="sigac-form-actions">
 
-                        <textarea name="descripcion" id="descripcion" rows="4"
-                            class="form-control @error('descripcion') is-invalid @enderror">{{ old('descripcion') }}</textarea>
+                <a href="{{ route('admin.tiposervicios.index') }}" class="btn btn-outline-secondary">
 
-                        @error('descripcion')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                    Cancelar
 
-                    </div>
+                </a>
 
-                    <div class="d-flex justify-content-end gap-2">
+                <button type="submit" class="btn sigac-btn-primary">
 
-                        <a href="{{ route('admin.tiposervicios.index') }}" class="btn btn-secondary">
-                            Cancelar
-                        </a>
+                    <i class="bi bi-floppy"></i>
+                    Guardar tipo de servicio
 
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg me-1"></i>
-                            Guardar tipo de servicio
-                        </button>
-
-                    </div>
-
-                </form>
+                </button>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
+
 @endsection

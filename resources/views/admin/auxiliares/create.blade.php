@@ -2,155 +2,61 @@
 
 @section('contenido')
 
-<div class="container-fluid px-4 py-4">
+    <div class="sigac-page">
 
-    <div class="mb-4">
+        <x-sigac.page-header title="Registrar auxiliar" subtitle="Registra un nuevo auxiliar en el sistema."
+            eyebrow="SIGAC · GESTIÓN DE AUXILIARES">
 
-        <h1 class="fw-bold">
-            Nuevo auxiliar
-        </h1>
+            <x-slot:actions>
 
-        <p class="text-muted">
-            Registra un nuevo auxiliar en el sistema.
-        </p>
+                <a href="{{ route('admin.auxiliares.index') }}" class="btn sigac-btn-light">
 
-    </div>
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
+                </a>
 
-            <strong>Hay errores en el formulario:</strong>
+            </x-slot:actions>
 
-            <ul class="mb-0 mt-2">
+        </x-sigac.page-header>
+
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="Revisa la información ingresada">
 
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                    <div>{{ $error }}</div>
                 @endforeach
 
-            </ul>
+            </x-sigac.alert>
+        @endif
 
-        </div>
-    @endif
+        <form method="POST" action="{{ route('admin.auxiliares.store') }}" class="sigac-form sigac-form-card">
 
-    <form method="POST" action="{{ route('admin.auxiliares.store') }}">
+            @csrf
 
-        @csrf
+            @include('admin.auxiliares.partials.form', [
+                'auxiliar' => null,
+            ])
 
-        <div class="card border-0 shadow-sm mb-4">
+            <div class="sigac-form-actions">
 
-            <div class="card-header bg-white">
+                <a href="{{ route('admin.auxiliares.index') }}" class="btn btn-outline-secondary">
 
-                <h5 class="mb-0 fw-bold">
-                    Datos del auxiliar
-                </h5>
+                    Cancelar
 
-            </div>
+                </a>
 
-            <div class="card-body">
+                <button type="submit" class="btn sigac-btn-primary">
 
-                <div class="row g-3">
+                    <i class="bi bi-person-plus"></i>
+                    Registrar auxiliar
 
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Nombre
-                        </label>
-
-                        <input
-                            type="text"
-                            name="name"
-                            class="form-control"
-                            value="{{ old('name') }}"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Apellido
-                        </label>
-
-                        <input
-                            type="text"
-                            name="last_name"
-                            class="form-control"
-                            value="{{ old('last_name') }}"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Correo electrónico
-                        </label>
-
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            value="{{ old('email') }}"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Contraseña
-                        </label>
-
-                        <input
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            required
-                        >
-
-                        <small class="text-muted">
-                            La contraseña debe tener al menos 8 caracteres.
-                        </small>
-
-                    </div>
-
-                </div>
+                </button>
 
             </div>
 
-        </div>
+        </form>
 
-
-        <div class="d-flex justify-content-between">
-
-            <a
-                href="{{ route('admin.auxiliares.index') }}"
-                class="btn btn-secondary"
-            >
-                Cancelar
-            </a>
-
-            <button
-                type="submit"
-                class="btn btn-primary"
-            >
-
-                <i class="bi bi-person-plus me-2"></i>
-
-                Registrar auxiliar
-
-            </button>
-
-        </div>
-
-    </form>
-
-</div>
+    </div>
 
 @endsection

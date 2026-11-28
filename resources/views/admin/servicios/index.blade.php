@@ -1,142 +1,230 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Servicios
-                </h1>
+        <x-sigac.page-header
+            title="Gestión de servicios"
+            subtitle="Administra los servicios ofrecidos por la institución."
+            eyebrow="SIGAC · ADMINISTRACIÓN">
 
-                <p class="text-muted mb-0">
-                    Administra los servicios ofrecidos por el laboratorio.
-                </p>
-            </div>
+            <x-slot:actions>
 
-            <a href="{{ route('admin.servicios.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>
-                Nuevo servicio
-            </a>
+                <a href="{{ route('admin.servicios.create') }}"
+                    class="btn sigac-btn-light">
 
-        </div>
+                    <i class="bi bi-plus-lg"></i>
+                    Nuevo servicio
+
+                </a>
+
+            </x-slot:actions>
+
+        </x-sigac.page-header>
+
+        {{-- Mensajes --}}
 
         @if (session('success'))
-            <div class="alert alert-success">
+
+            <x-sigac.alert variant="success">
                 {{ session('success') }}
-            </div>
+            </x-sigac.alert>
+
         @endif
 
-        <div class="card border-0 shadow-sm">
+        @if ($errors->any())
 
-            <div class="card-body">
+            <x-sigac.alert
+                variant="danger"
+                title="No fue posible completar la operación">
 
-                <div class="table-responsive">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                    <table class="table table-hover align-middle">
+            </x-sigac.alert>
 
-                        <thead>
+        @endif
+
+        {{-- Listado --}}
+
+        <x-sigac.card
+            title="Servicios registrados"
+            subtitle="Consulta los servicios, sus precios y condiciones de prestación.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Tipo de servicio</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Prerrequisitos</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($servicios as $servicio)
+
+                            @php
+                                $activo = $servicio->estadoServicio === 'Activo';
+
+                                $varianteEstado = $activo
+                                    ? 'success'
+                                    : 'neutral';
+
+                                $etiquetaEstado = $activo
+                                    ? 'Activo'
+                                    : 'Inactivo';
+                            @endphp
+
                             <tr>
-                                <th>Servicio</th>
-                                <th>Tipo de servicio</th>
-                                <th>Precio</th>
-                                <th>Prerrequisitos</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
+                                <td>
 
-                            @forelse ($servicios as $servicio)
-                                <tr>
+                                    <div class="sigac-table-entity">
 
-                                    <td class="fw-semibold">
-                                        {{ $servicio->nombre }}
-                                    </td>
+                                        <div class="sigac-icon sigac-icon-info">
 
-                                    <td>
-                                        {{ $servicio->tipoServicio->nombre ?? 'Sin tipo' }}
-                                    </td>
+                                            <i class="bi bi-clipboard2-pulse"
+                                                aria-hidden="true"></i>
 
-                                    <td>
-                                        ${{ number_format($servicio->precio, 0, ',', '.') }}
-                                    </td>
+                                        </div>
 
-                                    <td>
-                                        {{ $servicio->prerrequisitos ?: 'Sin prerrequisitos' }}
-                                    </td>
+                                        <strong>
+                                            {{ $servicio->nombre }}
+                                        </strong>
 
-                                    <td>
+                                    </div>
 
-                                        @if ($servicio->estadoServicio === 'Activo')
-                                            <span class="badge bg-success">
-                                                Activo
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary">
-                                                Inactivo
-                                            </span>
-                                        @endif
+                                </td>
 
-                                    </td>
+                                <td>
+                                    {{ $servicio->tipoServicio->nombre ?? 'Sin tipo' }}
+                                </td>
 
-                                    <td class="text-end">
+                                <td class="fw-semibold text-nowrap">
+
+                                    ${{ number_format($servicio->precio, 0, ',', '.') }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ $servicio->prerrequisitos ?: 'Sin prerrequisitos' }}
+
+                                </td>
+
+                                <td>
+
+                                    <x-sigac.status
+                                        :label="$etiquetaEstado"
+                                        :variant="$varianteEstado"
+                                    />
+
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
+                                        {{-- Editar --}}
 
                                         <a href="{{ route('admin.servicios.edit', ['servicio' => $servicio->idservicio]) }}"
-                                            class="btn btn-sm btn-outline-primary">
+                                            class="btn btn-sm btn-outline-warning"
+                                            title="Editar servicio"
+                                            aria-label="Editar servicio">
 
                                             <i class="bi bi-pencil"></i>
-                                            Editar
 
                                         </a>
 
-                                        <form
+                                        {{-- Activar / Desactivar --}}
+
+                                        <form method="POST"
                                             action="{{ route('admin.servicios.toggleEstado', ['servicio' => $servicio->idservicio]) }}"
-                                            method="POST" class="d-inline">
+                                            class="d-inline">
 
                                             @csrf
                                             @method('PATCH')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            @if ($activo)
 
-                                                @if ($servicio->estadoServicio === 'Activo')
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Desactivar servicio"
+                                                    aria-label="Desactivar servicio"
+                                                    onclick="return confirm('¿Está seguro de que desea desactivar este servicio?')">
+
                                                     <i class="bi bi-toggle-off"></i>
-                                                    Desactivar
-                                                @else
-                                                    <i class="bi bi-toggle-on"></i>
-                                                    Activar
-                                                @endif
 
-                                            </button>
+                                                </button>
+
+                                            @else
+
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-success"
+                                                    title="Activar servicio"
+                                                    aria-label="Activar servicio"
+                                                    onclick="return confirm('¿Desea activar nuevamente este servicio?')">
+
+                                                    <i class="bi bi-toggle-on"></i>
+
+                                                </button>
+
+                                            @endif
 
                                         </form>
 
-                                    </td>
+                                    </div>
 
-                                </tr>
+                                </td>
 
-                            @empty
+                            </tr>
 
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
+                        @empty
 
-                                        No hay servicios registrados.
+                            <tr>
 
-                                    </td>
-                                </tr>
-                            @endforelse
+                                <td colspan="6">
 
-                        </tbody>
+                                    <x-sigac.empty-state
+                                        title="No hay servicios registrados"
+                                        description="Los servicios ofrecidos por la institución aparecerán en este listado."
+                                        icon="clipboard2-pulse">
 
-                    </table>
+                                        <a href="{{ route('admin.servicios.create') }}"
+                                            class="btn sigac-btn-primary">
 
-                </div>
+                                            <i class="bi bi-plus-lg"></i>
+                                            Registrar servicio
+
+                                        </a>
+
+                                    </x-sigac.empty-state>
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

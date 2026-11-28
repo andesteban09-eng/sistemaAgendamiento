@@ -1,46 +1,95 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\URL;
+use Livewire\Volt\Volt;
+use Tests\Support\OtpTestHelper;
+
+beforeEach(function () {
+    OtpTestHelper::configure();
+});
 
 test('email verification screen can be rendered', function () {
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->get('/verify-email');
-
-    $response->assertStatus(200);
+    $this->actingAs($user)
+        ->get('/verify-email')
+        ->assertOk()
+        ->assertSeeVolt('pages.auth.verify-email');
 });
 
-test('email can be verified', function () {
+test('email verification code can be requested', function () {
     $user = User::factory()->unverified()->create();
 
-    Event::fake();
+    $this->actingAs($user);
 
-    $verificationUrl = URL::temporarySignedRoute(
-        'verification.verify',
-        now()->addMinutes(60),
-        ['id' => $user->id, 'hash' => sha1($user->email)]
-    );
+    Volt::test('pages.auth.verify-email')
+        ->call('sendVerification')
+        ->assertHasNoErrors()
+        ->assertSet('codeSent', true);
 
-    $response = $this->actingAs($user)->get($verificationUrl);
+    OtpTestHelper::sentCode();
 
-    Event::assertDispatched(Verified::class);
-    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    expect($user->fresh()->hasVerifiedEmail())
+        ->toBeFalse();
 });
 
-test('email is not verified with invalid hash', function () {
+test('email can be verified with a valid otp', function () {
     $user = User::factory()->unverified()->create();
 
-    $verificationUrl = URL::temporarySignedRoute(
-        'verification.verify',
-        now()->addMinutes(60),
-        ['id' => $user->id, 'hash' => sha1('wrong-email')]
+    $this->actingAs($user);
+
+    $component = Volt::test('pages.auth.verify-email')
+        ->call('sendVerification')
+        ->assertHasNoErrors();
+
+    $code = OtpTestHelper::sentCode();
+
+    $component
+        ->set('otp', $code)
+        ->call('verifyOtp')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('dashboard'));
+
+    expect($user->fresh()->hasVerifiedEmail())
+        ->toBeTrue();
+
+    $this->assertAuthenticatedAs($user);
+});
+
+test('email cannot be verified with an invalid otp', function () {
+    $user = User::factory()->unverified()->create();
+
+    $this->actingAs($user);
+
+    $component = Volt::test('pages.auth.verify-email')
+        ->call('sendVerification')
+        ->assertHasNoErrors();
+
+    $code = OtpTestHelper::invalidCode(
+        OtpTestHelper::sentCode()
     );
 
-    $this->actingAs($user)->get($verificationUrl);
+    $component
+        ->set('otp', $code)
+        ->call('verifyOtp')
+        ->assertHasErrors(['otp'])
+        ->assertNoRedirect();
 
-    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
+    expect($user->fresh()->hasVerifiedEmail())
+        ->toBeFalse();
+});
+
+test('email cannot be verified without requesting an otp', function () {
+    $user = User::factory()->unverified()->create();
+
+    $this->actingAs($user);
+
+    Volt::test('pages.auth.verify-email')
+        ->set('otp', '123456')
+        ->call('verifyOtp')
+        ->assertHasErrors(['otp'])
+        ->assertNoRedirect();
+
+    expect($user->fresh()->hasVerifiedEmail())
+        ->toBeFalse();
 });

@@ -2,172 +2,235 @@
 
 @section('contenido')
 
-    <div class="container py-4">
+    <div class="sigac-page">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <x-sigac.page-header title="Mis citas" subtitle="Consulta el historial y gestiona tus citas médicas."
+            eyebrow="SIGAC · PORTAL DE PACIENTES">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Mis citas
-                </h1>
+            <x-slot:actions>
 
-                <p class="text-muted mb-0">
-                    Consulta tus citas programadas.
-                </p>
-            </div>
+                <a href="{{ route('dashboard') }}" class="btn sigac-btn-light">
 
-            <a href="{{ route('Paciente.citas.create') }}" class="btn btn-primary">
-                <i class="bi bi-calendar-plus me-1"></i>
-                Agendar cita
-            </a>
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Volver al panel
+
+                </a>
+
+                <a href="{{ route('Paciente.citas.create') }}" class="btn sigac-btn-light">
+
+                    <i class="bi bi-calendar-plus me-1"></i>
+                    Agendar cita
+
+                </a>
+
+            </x-slot:actions>
+
+        </x-sigac.page-header>
+
+        {{-- Notificaciones --}}
+
+        @if (session('success'))
+            <x-sigac.alert variant="success">
+                {{ session('success') }}
+            </x-sigac.alert>
+        @endif
+
+        @if (session('error'))
+            <x-sigac.alert variant="danger">
+                {{ session('error') }}
+            </x-sigac.alert>
+        @endif
+
+        {{-- Indicadores --}}
+
+        <div class="sigac-metrics sigac-grid-four">
+
+            <x-sigac.metric-card label="Total de citas" :value="$citas->count()" icon="calendar-event" color="navy" />
+
+            <x-sigac.metric-card label="Pendientes" :value="$citas->where('estadocita', 'Pendiente')->count()" icon="clock" color="warning" />
+
+            <x-sigac.metric-card label="Confirmadas" :value="$citas->where('estadocita', 'Confirmada')->count()" icon="person-check" color="info" />
+
+            <x-sigac.metric-card label="Realizadas" :value="$citas->whereIn('estadocita', ['Realizada', 'Atendida'])->count()" icon="check-circle" color="success" />
 
         </div>
 
+        {{-- Historial --}}
 
-        @if ($citas->isEmpty())
-            <div class="card border-0 shadow-sm">
+        <x-sigac.card title="Historial de citas" subtitle="Consulta la información y el estado de tus citas registradas.">
 
-                <div class="card-body text-center py-5">
+            @if ($citas->isNotEmpty())
+                <div class="table-responsive">
 
-                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+                    <table class="table sigac-table align-middle">
 
-                    <h4 class="fw-bold mt-3">
-                        No tienes citas
-                    </h4>
+                        <thead>
+                            <tr>
+                                <th>Cita</th>
+                                <th>Servicio</th>
+                                <th>Fecha y hora</th>
+                                <th>Profesional</th>
+                                <th>Sede</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
 
-                    <p class="text-muted">
-                        Actualmente no tienes citas registradas.
-                    </p>
+                        <tbody>
 
-                    <a href="{{ route('Paciente.citas.create') }}" class="btn btn-primary">
-                        <i class="bi bi-calendar-plus me-1"></i>
-                        Agendar una cita
-                    </a>
+                            @foreach ($citas as $cita)
+                                @php
 
-                </div>
+                                    $varianteEstado = match ($cita->estadocita) {
+                                        'Pendiente' => 'warning',
+                                        'Confirmada' => 'info',
+                                        'Realizada', 'Atendida' => 'success',
+                                        'Cancelada' => 'danger',
+                                        default => 'neutral',
+                                    };
 
-            </div>
-        @else
-            <div class="card border-0 shadow-sm">
+                                    $profesional = $cita->agenda?->profesional?->user;
 
-                <div class="card-body p-0">
+                                    $nombreProfesional = trim(
+                                        ($profesional?->name ?? '') . ' ' . ($profesional?->last_name ?? ''),
+                                    );
 
-                    <div class="table-responsive">
-
-                        <table class="table table-hover align-middle mb-0">
-
-                            <thead class="table-light">
+                                    $puedeModificar =
+                                        $cita->estadocita === 'Pendiente' &&
+                                        $cita->fechacita &&
+                                        now()->lte(
+                                            \Carbon\Carbon::parse($cita->fechacita, 'America/Bogota')->subHours(24),
+                                        );
+                                @endphp
 
                                 <tr>
-                                    <th>Fecha</th>
-                                    <th>Servicio</th>
-                                    <th>Profesional</th>
-                                    <th>Sede</th>
-                                    <th>Consultorio</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
 
-                            </thead>
+                                    <td class="fw-semibold">
+                                        #{{ $cita->idcita }}
+                                    </td>
 
-                            <tbody>
+                                    <td>
 
-                                @foreach ($citas as $cita)
-                                    <tr>
+                                        <div class="sigac-table-entity">
 
-                                        <td>
-                                            {{ $cita->fechacita?->format('d/m/Y h:i A') }}
-                                        </td>
+                                            <div class="sigac-icon sigac-icon-info">
+                                                <i class="bi bi-clipboard2-pulse"></i>
+                                            </div>
 
-                                        <td>
-                                            {{ $cita->servicio?->nombre ?? 'Sin información' }}
-                                        </td>
+                                            <div>
 
-                                        <td>
-                                            {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
-                                            {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
-                                        </td>
+                                                <strong>
+                                                    {{ $cita->servicio?->nombre ?? 'Sin información' }}
+                                                </strong>
 
-                                        <td>
-                                            {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
-                                        </td>
+                                                <div class="text-muted small">
+                                                    {{ $cita->tipoServicio?->nombre ?? '' }}
+                                                </div>
 
-                                        <td>
-                                            {{ $cita->agenda?->consultorio ?? 'Sin información' }}
-                                        </td>
+                                            </div>
 
-                                        <td>
+                                        </div>
 
-                                            @switch($cita->estadocita)
-                                                @case('Pendiente')
-                                                    <span class="badge bg-warning text-dark">
-                                                        Pendiente
-                                                    </span>
-                                                @break
+                                    </td>
 
-                                                @case('Atendida')
-                                                @case('Realizada')
-                                                    <span class="badge bg-success">
-                                                        {{ $cita->estadocita }}
-                                                    </span>
-                                                @break
+                                    <td>
 
-                                                @case('Cancelada')
-                                                    <span class="badge bg-danger">
-                                                        Cancelada
-                                                    </span>
-                                                @break
+                                        <div class="fw-semibold">
+                                            {{ $cita->fechacita?->format('d/m/Y') ?? 'Sin fecha' }}
+                                        </div>
 
-                                                @default
-                                                    <span class="badge bg-secondary">
-                                                        {{ $cita->estadocita }}
-                                                    </span>
-                                            @endswitch
+                                        <div class="text-muted small">
+                                            {{ $cita->fechacita?->format('h:i A') ?? 'Sin hora' }}
+                                        </div>
 
-                                        </td>
-                                        <td>
+                                    </td>
+
+                                    <td>
+                                        {{ $nombreProfesional ?: 'Sin información' }}
+                                    </td>
+
+                                    <td>
+
+                                        {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
+
+                                        <div class="small text-muted">
+                                            {{ $cita->agenda?->consultorio ?? '' }}
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <x-sigac.status :label="$cita->estadocita" :variant="$varianteEstado" />
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="sigac-table-actions">
 
                                             <a href="{{ route('Paciente.citas.show', $cita) }}"
-                                                class="btn btn-sm btn-outline-primary" title="Ver cita">
-                                                <i class="bi bi-eye"></i>
+                                                class="btn btn-sm sigac-btn-light">
+
+                                                <i class="bi bi-eye me-1"></i>
+                                                Ver
+
                                             </a>
 
-                                            @if ($cita->estadocita === 'Pendiente')
+                                            @if ($puedeModificar)
                                                 <a href="{{ route('Paciente.citas.edit', $cita) }}"
-                                                    class="btn btn-sm btn-outline-warning" title="Editar cita">
-                                                    <i class="bi bi-pencil-square"></i>
+                                                    class="btn btn-sm btn-outline-primary">
+
+                                                    <i class="bi bi-pencil-square me-1"></i>
+                                                    Editar
+
                                                 </a>
-
-                                                <form action="{{ route('Paciente.citas.cancelar', $cita) }}" method="POST"
-                                                    class="d-inline"
-                                                    onsubmit="return confirm('¿Está seguro de cancelar esta cita?');">
-
-                                                    @csrf
-                                                    @method('PATCH')
-
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        title="Cancelar cita">
-                                                        <i class="bi bi-x-circle"></i>
-                                                    </button>
-
-                                                </form>
                                             @endif
 
-                                        </td>
+                                        </div>
 
-                                    </tr>
-                                @endforeach
+                                    </td>
 
-                            </tbody>
+                                </tr>
+                            @endforeach
 
-                        </table>
+                        </tbody>
 
-                    </div>
+                    </table>
 
                 </div>
 
-            </div>
-        @endif
+                <div class="sigac-pagination">
+
+                    <span class="sigac-table-results">
+                        Total: {{ $citas->count() }} citas registradas.
+                    </span>
+
+                </div>
+            @else
+                <x-sigac.empty-state title="Todavía no tienes citas registradas"
+                    description="Agenda tu primera cita para comenzar a gestionar tus atenciones desde SIGAC."
+                    icon="calendar-x">
+
+                    <a href="{{ route('Paciente.citas.create') }}" class="btn sigac-btn-primary">
+
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        Agendar una cita
+
+                    </a>
+
+                </x-sigac.empty-state>
+            @endif
+
+        </x-sigac.card>
+
+        <x-sigac.alert variant="info" title="Información sobre tus citas">
+
+            Recuerda que puedes modificar una cita pendiente con al menos
+            24 horas de anticipación. Cada cita admite un máximo de
+            tres reprogramaciones.
+
+        </x-sigac.alert>
 
     </div>
 

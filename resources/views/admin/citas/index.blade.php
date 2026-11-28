@@ -1,119 +1,197 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="fw-bold mb-1">Gestión de citas</h1>
-                <p class="text-muted mb-0">
-                    Consulta las citas registradas en SIGAC.
-                </p>
-            </div>
+    <div class="sigac-page">
 
-            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i>
-                Volver al panel
-            </a>
-        </div>
+        <x-sigac.page-header title="Gestión de citas" subtitle="Consulta y administra las citas registradas en SIGAC."
+            eyebrow="SIGAC · ADMINISTRACIÓN">
 
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body">
-                <form method="GET" action="{{ route('admin.citas.index') }}" class="row g-3 align-items-end">
+            <x-slot:actions>
+                <a href="{{ route('dashboard') }}" class="btn sigac-btn-light">
 
-                    <div class="col-md-4">
-                        <label for="estado" class="form-label">Estado</label>
-                        <select name="estado" id="estado" class="form-select">
-                            <option value="">Todos los estados</option>
-                            @foreach (['Pendiente', 'Realizada', 'Cancelada'] as $estado)
-                                <option value="{{ $estado }}" @selected(request('estado') === $estado)>
-                                    {{ $estado }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <i class="bi bi-arrow-left"></i>
+                    Volver al panel
 
-                    <div class="col-md-4">
-                        <label for="fecha" class="form-label">Fecha</label>
-                        <input type="date" name="fecha" id="fecha" class="form-control"
-                            value="{{ request('fecha') }}">
-                    </div>
+                </a>
+            </x-slot:actions>
 
-                    <div class="col-md-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search me-1"></i>
-                            Filtrar
-                        </button>
+        </x-sigac.page-header>
 
-                        <a href="{{ route('admin.citas.index') }}" class="btn btn-outline-secondary">
-                            Limpiar
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+        {{-- Mensajes --}}
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+        @if (session('success'))
+            <x-sigac.alert variant="success">
+                {{ session('success') }}
+            </x-sigac.alert>
+        @endif
+
+        @if (session('error'))
+            <x-sigac.alert variant="danger">
+                {{ session('error') }}
+            </x-sigac.alert>
+        @endif
+
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="No fue posible completar la operación">
+
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+
+            </x-sigac.alert>
+        @endif
+
+        {{-- Filtros --}}
+
+        <x-sigac.card title="Filtros de búsqueda" subtitle="Consulta las citas según su estado y fecha.">
+
+            <form method="GET" action="{{ route('admin.citas.index') }}" class="sigac-filters mb-0">
+
+                <div>
+                    <label for="estado" class="form-label">
+                        Estado
+                    </label>
+
+                    <select name="estado" id="estado" class="form-select">
+
+                        <option value="">Todos los estados</option>
+
+                        @foreach (['Pendiente', 'Realizada', 'Cancelada'] as $estado)
+                            <option value="{{ $estado }}" @selected(request('estado') === $estado)>
+
+                                {{ $estado }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
+
+                <div>
+                    <label for="fecha" class="form-label">
+                        Fecha
+                    </label>
+
+                    <input type="date" name="fecha" id="fecha" class="form-control" value="{{ request('fecha') }}">
+                </div>
+
+                <div class="sigac-filter-actions">
+
+                    <button type="submit" class="btn sigac-btn-primary">
+
+                        <i class="bi bi-search"></i>
+                        Filtrar
+
+                    </button>
+
+                    <a href="{{ route('admin.citas.index') }}" class="btn btn-outline-secondary">
+
+                        Limpiar
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </x-sigac.card>
+
+        {{-- Listado --}}
+
+        <x-sigac.card title="Citas registradas" subtitle="Información de los agendamientos y su estado actual.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Paciente</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Profesional</th>
+                            <th scope="col">Sede</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($citas as $cita)
+                            @php
+                                $varianteEstado = match ($cita->estadocita) {
+                                    'Pendiente' => 'warning',
+                                    'Realizada' => 'success',
+                                    'Cancelada' => 'danger',
+                                    default => 'neutral',
+                                };
+                            @endphp
+
                             <tr>
-                                <th>Paciente</th>
-                                <th>Fecha</th>
-                                <th>Servicio</th>
-                                <th>Profesional</th>
-                                <th>Sede</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($citas as $cita)
-                                <tr>
-                                    <td>
-                                        {{ $cita->paciente?->user?->name ?? 'Sin información' }}
-                                        {{ $cita->paciente?->user?->last_name ?? '' }}
-                                    </td>
-                                    <td>
-                                        {{ $cita->fechacita?->format('d/m/Y h:i A') }}
-                                    </td>
-                                    <td>
-                                        {{ $cita->servicio?->nombre ?? 'Sin información' }}
-                                    </td>
-                                    <td>
-                                        {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
-                                        {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
-                                    </td>
-                                    <td>
-                                        {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
-                                    </td>
-                                    <td>
-                                        @php
-                                            $color = match ($cita->estadocita) {
-                                                'Pendiente' => 'warning text-dark',
-                                                'Realizada' => 'success',
-                                                'Cancelada' => 'danger',
-                                                default => 'secondary',
-                                            };
-                                        @endphp
 
-                                        <span class="badge bg-{{ $color }}">
-                                            {{ $cita->estadocita }}
-                                        </span>
-                                    </td>
+                                <td>
+                                    <div class="sigac-table-entity">
 
-                                    <td>
+                                        <div class="sigac-icon sigac-icon-info">
+                                            <i class="bi bi-person" aria-hidden="true"></i>
+                                        </div>
+
+                                        <strong>
+                                            {{ $cita->paciente?->user?->name ?? 'Sin información' }}
+                                            {{ $cita->paciente?->user?->last_name ?? '' }}
+                                        </strong>
+
+                                    </div>
+                                </td>
+
+                                <td class="text-nowrap">
+                                    {{ $cita->fechacita?->format('d/m/Y h:i A') }}
+                                </td>
+
+                                <td>
+                                    {{ $cita->servicio?->nombre ?? 'Sin información' }}
+                                </td>
+
+                                <td>
+                                    {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
+                                    {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
+                                </td>
+
+                                <td>
+                                    {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
+                                </td>
+
+                                <td>
+                                    <x-sigac.status :label="$cita->estadocita" :variant="$varianteEstado" />
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
+                                        {{-- Consultar --}}
+
                                         <a href="{{ route('admin.citas.show', $cita) }}"
-                                            class="btn btn-sm btn-outline-primary" title="Ver cita">
+                                            class="btn btn-sm btn-outline-primary" title="Ver cita" aria-label="Ver cita">
+
                                             <i class="bi bi-eye"></i>
+
                                         </a>
 
                                         @if ($cita->estadocita === 'Pendiente')
+                                            {{-- Editar --}}
+
                                             <a href="{{ route('admin.citas.edit', $cita) }}"
-                                                class="btn btn-sm btn-outline-warning" title="Editar cita">
+                                                class="btn btn-sm btn-outline-warning" title="Editar cita"
+                                                aria-label="Editar cita">
+
                                                 <i class="bi bi-pencil-square"></i>
+
                                             </a>
+
+                                            {{-- Cancelar --}}
 
                                             <form action="{{ route('admin.citas.cancelar', $cita) }}" method="POST"
                                                 class="d-inline"
@@ -123,31 +201,60 @@
                                                 @method('PATCH')
 
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    title="Cancelar cita">
+                                                    title="Cancelar cita" aria-label="Cancelar cita">
+
                                                     <i class="bi bi-x-circle"></i>
+
                                                 </button>
+
                                             </form>
                                         @endif
-                                    </td>
 
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted py-5">
-                                        No se encontraron citas.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+                                <td colspan="7">
+
+                                    <x-sigac.empty-state title="No se encontraron citas"
+                                        description="No hay citas que coincidan con los criterios de búsqueda."
+                                        icon="calendar-x">
+
+                                        <a href="{{ route('admin.citas.index') }}" class="btn btn-outline-secondary">
+
+                                            Limpiar filtros
+
+                                        </a>
+
+                                    </x-sigac.empty-state>
+
+                                </td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
             </div>
 
+            {{-- Paginación --}}
+
             @if ($citas->hasPages())
-                <div class="card-footer bg-white">
+                <div class="sigac-pagination">
+
                     {{ $citas->links('pagination::bootstrap-5') }}
+
                 </div>
             @endif
-        </div>
+
+        </x-sigac.card>
+
     </div>
+
 @endsection

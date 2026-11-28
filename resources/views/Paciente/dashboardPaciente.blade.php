@@ -1,376 +1,286 @@
 @extends('layouts.dashboard')
 
 @section('contenido')
-    <div class="container py-4">
 
-        {{-- ========================================================= --}}
-        {{-- BIENVENIDA --}}
-        {{-- ========================================================= --}}
+    <div class="sigac-page sigac-paciente">
 
-        <section class="hero rounded-4 shadow-sm mb-4 p-4 p-lg-5">
+        {{-- Encabezado --}}
 
-            <div class="row align-items-center">
+        <x-sigac.page-header title="Panel del paciente" subtitle="Gestiona tus citas y consulta tus próximas atenciones."
+            eyebrow="SIGAC · PORTAL DE PACIENTES" />
 
-                <div class="col-md-8">
+        {{-- Notificaciones --}}
 
-                    <p class="text-uppercase small fw-bold mb-2">
-                        Portal de pacientes
-                    </p>
+        @if (session('success'))
+            <x-sigac.alert variant="success">
+                {{ session('success') }}
+            </x-sigac.alert>
+        @endif
 
-                    <h1 class="fw-bold mb-3">
-                        Hola, {{ auth()->user()->name }}
-                    </h1>
+        @if (session('error'))
+            <x-sigac.alert variant="danger">
+                {{ session('error') }}
+            </x-sigac.alert>
+        @endif
 
-                    <p class="lead mb-2">
-                        Bienvenido al portal de pacientes de
-                        SIGAC - Sistema Integral de Gestión de Citas Medicas para IPS.
-                    </p>
+        @unless ($paciente)
+            <x-sigac.alert variant="warning" title="Perfil de paciente no disponible">
 
-                    <p class="mb-0">
-                        Gestiona tus citas, consulta tus pruebas de laboratorio
-                        y revisa tus resultados desde un solo lugar.
-                    </p>
+                Tu cuenta todavía no tiene un perfil de paciente asociado.
+                Si tienes dificultades para agendar una cita,
+                comunícate con el administrador.
 
-                </div>
+            </x-sigac.alert>
+        @endunless
 
-                <div class="col-md-4 text-center mt-4 mt-md-0">
+        {{-- Accesos principales --}}
 
-                    <i class="bi bi-person-heart display-1"></i>
+        <section class="sigac-modules mb-3">
 
-                </div>
+            <x-sigac.module-card title="Agendar una cita"
+                description="Selecciona el servicio que necesitas y consulta los horarios disponibles." :href="route('Paciente.citas.create')"
+                icon="calendar-plus" color="info" />
 
-            </div>
+            <x-sigac.module-card title="Mis citas"
+                description="Consulta tus citas registradas y gestiona las que tengas pendientes." :href="route('Paciente.citas.index')"
+                icon="calendar-check" color="navy" />
 
         </section>
 
+        {{-- Próxima cita y resumen --}}
 
-        {{-- ========================================================= --}}
-        {{-- RESUMEN --}}
-        {{-- ========================================================= --}}
+        <div class="row g-3 mb-3">
 
-        <div class="row g-4 mb-4">
+            <div class="col-12 col-xl-8">
 
-            {{-- CITAS --}}
-            <div class="col-md-4">
-
-                <div class="card dashboard-card border-0 shadow-sm h-100">
-
-                    <div class="card-body p-4">
-
-                        <div class="d-flex justify-content-between align-items-start">
-
-                            <div>
-
-                                <p class="text-muted mb-1">
-                                    Citas pendientes
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    {{ $totalPendientes }}
-                                </h2>
-
-                            </div>
-
-                            <i class="bi bi-calendar-check fs-1 text-primary"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {{-- PRUEBAS --}}
-            <div class="col-md-4">
-
-                <div class="card dashboard-card border-0 shadow-sm h-100">
-
-                    <div class="card-body p-4 dashboard-appointment">
-
-                        <div class="d-flex justify-content-between align-items-start">
-
-                            <div>
-
-                                <p class="text-muted mb-1">
-                                    Pruebas de laboratorio
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    —
-                                </h2>
-
-                                <small class="text-muted">
-                                    Próximamente
-                                </small>
-
-                            </div>
-
-                            <i class="bi bi-droplet fs-1 text-success"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {{-- RESULTADOS --}}
-            <div class="col-md-4">
-
-                <div class="card dashboard-card border-0 shadow-sm h-100">
-
-                    <div class="card-body p-4 dashboard-appointment">
-
-                        <div class="d-flex justify-content-between align-items-start">
-
-                            <div>
-
-                                <p class="text-muted mb-1">
-                                    Resultados
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    —
-                                </h2>
-
-                                <small class="text-muted">
-                                    Próximamente
-                                </small>
-
-                            </div>
-
-                            <i class="bi bi-file-earmark-medical fs-1 text-danger"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- ========================================================= --}}
-        {{-- ACCIONES PRINCIPALES --}}
-        {{-- ========================================================= --}}
-
-        <div class="row g-4 mb-4">
-
-            {{-- AGENDAR CITA --}}
-            <div class="col-md-6">
-
-                <a href="{{ route('Paciente.citas.create') }}" class="text-decoration-none">
-
-                    <div class="card dashboard-card border-0 shadow-sm h-100">
-
-                        <div class="card-body p-4 p-lg-5 dashboard-appointment">
-
-                            <i class="bi bi-calendar-plus display-4 text-primary"></i>
-
-                            <h3 class="fw-bold mt-3">
-                                Agendar una cita
-                            </h3>
-
-                            <p class="text-muted mb-0">
-                                Selecciona el servicio que necesitas y
-                                encuentra una disponibilidad con un profesional
-                                autorizado.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            {{-- PRUEBAS --}}
-            <div class="col-md-6">
-
-                <a href="#" class="text-decoration-none">
-
-                    <div class="card dashboard-card border-0 shadow-sm h-100">
-
-                        <div class="card-body p-4 dashboard-appointment">
-
-                            <i class="bi bi-clipboard2-pulse display-4 text-success"></i>
-
-                            <h3 class="fw-bold mt-3">
-                                Pruebas de laboratorio
-                            </h3>
-
-                            <p class="text-muted mb-0">
-                                Consulta y gestiona las pruebas y procedimientos
-                                de laboratorio disponibles.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        {{-- ========================================================= --}}
-        {{-- PRÓXIMA CITA --}}
-        {{-- ========================================================= --}}
-
-        <div class="card border-0 shadow-sm mb-4">
-
-            <div class="card-body p-4">
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-
-                    <h4 class="fw-bold mb-0">
-
-                        <i class="bi bi-calendar-event me-2"></i>
-
-                        Próxima cita
-
-                    </h4>
-
+                <x-sigac.card title="Próxima cita" subtitle="Información de tu siguiente cita pendiente."
+                    class="h-100 mb-0">
 
                     @if ($proximaCita)
-                        <a href="{{ route('Paciente.citas.index') }}" class="btn btn-outline-primary btn-sm">
-                            Ver mis citas
-                        </a>
+                        @php
+                            $profesional = $proximaCita->agenda?->profesional?->user;
+
+                            $nombreProfesional = trim(
+                                ($profesional?->name ?? '') . ' ' . ($profesional?->last_name ?? ''),
+                            );
+                        @endphp
+
+                        <div class="sigac-identity">
+
+                            <div class="sigac-icon sigac-icon-info">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+
+                            <div class="sigac-identity-content">
+
+                                <h2>
+                                    {{ $proximaCita->servicio?->nombre ?? 'Sin información' }}
+                                </h2>
+
+                                <p class="sigac-description mb-0">
+                                    Cita #{{ $proximaCita->idcita }}
+                                </p>
+
+                            </div>
+
+                            <x-sigac.status label="Pendiente" variant="warning" />
+
+                        </div>
+
+                        <hr>
+
+                        <dl class="sigac-details">
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    Fecha
+                                </dt>
+
+                                <dd>
+                                    {{ $proximaCita->fechacita?->format('d/m/Y') ?? 'Sin fecha' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-clock me-1"></i>
+                                    Hora
+                                </dt>
+
+                                <dd>
+                                    {{ $proximaCita->fechacita?->format('h:i A') ?? 'Sin hora' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    Profesional
+                                </dt>
+
+                                <dd>
+                                    {{ $nombreProfesional ?: 'Sin información' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-hospital me-1"></i>
+                                    Sede
+                                </dt>
+
+                                <dd>
+                                    {{ $proximaCita->agenda?->sede?->nombre ?? 'Sin información' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-door-open me-1"></i>
+                                    Consultorio
+                                </dt>
+
+                                <dd>
+                                    {{ $proximaCita->agenda?->consultorio ?? 'Sin asignar' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>
+                                    <i class="bi bi-clipboard2-pulse me-1"></i>
+                                    Tipo de servicio
+                                </dt>
+
+                                <dd>
+                                    {{ $proximaCita->tipoServicio?->nombre ?? 'Sin información' }}
+                                </dd>
+                            </div>
+
+                        </dl>
+
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+
+                            <a href="{{ route('Paciente.citas.show', $proximaCita) }}" class="btn sigac-btn-primary">
+
+                                <i class="bi bi-eye me-1"></i>
+                                Ver detalle
+
+                            </a>
+
+                            <a href="{{ route('Paciente.citas.index') }}" class="btn sigac-btn-light">
+
+                                Ver mis citas
+
+                            </a>
+
+                        </div>
+                    @else
+                        <x-sigac.empty-state title="No tienes citas pendientes próximas"
+                            description="Cuando agendes una cita, podrás consultar aquí la información de tu próxima atención."
+                            icon="calendar-check">
+
+                            <a href="{{ route('Paciente.citas.create') }}" class="btn sigac-btn-primary">
+
+                                <i class="bi bi-calendar-plus me-1"></i>
+                                Agendar una cita
+
+                            </a>
+
+                        </x-sigac.empty-state>
                     @endif
 
-                </div>
+                </x-sigac.card>
 
+            </div>
 
-                @if ($proximaCita)
-                    <div class="row g-4">
+            {{-- Resumen personal --}}
 
-                        {{-- SERVICIO --}}
-                        <div class="col-md-6">
+            <div class="col-12 col-xl-4">
 
-                            <p class="text-muted mb-1">
-                                Servicio
-                            </p>
+                <x-sigac.card title="Resumen de citas" subtitle="Consulta tu actividad." class="h-100 mb-0">
 
-                            <h5 class="fw-bold">
-                                {{ $proximaCita->servicio?->nombre ?? 'Sin información' }}
-                            </h5>
+                    <x-sigac.metric-card label="Citas pendientes próximas" :value="$totalPendientes" icon="calendar-check"
+                        color="warning" />
 
-                        </div>
+                    <div class="mt-3">
 
-
-                        {{-- FECHA --}}
-                        <div class="col-md-6">
-
-                            <p class="text-muted mb-1">
-                                Fecha y hora
-                            </p>
-
-                            <h5 class="fw-bold">
-                                {{ $proximaCita->fechacita?->format('d/m/Y h:i A') }}
-                            </h5>
-
-                        </div>
-
-
-                        {{-- PROFESIONAL --}}
-                        <div class="col-md-6">
-
-                            <p class="text-muted mb-1">
-                                Profesional
-                            </p>
-
-                            <h5 class="fw-bold">
-
-                                {{ $proximaCita->agenda?->profesional?->user?->name ?? '' }}
-
-                                {{ $proximaCita->agenda?->profesional?->user?->last_name ?? '' }}
-
-                            </h5>
-
-                        </div>
-
-
-                        {{-- SEDE --}}
-                        <div class="col-md-6">
-
-                            <p class="text-muted mb-1">
-                                Sede
-                            </p>
-
-                            <h5 class="fw-bold">
-                                {{ $proximaCita->agenda?->sede?->nombre ?? 'Sin información' }}
-                            </h5>
-
-                        </div>
-
-                    </div>
-                @else
-                    <div class="text-center py-4">
-
-                        <i class="bi bi-calendar-x display-5 text-muted"></i>
-
-                        <h5 class="mt-3">
-                            No tienes citas programadas
-                        </h5>
-
-                        <p class="text-muted">
-                            Cuando agendes una cita, aparecerá aquí.
+                        <p class="sigac-description mb-3">
+                            Desde el listado de citas puedes consultar
+                            el estado de tus atenciones y las operaciones
+                            disponibles para cada una.
                         </p>
 
-                        <a href="{{ route('Paciente.citas.create') }}" class="btn btn-primary">
+                        <a href="{{ route('Paciente.citas.index') }}" class="btn sigac-btn-light w-100">
 
-                            <i class="bi bi-calendar-plus me-2"></i>
-
-                            Agendar una cita
+                            <i class="bi bi-clock-history me-1"></i>
+                            Consultar mis citas
 
                         </a>
 
                     </div>
-                @endif
+
+                </x-sigac.card>
 
             </div>
 
         </div>
 
+        {{-- Servicios futuros --}}
 
-        {{-- ========================================================= --}}
-        {{-- INFORMACIÓN --}}
-        {{-- ========================================================= --}}
+        <x-sigac.card title="Servicios complementarios" subtitle="Nuevas funcionalidades del portal de pacientes.">
 
-        <div class="card border-0 shadow-sm">
+            <div class="row g-3">
 
-            <div class="card-body p-4">
+                <div class="col-12 col-md-6">
 
-                <div class="row align-items-center g-3">
+                    <div class="sigac-module h-100">
 
-                    <div class="col-md-1 text-center">
+                        <div class="sigac-icon sigac-icon-neutral">
+                            <i class="bi bi-droplet"></i>
+                        </div>
 
-                        <i class="bi bi-info-circle display-6 text-primary"></i>
+                        <div class="sigac-module-content">
+
+                            <h3>Pruebas de laboratorio</h3>
+
+                            <p>
+                                Consulta y gestión de pruebas
+                                y procedimientos de laboratorio.
+                            </p>
+
+                            <x-sigac.status label="Próximamente" variant="neutral" />
+
+                        </div>
+
+                        <i class="bi bi-lock text-muted"></i>
 
                     </div>
 
-                    <div class="col-md-11">
+                </div>
 
-                        <h5 class="fw-bold">
-                            ¿Necesitas realizarte un procedimiento?
-                        </h5>
+                <div class="col-12 col-md-6">
 
-                        <p class="text-muted mb-0">
-                            Puedes consultar los servicios disponibles y
-                            seleccionar el procedimiento que necesitas.
-                            El sistema te mostrará las disponibilidades
-                            correspondientes.
-                        </p>
+                    <div class="sigac-module h-100">
+
+                        <div class="sigac-icon sigac-icon-neutral">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </div>
+
+                        <div class="sigac-module-content">
+
+                            <h3>Resultados</h3>
+
+                            <p>
+                                Consulta de resultados de
+                                pruebas y procedimientos.
+                            </p>
+
+                            <x-sigac.status label="Próximamente" variant="neutral" />
+
+                        </div>
+
+                        <i class="bi bi-lock text-muted"></i>
 
                     </div>
 
@@ -378,7 +288,18 @@
 
             </div>
 
-        </div>
+        </x-sigac.card>
+
+        {{-- Información para el paciente --}}
+
+        <x-sigac.alert variant="info" title="¿Necesitas realizarte un procedimiento?">
+
+            Consulta los servicios disponibles desde la opción
+            Agendar una cita. El sistema te mostrará los horarios
+            correspondientes al servicio seleccionado.
+
+        </x-sigac.alert>
 
     </div>
+
 @endsection

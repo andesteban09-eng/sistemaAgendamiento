@@ -13,10 +13,13 @@ class CitaController extends Controller
 {
     public function index(Request $request): View
     {
-        $request->validate([
+        $filtros = $request->validate([
+            'documento' => ['nullable', 'string', 'max:100'],
             'estado' => ['nullable', 'in:Pendiente,Confirmada,Realizada,Cancelada'],
             'fecha' => ['nullable', 'date_format:Y-m-d'],
         ]);
+
+        $documento = trim($filtros['documento'] ?? '');
 
         $citas = Cita::with([
             'paciente.user',
@@ -26,14 +29,22 @@ class CitaController extends Controller
             'agenda.sede',
         ])
             ->when(
+                $documento !== '',
+                fn($query) => $query->whereHas(
+                    'paciente',
+                    fn($paciente) => $paciente->where('numdoc', $documento)
+                )
+            )
+            ->when(
                 $request->filled('estado'),
-                fn ($query) => $query->where('estadocita', $request->estado)
+                fn($query) => $query->where('estadocita', $request->estado)
             )
             ->when(
                 $request->filled('fecha'),
-                fn ($query) => $query->whereDate('fechacita', $request->fecha)
+                fn($query) => $query->whereDate('fechacita', $request->fecha)
             )
             ->orderBy('fechacita')
+            ->orderBy('idcita')
             ->paginate(15)
             ->withQueryString();
 
@@ -62,7 +73,6 @@ class CitaController extends Controller
             return redirect()
                 ->route('auxiliar.citas.index')
                 ->with('success', 'La llegada del paciente fue confirmada correctamente.');
-
         } catch (\RuntimeException $e) {
             return back()->with('error', $e->getMessage());
         }

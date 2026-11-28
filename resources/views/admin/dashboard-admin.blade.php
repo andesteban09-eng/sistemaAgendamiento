@@ -1,250 +1,143 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid dashboard-container px-4 py-4">
+
+    @php
+        $subtitulo = 'Bienvenido, ' . auth()->user()->name . '. Supervisa y administra los recursos de la IPS.';
+
+        $periodo = 'Citas programadas durante ' . now()->locale('es')->translatedFormat('F Y') . '.';
+
+        $indicadores = [
+            ['Usuarios activos', $usuariosActivos, 'people', 'navy'],
+            ['Pacientes registrados', $pacientesRegistrados, 'person', 'info'],
+            ['Profesionales activos', $profesionalesActivos, 'person-badge', 'success'],
+            ['Auxiliares activos', $auxiliaresActivos, 'person-gear', 'navy'],
+            ['Sedes activas', $sedesActivas, 'building', 'info'],
+            ['Servicios registrados', $serviciosRegistrados, 'clipboard2-pulse', 'success'],
+        ];
+
+        $colores = [
+            'Pendiente' => 'warning',
+            'Confirmada' => 'info',
+            'Realizada' => 'success',
+            'Atendida' => 'success',
+            'Cancelada' => 'danger',
+        ];
+
+        $modulos = [
+            ['Pacientes', 'Gestiona los pacientes registrados.', 'people', 'admin.pacientes.index'],
+            ['Profesionales', 'Administra los profesionales de salud.', 'person-badge', 'admin.profesionales.index'],
+            ['Auxiliares', 'Gestiona el personal auxiliar.', 'person-gear', 'admin.auxiliares.index'],
+            ['Citas', 'Consulta y administra las citas.', 'calendar-check', 'admin.citas.index'],
+            ['Tipos de servicio', 'Administra las categorías de servicios.', 'tags', 'admin.tiposervicios.index'],
+            ['Servicios', 'Gestiona los servicios ofrecidos.', 'clipboard2-pulse', 'admin.servicios.index'],
+            ['Sedes', 'Gestiona las ubicaciones de atención.', 'building', 'admin.sedes.index'],
+        ];
+    @endphp
+
+    <div class="sigac-page">
 
         {{-- Encabezado --}}
-        <div class="mb-4">
-            <h1 class="fw-bold mb-1">
-                Panel de administración
-            </h1>
 
-            <p class="text-muted mb-0">
-                Bienvenido a SIGAC.
-            </p>
-        </div>
+        <x-sigac.page-header title="Panel de administración" :subtitle="$subtitulo" eyebrow="SIGAC · ADMINISTRACIÓN GENERAL" />
 
-        {{-- Tarjetas principales --}}
-        <div class="row g-4">
+        {{-- Indicadores administrativos --}}
 
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Pacientes
-                                </p>
+        <section class="sigac-metrics sigac-grid-three" aria-label="Indicadores administrativos">
 
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
+            @foreach ($indicadores as [$label, $value, $icon, $color])
+                <x-sigac.metric-card :label="$label" :value="$value" :icon="$icon" :color="$color" />
+            @endforeach
+
+        </section>
+
+        {{-- Actividad mensual --}}
+
+        <x-sigac.card title="Actividad mensual" :subtitle="$periodo">
+
+            <x-slot:actions>
+
+                <div class="text-end">
+
+                    <span class="sigac-description">
+                        Total de citas
+                    </span>
+
+                    <strong class="sigac-metric-value mt-0">
+                        {{ $citasMes }}
+                    </strong>
+
+                </div>
+
+            </x-slot:actions>
+
+            @if ($citasMes > 0)
+                {{-- Distribución de citas --}}
+
+                <div class="progress-stacked mb-3" style="height: 12px;" role="img"
+                    aria-label="Distribución mensual de citas por estado">
+
+                    @foreach ($estadosMes as $estado => $total)
+                        @php
+                            $color = $colores[$estado] ?? 'neutral';
+                            $porcentaje = ($total / $citasMes) * 100;
+                        @endphp
+
+                        <div class="progress" style="width: {{ $porcentaje }}%;">
+
+                            <div class="progress-bar" style="background-color: var(--sigac-{{ $color }});">
                             </div>
 
-                            <i class="bi bi-people fs-1 text-primary"></i>
                         </div>
-                    </div>
+                    @endforeach
+
                 </div>
-            </div>
 
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Profesionales
-                                </p>
+                {{-- Leyenda --}}
 
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
+                <div class="row g-3">
+
+                    @foreach ($estadosMes as $estado => $total)
+                        @php
+                            $varianteEstado = $colores[$estado] ?? 'neutral';
+                        @endphp
+
+                        <div class="col-12 col-sm-6 col-lg-3">
+
+                            <div class="d-flex align-items-center justify-content-between gap-2 border rounded-3 p-3">
+
+                                <x-sigac.status :label="$estado" :variant="$varianteEstado" />
+
+                                <strong>{{ $total }}</strong>
+
                             </div>
 
-                            <i class="bi bi-person-badge fs-1 text-success"></i>
                         </div>
-                    </div>
+                    @endforeach
+
                 </div>
-            </div>
+            @else
+                <x-sigac.empty-state title="Sin actividad mensual" description="No hay citas programadas para este mes."
+                    icon="calendar-x" />
+            @endif
 
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Citas
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
-                            </div>
-
-                            <i class="bi bi-calendar-check fs-1 text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Servicios
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
-                            </div>
-
-                            <i class="bi bi-clipboard2-pulse fs-1 text-danger"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        </x-sigac.card>
 
         {{-- Módulos administrativos --}}
-        <div class="mt-5">
 
-            <h3 class="fw-bold mb-4">
-                Gestión del sistema
-            </h3>
+        <x-sigac.card title="Gestión del sistema" subtitle="Accede a los diferentes módulos administrativos de SIGAC.">
 
-            <div class="row g-4">
+            <div class="sigac-modules sigac-grid-three">
 
-                {{-- Pacientes --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <i class="bi bi-people fs-1 text-primary"></i>
-
-                            <h4 class="mt-3">
-                                Pacientes
-                            </h4>
-
-                            <p class="text-muted">
-                                Registrar, consultar, actualizar y gestionar
-                                pacientes del sistema.
-                            </p>
-
-                            <a href="{{ route('admin.pacientes.index') }}" class="btn btn-primary">
-                                Gestionar pacientes
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Profesionales --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <i class="bi bi-person-badge fs-1 text-success"></i>
-
-                            <h4 class="mt-3">
-                                Profesionales
-                            </h4>
-
-                            <p class="text-muted">
-                                Administrar los profesionales de salud
-                                registrados en el sistema.
-                            </p>
-
-                            <a href="{{ route('admin.profesionales.index') }}" class="btn btn-success">
-                                Gestionar profesionales
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Auxiliares --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-
-                            <i class="bi bi-person-gear fs-1 text-info"></i>
-
-                            <h4 class="mt-3">
-                                Auxiliares
-                            </h4>
-
-                            <p class="text-muted">
-                                Administrar los auxiliares encargados de gestionar
-                                la distribución de horarios de los profesionales.
-                            </p>
-
-                            <a href="{{ route('admin.auxiliares.index') }}" class="btn btn-info">
-                                Gestionar auxiliares
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Citas --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <i class="bi bi-calendar-check fs-1 text-warning"></i>
-
-                            <h4 class="mt-3">
-                                Citas
-                            </h4>
-
-                            <p class="text-muted">
-                                Consultar y administrar las citas
-                                registradas en el sistema.
-                            </p>
-
-                            <a href="{{ route('admin.citas.index') }}" class="btn btn-warning">
-                                Gestionar citas
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Tipos de servicio --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <i class="bi bi-tags fs-1 text-secondary"></i>
-
-                            <h4 class="mt-3">
-                                Tipos de servicio
-                            </h4>
-
-                            <p class="text-muted">
-                                Crear y administrar las categorías que agrupan
-                                los servicios ofrecidos por el laboratorio.
-                            </p>
-
-                            <a href="{{ route('admin.tiposervicios.index') }}" class="btn btn-secondary">
-                                Gestionar tipos
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Servicios --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <i class="bi bi-clipboard2-pulse fs-1 text-danger"></i>
-
-                            <h4 class="mt-3">
-                                Servicios
-                            </h4>
-
-                            <p class="text-muted">
-                                Registrar y administrar los servicios del
-                                laboratorio, sus precios y requisitos.
-                            </p>
-
-                            <a href="{{ route('admin.servicios.index') }}" class="btn btn-danger">
-                                Gestionar servicios
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @foreach ($modulos as [$label, $description, $icon, $route])
+                    <x-sigac.module-card :title="$label" :description="$description" :href="route($route)" :icon="$icon"
+                        color="info" />
+                @endforeach
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

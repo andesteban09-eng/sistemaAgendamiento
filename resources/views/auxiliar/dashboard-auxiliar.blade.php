@@ -1,180 +1,164 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
+
+    @php
+        $subtitulo = 'Bienvenido, ' . auth()->user()->name . '. Consulta la actividad operativa de la IPS.';
+
+        $indicadores = [
+            ['Citas de hoy', $citasHoy, 'calendar-event', 'navy'],
+            ['Pendientes', $citasPendientes, 'clock', 'warning'],
+            ['Confirmadas', $citasConfirmadas, 'person-check', 'info'],
+            ['Realizadas', $citasRealizadas, 'check-circle', 'success'],
+        ];
+
+        $estados = [
+            ['Pendientes', $citasPendientes, 'warning'],
+            ['Confirmadas', $citasConfirmadas, 'info'],
+            ['Realizadas', $citasRealizadas, 'success'],
+            ['Canceladas', $citasCanceladas, 'danger'],
+        ];
+
+        $recursos = [
+            ['Profesionales activos', $profesionalesActivos, 'person-badge'],
+            ['Sedes activas', $sedesActivas, 'building'],
+            ['Horarios de hoy', $horariosHoy, 'calendar-week'],
+        ];
+    @endphp
+
+    <div class="sigac-page">
 
         {{-- Encabezado --}}
-        <div class="mb-4">
-            <h1 class="fw-bold mb-1">
-                Panel del auxiliar
-            </h1>
 
-            <p class="text-muted mb-0">
-                Bienvenido a SIGAC.
-                Desde este panel podrá gestionar la disponibilidad de los profesionales
-                y consultar las citas registradas.
-            </p>
-        </div>
+        <x-sigac.page-header title="Panel del auxiliar" :subtitle="$subtitulo" eyebrow="SIGAC · GESTIÓN OPERATIVA" />
 
-        {{-- Resumen --}}
-        <div class="row g-4">
+        {{-- Indicadores principales --}}
 
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+        <section class="sigac-metrics sigac-grid-four" aria-label="Indicadores de la jornada">
 
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Profesionales activos
-                                </p>
+            @foreach ($indicadores as [$label, $value, $icon, $color])
+                <x-sigac.metric-card :label="$label" :value="$value" :icon="$icon" :color="$color" />
+            @endforeach
 
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
+        </section>
+
+        {{-- Progreso de la jornada --}}
+
+        <x-sigac.card title="Progreso de la jornada" subtitle="Distribución de las citas de hoy.">
+
+            <x-slot:actions>
+
+                <div class="text-end">
+
+                    <span class="sigac-description">
+                        Citas realizadas
+                    </span>
+
+                    <strong class="sigac-metric-value text-success mt-0">
+                        {{ $porcentajeRealizadas }}%
+                    </strong>
+
+                </div>
+
+            </x-slot:actions>
+
+            @if ($citasHoy > 0)
+                <div class="progress-stacked mb-3" style="height: 12px;" role="img"
+                    aria-label="Distribución de citas por estado">
+
+                    @foreach ($estados as [$label, $total, $color])
+                        @php
+                            $porcentaje = ($total / $citasHoy) * 100;
+                        @endphp
+
+                        <div class="progress" style="width: {{ $porcentaje }}%;">
+
+                            <div class="progress-bar" style="background-color: var(--sigac-{{ $color }});">
                             </div>
 
-                            <i class="bi bi-person-badge fs-1 text-success"></i>
+                        </div>
+                    @endforeach
+
+                </div>
+            @else
+                <x-sigac.empty-state title="Sin actividad programada" description="No hay citas programadas para hoy."
+                    icon="calendar-x" />
+            @endif
+
+            {{-- Distribución por estado --}}
+
+            <div class="row g-3">
+
+                @foreach ($estados as [$label, $value, $color])
+                    <div class="col-12 col-sm-6 col-lg-3">
+
+                        <div class="d-flex align-items-center justify-content-between gap-2 border rounded-3 p-3">
+
+                            <x-sigac.status :label="$label" :variant="$color" />
+
+                            <strong>{{ $value }}</strong>
 
                         </div>
+
                     </div>
-                </div>
+                @endforeach
+
             </div>
 
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+        </x-sigac.card>
 
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Sedes activas
-                                </p>
+        {{-- Capacidad operativa --}}
 
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
+        <x-sigac.card title="Capacidad operativa" subtitle="Recursos registrados en la IPS.">
+
+            <div class="row g-3">
+
+                @foreach ($recursos as [$label, $value, $icon])
+                    <div class="col-12 col-md-4">
+
+                        <div class="sigac-resource h-100">
+
+                            <div class="sigac-icon sigac-icon-info">
+
+                                <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>
+
                             </div>
 
-                            <i class="bi bi-building fs-1 text-primary"></i>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-
                             <div>
-                                <p class="text-muted mb-1">
-                                    Horarios registrados
-                                </p>
 
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
+                                <span>{{ $label }}</span>
+
+                                <strong>{{ $value }}</strong>
+
                             </div>
 
-                            <i class="bi bi-calendar-week fs-1 text-warning"></i>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <div>
-                                <p class="text-muted mb-1">
-                                    Citas pendientes
-                                </p>
-
-                                <h2 class="fw-bold mb-0">
-                                    0
-                                </h2>
-                            </div>
-
-                            <i class="bi bi-calendar-check fs-1 text-info"></i>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        {{-- Módulos del auxiliar --}}
-        <div class="mt-5">
-
-            <h3 class="fw-bold mb-4">
-                Gestión de agenda
-            </h3>
-
-            <div class="row g-4">
-
-                {{-- Agenda --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body p-4">
-
-                            <i class="bi bi-calendar-plus fs-1 text-primary"></i>
-
-                            <h4 class="mt-3">
-                                Gestionar agenda
-                            </h4>
-
-                            <p class="text-muted">
-                                Registrar y administrar la disponibilidad de horarios
-                                de los profesionales de la salud según la sede,
-                                fecha y hora.
-                            </p>
-
-                            <a href="{{ route('auxiliar.agenda.index') }}" class="btn btn-primary">
-                                Gestionar agenda
-                            </a>
-
                         </div>
 
                     </div>
-                </div>
-
-                {{-- Citas --}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body p-4">
-
-                            <i class="bi bi-calendar-check fs-1 text-warning"></i>
-
-                            <h4 class="mt-3">
-                                Consultar citas
-                            </h4>
-
-                            <p class="text-muted">
-                                Consultar las citas programadas y verificar
-                                su estado, profesional, sede, servicio,
-                                fecha y hora.
-                            </p>
-
-                            <a href="{{ route('auxiliar.citas.index') }}" class="btn btn-warning">
-                                Consultar citas
-                            </a>
-
-                        </div>
-
-                    </div>
-                </div>
+                @endforeach
 
             </div>
 
-        </div>
+        </x-sigac.card>
+
+        {{-- Accesos rápidos --}}
+
+        <x-sigac.card title="Gestión operativa" subtitle="Accede a las herramientas de gestión de agendas y citas.">
+
+            <div class="sigac-modules">
+
+                <x-sigac.module-card title="Gestionar agenda"
+                    description="Registra y administra los horarios de los profesionales." :href="route('auxiliar.agenda.index')"
+                    icon="calendar-plus" color="info" />
+
+                <x-sigac.module-card title="Consultar citas"
+                    description="Consulta las citas programadas y gestiona sus estados." :href="route('auxiliar.citas.index')"
+                    icon="calendar-check" color="navy" />
+
+            </div>
+
+        </x-sigac.card>
 
     </div>
+
 @endsection

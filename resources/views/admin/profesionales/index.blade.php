@@ -1,155 +1,179 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Gestión de profesionales
-                </h1>
+        <x-sigac.page-header title="Gestión de profesionales"
+            subtitle="Consulta y administra los profesionales de salud registrados." eyebrow="SIGAC · ADMINISTRACIÓN">
 
-                <p class="text-muted mb-0">
-                    Consulta y administra los profesionales de salud registrados.
-                </p>
-            </div>
+            <x-slot:actions>
 
-            <a href="{{ route('admin.profesionales.create') }}" class="btn btn-success">
+                <a href="{{ route('admin.profesionales.create') }}" class="btn sigac-btn-light">
 
-                <i class="bi bi-person-plus me-2"></i>
+                    <i class="bi bi-person-plus"></i>
+                    Nuevo profesional
 
-                Nuevo profesional
+                </a>
 
-            </a>
+            </x-slot:actions>
 
-        </div>
+        </x-sigac.page-header>
+
+        {{-- Mensajes --}}
 
         @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-
-                <i class="bi bi-check-circle me-2"></i>
+            <x-sigac.alert variant="success" class="alert alert-dismissible fade show pe-5">
 
                 {{ session('success') }}
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar">
                 </button>
 
-            </div>
+            </x-sigac.alert>
         @endif
 
-        <div class="card border-0 shadow-sm">
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="No fue posible completar la operación">
 
-            <div class="card-body">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                <div class="table-responsive">
+            </x-sigac.alert>
+        @endif
 
-                    <table class="table table-hover align-middle">
+        {{-- Listado de profesionales --}}
 
-                        <thead>
+        <x-sigac.card title="Profesionales registrados"
+            subtitle="Información personal y estado de los profesionales de salud.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Profesional</th>
+                            <th scope="col">Documento</th>
+                            <th scope="col">Teléfono</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($profesionales as $profesional)
+                            @php
+                                $activo = $profesional->estadoprofesionalsalud === 'Activo';
+
+                                $varianteEstado = $activo ? 'success' : 'neutral';
+                            @endphp
 
                             <tr>
-                                <th>ID</th>
-                                <th>Profesional</th>
-                                <th>Documento</th>
-                                <th>Teléfono</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
 
-                        </thead>
+                                <td>
+                                    {{ $profesional->idprofesionalsalud }}
+                                </td>
 
-                        <tbody>
+                                <td>
 
-                            @forelse ($profesionales as $profesional)
-                                <tr>
+                                    <div class="sigac-table-entity">
 
-                                    <td>
-                                        {{ $profesional->idprofesionalsalud }}
-                                    </td>
+                                        <div class="sigac-icon sigac-icon-info">
 
-                                    <td>
+                                            <i class="bi bi-person-badge" aria-hidden="true"></i>
 
-                                        <strong>
-                                            {{ $profesional->user?->name }}
-                                            {{ $profesional->user?->last_name }}
-                                        </strong>
+                                        </div>
 
-                                        <br>
+                                        <div>
 
-                                        <small class="text-muted">
-                                            {{ $profesional->user?->email }}
-                                        </small>
+                                            <strong>
+                                                {{ $profesional->user?->name }}
+                                                {{ $profesional->user?->last_name }}
+                                            </strong>
 
-                                    </td>
+                                            <div class="text-muted">
+                                                {{ $profesional->user?->email }}
+                                            </div>
 
-                                    <td>
+                                        </div>
 
+                                    </div>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="text-muted">
                                         {{ $profesional->tipodoc }}
+                                    </div>
 
-                                        <br>
+                                    <strong>
+                                        {{ $profesional->numdoc }}
+                                    </strong>
 
-                                        <strong>
-                                            {{ $profesional->numdoc }}
-                                        </strong>
+                                </td>
 
-                                    </td>
+                                <td>
+                                    {{ $profesional->telefono }}
+                                </td>
 
-                                    <td>
-                                        {{ $profesional->telefono }}
-                                    </td>
+                                <td>
 
-                                    <td>
+                                    <x-sigac.status :label="$profesional->estadoprofesionalsalud" :variant="$varianteEstado" />
 
-                                        @if ($profesional->estadoprofesionalsalud === 'Activo')
-                                            <span class="badge text-bg-success">
-                                                Activo
-                                            </span>
-                                        @else
-                                            <span class="badge text-bg-secondary">
-                                                Inactivo
-                                            </span>
-                                        @endif
+                                </td>
 
-                                    </td>
+                                <td class="text-end">
 
-                                    <td class="text-end">
+                                    <div class="sigac-table-actions">
 
-                                        {{-- Ver --}}
+                                        {{-- Consultar --}}
+
                                         <a href="{{ route('admin.profesionales.show', $profesional) }}"
-                                            class="btn btn-sm btn-outline-primary" title="Ver profesional">
+                                            class="btn btn-sm btn-outline-primary" title="Consultar profesional"
+                                            aria-label="Consultar profesional">
 
                                             <i class="bi bi-eye"></i>
 
                                         </a>
 
-
                                         {{-- Editar --}}
+
                                         <a href="{{ route('admin.profesionales.edit', $profesional) }}"
-                                            class="btn btn-sm btn-outline-warning" title="Editar profesional">
+                                            class="btn btn-sm btn-outline-warning" title="Editar profesional"
+                                            aria-label="Editar profesional">
 
                                             <i class="bi bi-pencil"></i>
 
                                         </a>
 
-
                                         {{-- Activar / Desactivar --}}
-                                        <form action="{{ route('admin.profesionales.toggleEstado', $profesional) }}"
-                                            method="POST" class="d-inline">
+
+                                        <form method="POST"
+                                            action="{{ route('admin.profesionales.toggleEstado', $profesional) }}"
+                                            class="d-inline">
 
                                             @csrf
                                             @method('PATCH')
 
-                                            @if ($profesional->estadoprofesionalsalud === 'Activo')
+                                            @if ($activo)
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    title="Desactivar profesional">
+                                                    title="Desactivar profesional" aria-label="Desactivar profesional"
+                                                    onclick="return confirm('¿Está seguro de que desea desactivar este profesional?')">
 
                                                     <i class="bi bi-person-x"></i>
 
                                                 </button>
                                             @else
                                                 <button type="submit" class="btn btn-sm btn-outline-success"
-                                                    title="Activar profesional">
+                                                    title="Activar profesional" aria-label="Activar profesional"
+                                                    onclick="return confirm('¿Desea activar nuevamente este profesional?')">
 
                                                     <i class="bi bi-person-check"></i>
 
@@ -158,35 +182,44 @@
 
                                         </form>
 
-                                    </td>
-                                </tr>
+                                    </div>
 
-                            @empty
+                                </td>
 
-                                <tr>
+                            </tr>
 
-                                    <td colspan="6" class="text-center py-5">
+                        @empty
 
-                                        <i class="bi bi-person-badge fs-1 text-muted"></i>
+                            <tr>
 
-                                        <p class="text-muted mt-3 mb-0">
-                                            No hay profesionales registrados.
-                                        </p>
+                                <td colspan="6">
 
-                                    </td>
+                                    <x-sigac.empty-state title="No hay profesionales registrados"
+                                        description="Los profesionales de salud registrados aparecerán en este listado."
+                                        icon="person-badge">
 
-                                </tr>
-                            @endforelse
+                                        <a href="{{ route('admin.profesionales.create') }}" class="btn sigac-btn-primary">
 
-                        </tbody>
+                                            <i class="bi bi-person-plus"></i>
+                                            Registrar profesional
 
-                    </table>
+                                        </a>
 
-                </div>
+                                    </x-sigac.empty-state>
+
+                                </td>
+
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

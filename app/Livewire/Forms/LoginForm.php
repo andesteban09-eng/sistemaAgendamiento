@@ -27,6 +27,7 @@ class LoginForm extends Form
      *
      * @throws ValidationException
      */
+
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
@@ -37,6 +38,8 @@ class LoginForm extends Form
             'estado' => 'activo',
         ], $this->remember)) {
 
+            RateLimiter::hit($this->throttleKey(), 60);
+
             throw ValidationException::withMessages([
                 'form.email' => trans('auth.failed'),
             ]);
@@ -44,6 +47,7 @@ class LoginForm extends Form
 
         RateLimiter::clear($this->throttleKey());
     }
+
 
     /**
      * Ensure the authentication request is not rate limited.

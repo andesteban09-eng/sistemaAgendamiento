@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -10,12 +10,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'name','last_name', 'email', 'password', 'rol', 'estado',
+    'name',
+    'last_name',
+    'email',
+    'password',
+    'rol',
+    'estado',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -34,12 +40,16 @@ class User extends Authenticatable
     }
 
     public function paciente(): HasOne
-{
-    return $this->hasOne(Paciente::class, 'idusuario', 'id');
-}
+    {
+        return $this->hasOne(Paciente::class, 'idusuario', 'id');
+    }
 
-public function profesional(): HasOne
-{
-    return $this->hasOne(ProfesionalSalud::class, 'idusuario', 'id');
-}
+    public function profesional(): HasOne
+    {
+        return $this->hasOne(ProfesionalSalud::class, 'idusuario', 'id');
+    }
+    public function otpChallenges(): HasMany
+    {
+        return $this->hasMany(OtpChallenge::class, 'user_id');
+    }
 }

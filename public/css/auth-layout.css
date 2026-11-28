@@ -1,0 +1,1123 @@
+/* SIGAC — Login y registro.
+   Diseño original con tamaños más compactos.
+   No modifica la lógica de Laravel ni Livewire. */
+
+.sigac-auth-page {
+    --auth-navy: var(--azul-oscuro, #0a2558);
+    --auth-aqua: var(--aqua, #00b4d8);
+    --auth-muted: #5b697c;
+
+    min-height: calc(100vh - 165px);
+    min-height: calc(100dvh - 165px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f8fc;
+    padding: clamp(12px, 2vh, 22px) 20px;
+}
+
+/* Distribución original en dos columnas */
+.sigac-auth-layout {
+    width: min(960px, 100%);
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+    align-items: center;
+
+    gap: clamp(24px, 4vw, 54px);
+}
+
+/* Presentación */
+.sigac-auth-intro {
+    min-width: 0;
+}
+
+.sigac-auth-eyebrow {
+    display: block;
+    color: #067d99;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    margin-bottom: 12px;
+}
+
+.sigac-auth-icon {
+    display: inline-flex;
+    width: 50px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: #e6f7fb;
+    color: #0876b8;
+
+    font-size: 1.55rem;
+    margin-bottom: 12px;
+}
+
+.sigac-auth-intro h1 {
+    font-family: "Montserrat", sans-serif;
+    color: var(--auth-navy);
+
+    font-size: clamp(1.7rem, 2.35vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.14;
+
+    margin: 0 0 10px;
+}
+
+.sigac-auth-intro h1 span {
+    color: #009ab9;
+}
+
+.sigac-auth-intro p {
+    color: var(--auth-muted);
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    line-height: 1.45;
+    max-width: 380px;
+    margin: 0;
+}
+
+/* Tarjeta del formulario */
+.sigac-auth-card {
+    min-width: 0;
+
+    background: #fff;
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    box-shadow: 0 16px 44px rgba(10, 37, 88, 0.075);
+
+    padding: clamp(18px, 2.1vw, 27px);
+}
+
+.sigac-auth-card-heading {
+    margin-bottom: 14px;
+}
+
+.sigac-auth-card-heading h2 {
+    font-family: "Montserrat", sans-serif;
+    color: var(--auth-navy);
+
+    font-size: clamp(1.3rem, 1.5vw, 1.6rem);
+    font-weight: 750;
+    line-height: 1.2;
+
+    margin: 0 0 4px;
+}
+
+.sigac-auth-card-heading p {
+    color: var(--auth-muted);
+    font-size: 0.85rem;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.sigac-auth-card form {
+    margin: 0;
+}
+
+/* Campos */
+.sigac-auth-field {
+    min-width: 0;
+    margin-bottom: 12px;
+}
+
+.sigac-auth-field .form-label {
+    display: block;
+    color: #253752;
+
+    font-size: 0.84rem;
+    font-weight: 600;
+
+    margin: 0 0 4px;
+}
+
+.sigac-auth-field .form-label i {
+    color: #337598;
+    margin-right: 5px;
+}
+
+.sigac-auth-field .form-control {
+    min-width: 0;
+    width: 100%;
+
+    height: auto;
+    min-height: 42px;
+    padding: 7px 11px;
+
+    font-size: 0.91rem;
+
+    border: 1px solid #d8e1eb;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.sigac-auth-field .form-control:focus {
+    border-color: var(--auth-aqua);
+    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
+}
+
+/* Mensajes y recordar sesión */
+.sigac-auth-status {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.sigac-auth-remember {
+    margin: 0 0 12px;
+    font-size: 0.84rem;
+}
+
+.sigac-auth-remember .form-check-input {
+    cursor: pointer;
+}
+
+/* Botón principal */
+.sigac-auth-card .sigac-auth-submit {
+    min-height: 44px;
+
+    border: 1px solid #00a7c7;
+    border-radius: 9px;
+    background: #00aacb;
+
+    color: #fff;
+    font-size: 0.91rem;
+    font-weight: 700;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.sigac-auth-card .sigac-auth-submit:hover,
+.sigac-auth-card .sigac-auth-submit:focus-visible {
+    border-color: #0087a5;
+    background: #008fae;
+    color: #fff;
+}
+
+/* Enlaces inferiores */
+.sigac-auth-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px 10px;
+    margin-top: 10px;
+
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.sigac-auth-links-between {
+    justify-content: space-between;
+}
+
+.sigac-auth-links span {
+    color: var(--auth-muted);
+}
+
+.sigac-auth-links a {
+    color: #067caa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.sigac-auth-links a:hover {
+    color: var(--auth-navy);
+    text-decoration: underline;
+}
+
+/* Registro: conserva sus dos columnas */
+.sigac-auth-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 12px;
+    row-gap: 10px;
+}
+
+.sigac-auth-fields .sigac-auth-field {
+    margin: 0;
+}
+
+.sigac-auth-fields .sigac-auth-full {
+    grid-column: 1 / -1;
+}
+
+.sigac-auth-page-register .sigac-auth-card-heading {
+    margin-bottom: 14px;
+}
+
+.sigac-auth-page-register .sigac-auth-submit {
+    margin-top: 14px;
+}
+
+/* Pantallas de poca altura */
+@media (max-height: 710px) and (min-width: 901px) {
+    .sigac-auth-page {
+        min-height: 0;
+    }
+}
+
+/* Tablet: una columna */
+@media (max-width: 900px) {
+    .sigac-auth-page {
+        min-height: 0;
+        padding: 14px 16px 24px;
+    }
+
+    .sigac-auth-layout {
+        max-width: 590px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .sigac-auth-intro {
+        text-align: center;
+    }
+
+    .sigac-auth-eyebrow {
+        margin-bottom: 6px;
+        font-size: 0.68rem;
+    }
+
+    .sigac-auth-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.3rem;
+        border-radius: 12px;
+        margin-bottom: 6px;
+    }
+
+    .sigac-auth-intro h1 {
+        font-size: 1.45rem;
+        margin-bottom: 5px;
+    }
+
+    .sigac-auth-intro p {
+        font-size: 0.86rem;
+        line-height: 1.4;
+        max-width: 100%;
+    }
+
+    .sigac-auth-card {
+        padding: 20px;
+    }
+}
+
+/* Móvil: campos del registro apilados */
+@media (max-width: 560px) {
+    .sigac-auth-page {
+        padding: 12px 12px 22px;
+    }
+
+    .sigac-auth-layout {
+        gap: 12px;
+    }
+
+    .sigac-auth-card {
+        padding: 18px 14px;
+        border-radius: 14px;
+    }
+
+    .sigac-auth-fields {
+        grid-template-columns: 1fr;
+        row-gap: 11px;
+    }
+
+    .sigac-auth-fields .sigac-auth-full {
+        grid-column: auto;
+    }
+
+    .sigac-auth-card-heading {
+        margin-bottom: 12px;
+    }
+
+    .sigac-auth-field {
+        margin-bottom: 10px;
+    }
+
+    .sigac-auth-field .form-control {
+        min-height: 44px;
+    }
+
+    .sigac-auth-links-between {
+        justify-content: center;
+    }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .sigac-auth-card .sigac-auth-submit {
+        transition: none;
+    }
+}
+
+/* ==========================================
+   SIGAC — Refinamiento responsive
+   Mantiene el diseño original
+   ========================================== */
+
+/* Distribución vertical exclusiva de autenticación */
+body:has(.sigac-auth-page) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.sigac-auth-page {
+    flex: 1 0 auto;
+    min-height: 0;
+    padding: clamp(10px, 2vh, 22px) 16px;
+}
+
+/* Ajustes generales */
+.sigac-auth-layout {
+    width: min(980px, 100%);
+    gap: clamp(20px, 3vw, 48px);
+}
+
+.sigac-auth-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
+.sigac-auth-intro h1 {
+    font-size: clamp(1.7rem, 2.3vw, 2.4rem);
+    margin-bottom: 10px;
+}
+
+.sigac-auth-intro p {
+    font-size: 0.94rem;
+    line-height: 1.45;
+}
+
+.sigac-auth-card {
+    padding: clamp(18px, 2vw, 26px);
+}
+
+.sigac-auth-card-heading {
+    margin-bottom: 14px;
+}
+
+.sigac-auth-card-heading h2 {
+    font-size: clamp(1.3rem, 1.6vw, 1.55rem);
+}
+
+.sigac-auth-card-heading p {
+    font-size: 0.85rem;
+}
+
+.sigac-auth-field {
+    margin-bottom: 11px;
+}
+
+.sigac-auth-field .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.sigac-auth-field .form-control {
+    min-height: 44px;
+    padding: 8px 11px;
+    font-size: 0.92rem;
+}
+
+.sigac-auth-remember {
+    margin-bottom: 12px;
+}
+
+.sigac-auth-links {
+    margin-top: 10px;
+    font-size: 0.84rem;
+}
+
+/* Registro */
+.sigac-auth-fields {
+    column-gap: 12px;
+    row-gap: 10px;
+}
+
+.sigac-auth-page-register .sigac-auth-card-heading {
+    margin-bottom: 13px;
+}
+
+.sigac-auth-page-register .sigac-auth-submit {
+    margin-top: 14px;
+}
+
+/* ==========================================
+   Escritorios con altura reducida
+   ========================================== */
+
+@media (min-width: 901px) and (max-height: 760px) {
+    .sigac-auth-page {
+        padding-block: 8px;
+    }
+
+    .sigac-auth-card {
+        padding: 16px 22px;
+    }
+
+    .sigac-auth-icon {
+        width: 42px;
+        height: 42px;
+        margin-bottom: 8px;
+    }
+
+    .sigac-auth-card-heading {
+        margin-bottom: 10px;
+    }
+
+    .sigac-auth-field {
+        margin-bottom: 9px;
+    }
+
+    .sigac-auth-fields {
+        row-gap: 8px;
+    }
+
+    .sigac-auth-page-register .sigac-auth-submit {
+        margin-top: 10px;
+    }
+}
+
+/* ==========================================
+   Tabletas
+   ========================================== */
+
+@media (max-width: 900px) {
+    .sigac-auth-page {
+        padding: 12px 14px;
+    }
+
+    .sigac-auth-layout {
+        max-width: 580px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .sigac-auth-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 6px;
+    }
+
+    .sigac-auth-intro h1 {
+        font-size: 1.45rem;
+        margin-bottom: 4px;
+    }
+
+    .sigac-auth-intro p {
+        font-size: 0.86rem;
+    }
+
+    .sigac-auth-card {
+        padding: 20px;
+    }
+}
+
+/* ==========================================
+   Teléfonos
+   ========================================== */
+
+@media (max-width: 560px) {
+    .sigac-auth-page {
+        padding: 10px 12px;
+    }
+
+    .sigac-auth-layout {
+        gap: 10px;
+    }
+
+    .sigac-auth-card {
+        padding: 16px 14px;
+    }
+
+    .sigac-auth-fields {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 10px;
+    }
+
+    .sigac-auth-fields .sigac-auth-full {
+        grid-column: auto;
+    }
+
+    .sigac-auth-card-heading {
+        margin-bottom: 12px;
+    }
+
+    .sigac-auth-field {
+        margin-bottom: 10px;
+    }
+}
+
+/* ==========================================
+   SIGAC — Recuperación de contraseña
+   ========================================== */
+
+.sigac-auth-page-recovery .sigac-recovery-progress {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e3eaf2;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    color: #8492a6;
+    text-align: center;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: #e3eaf2;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #edf2f7;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-step small {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-step.is-active {
+    color: #0a2558;
+}
+
+.sigac-auth-page-recovery
+    .sigac-recovery-step.is-active
+    .sigac-recovery-number {
+    background: #0a2558;
+    color: #fff;
+}
+
+.sigac-auth-page-recovery
+    .sigac-recovery-step.is-completed
+    .sigac-recovery-number {
+    background: #e4f5ed;
+    color: #198754;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-email {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    margin-bottom: 14px;
+    border: 1px solid #dceaf3;
+    border-radius: 9px;
+    background: #f2f8fc;
+    color: #0a2558;
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+}
+
+.sigac-auth-page-recovery .sigac-otp-input {
+    min-height: 54px;
+    padding-left: calc(11px + 0.45em);
+    text-align: center;
+    font-family: monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.45em;
+    font-variant-numeric: tabular-nums;
+}
+
+.sigac-auth-page-recovery .sigac-otp-input::placeholder {
+    color: #b8c4d2;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-hint {
+    color: #5b697c;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin: 8px 0 12px;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-link {
+    border: 0;
+    background: transparent;
+    padding: 2px;
+    color: #067caa;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-link:hover {
+    text-decoration: underline;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-link:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.sigac-auth-page-recovery .sigac-recovery-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 12px 0;
+    border-radius: 9px;
+    background: #f0f7fb;
+    color: #42627e;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+    .sigac-auth-page-recovery .sigac-recovery-progress {
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+    }
+
+    .sigac-auth-page-recovery .sigac-otp-input {
+        font-size: 1.3rem;
+        letter-spacing: 0.35em;
+    }
+
+    .sigac-auth-page-recovery .sigac-recovery-step small {
+        font-size: 0.65rem;
+    }
+}
+
+/* ==========================================================
+   SIGAC — Verificación de correo electrónico mediante OTP
+   ========================================================== */
+
+.sigac-auth-page-verification {
+    --verification-navy: #0a2558;
+    --verification-aqua: #00b4d8;
+    --verification-muted: #5b697c;
+    --verification-border: #dce6ef;
+}
+
+/* Distribución principal */
+
+.sigac-auth-page-verification .sigac-auth-layout {
+    max-width: 940px;
+    width: 100%;
+    grid-template-columns: 0.95fr 1.05fr;
+    align-items: center;
+    gap: clamp(20px, 4vw, 48px);
+}
+
+/* Presentación */
+
+.sigac-auth-page-verification .sigac-auth-eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #087e9b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.sigac-auth-page-verification .sigac-auth-intro h1 {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+.sigac-auth-page-verification .sigac-auth-intro p {
+    max-width: 390px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--verification-muted);
+}
+
+/* Tarjeta principal */
+
+.sigac-auth-page-verification .sigac-auth-card {
+    width: 100%;
+    padding: clamp(18px, 3vw, 26px);
+    background: #ffffff;
+    border: 1px solid #e2eaf2;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(10, 37, 88, 0.06);
+}
+
+.sigac-auth-page-verification .sigac-auth-card-heading {
+    margin-bottom: 18px;
+}
+
+.sigac-auth-page-verification .sigac-auth-card-heading h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--verification-navy);
+    margin-bottom: 6px;
+}
+
+.sigac-auth-page-verification .sigac-auth-card-heading p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--verification-muted);
+    margin-bottom: 0;
+}
+
+/* Correo asociado a la cuenta */
+
+.sigac-auth-page-verification .sigac-recovery-email {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    margin-bottom: 18px;
+    background: #f0f7fc;
+    border: 1px solid #dceaf4;
+    border-radius: 9px;
+    color: var(--verification-navy);
+    font-size: 0.85rem;
+}
+
+.sigac-auth-page-verification .sigac-recovery-email i {
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: #087e9b;
+}
+
+.sigac-auth-page-verification .sigac-recovery-email span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Campo OTP */
+
+.sigac-auth-page-verification .sigac-auth-field {
+    margin-bottom: 10px;
+}
+
+.sigac-auth-page-verification .sigac-auth-field .form-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--verification-navy);
+}
+
+.sigac-auth-page-verification .sigac-auth-field .sigac-otp-input {
+    width: 100%;
+    min-height: 54px;
+    padding: 10px 12px;
+    border: 1px solid var(--verification-border);
+    border-radius: 9px;
+    background: #ffffff;
+    color: var(--verification-navy);
+    font-family: monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.45em;
+    text-align: center;
+    text-indent: 0.45em;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.sigac-auth-page-verification .sigac-otp-input::placeholder {
+    color: #b3c0ce;
+    font-weight: 400;
+}
+
+.sigac-auth-page-verification .sigac-otp-input:focus {
+    outline: none;
+    border-color: var(--verification-aqua);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+/* Información de vigencia */
+
+.sigac-auth-page-verification .sigac-recovery-hint {
+    margin: 8px 0 15px;
+    color: var(--verification-muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.sigac-auth-page-verification .sigac-recovery-hint i {
+    margin-right: 3px;
+}
+
+/* Botón principal */
+
+.sigac-auth-page-verification .sigac-auth-submit {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: #00b4d8;
+    color: #0a2558;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.sigac-auth-page-verification .sigac-auth-submit:hover:not(:disabled) {
+    background: #009fbe;
+    color: #ffffff;
+}
+
+.sigac-auth-page-verification .sigac-auth-submit:focus-visible {
+    outline: 3px solid #0a2558;
+    outline-offset: 3px;
+}
+
+.sigac-auth-page-verification .sigac-auth-submit:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+/* Reenvío y cierre de sesión */
+
+.sigac-auth-page-verification .sigac-auth-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+    color: var(--verification-muted);
+}
+
+.sigac-auth-page-verification .sigac-recovery-link {
+    padding: 5px 3px;
+    background: transparent;
+    border: none;
+    color: #087e9b;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sigac-auth-page-verification .sigac-recovery-link:hover {
+    color: var(--verification-navy);
+    text-decoration: underline;
+}
+
+.sigac-auth-page-verification .sigac-recovery-link:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Aviso de seguridad */
+
+.sigac-auth-page-verification .sigac-recovery-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 16px;
+    padding: 11px 12px;
+    background: #f0f7fb;
+    border: 1px solid #e0edf5;
+    border-radius: 9px;
+    color: #42627e;
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.sigac-auth-page-verification .sigac-recovery-notice i {
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: #087e9b;
+}
+
+/* Mensajes de estado y validación */
+
+.sigac-auth-page-verification .alert {
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.sigac-auth-page-verification .text-danger {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.76rem;
+}
+
+/* ==========================================================
+   Responsive — Tablets
+   ========================================================== */
+
+@media (max-width: 900px) {
+    .sigac-auth-page-verification .sigac-auth-layout {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        gap: 22px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-intro {
+        text-align: center;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-intro p {
+        margin-inline: auto;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-icon {
+        margin-inline: auto;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-intro h1 {
+        font-size: 1.9rem;
+    }
+}
+
+/* ==========================================================
+   Responsive — Dispositivos móviles
+   ========================================================== */
+
+@media (max-width: 560px) {
+    .sigac-auth-page-verification {
+        padding: 16px 12px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-layout {
+        gap: 15px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-intro h1 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-intro p {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-eyebrow {
+        font-size: 0.62rem;
+        margin-bottom: 8px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-card-heading {
+        margin-bottom: 14px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-card-heading h2 {
+        font-size: 1.15rem;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-card-heading p {
+        font-size: 0.8rem;
+    }
+
+    .sigac-auth-page-verification .sigac-recovery-email {
+        padding: 9px 10px;
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-field .sigac-otp-input {
+        min-height: 48px;
+        font-size: 1.3rem;
+        letter-spacing: 0.35em;
+        text-indent: 0.35em;
+    }
+
+    .sigac-auth-page-verification .sigac-recovery-notice {
+        margin-top: 12px;
+        font-size: 0.73rem;
+    }
+}
+
+/* Pantallas de escritorio con poca altura */
+
+@media (min-width: 901px) and (max-height: 720px) {
+    .sigac-auth-page-verification .sigac-auth-card {
+        padding: 18px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-layout {
+        gap: 24px;
+    }
+
+    .sigac-auth-page-verification .sigac-auth-card-heading {
+        margin-bottom: 12px;
+    }
+
+    .sigac-auth-page-verification .sigac-recovery-email {
+        margin-bottom: 12px;
+    }
+
+    .sigac-auth-page-verification .sigac-recovery-notice {
+        margin-top: 12px;
+    }
+}
+
+/* Accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+    .sigac-auth-page-verification *,
+    .sigac-auth-page-verification *::before,
+    .sigac-auth-page-verification *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ==========================================
+   Pantallas estrechas y de poca altura
+   ========================================== */
+
+@media (max-width: 900px) and (max-height: 700px) {
+    .sigac-auth-intro .sigac-auth-icon,
+    .sigac-auth-intro p {
+        display: none;
+    }
+
+    .sigac-auth-intro h1 {
+        margin-bottom: 0;
+    }
+
+    .sigac-auth-page {
+        padding-block: 8px;
+    }
+
+    .sigac-auth-layout {
+        gap: 8px;
+    }
+}

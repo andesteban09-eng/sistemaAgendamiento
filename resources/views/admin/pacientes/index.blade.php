@@ -1,169 +1,216 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Gestión de pacientes
-                </h1>
+        <x-sigac.page-header title="Gestión de pacientes"
+            subtitle="Consulta y administra los pacientes registrados en el sistema." eyebrow="SIGAC · ADMINISTRACIÓN">
 
-                <p class="text-muted mb-0">
-                    Consulta y administra los pacientes registrados en el sistema.
-                </p>
-            </div>
-            <a href="{{ route('admin.pacientes.create') }}" class="btn btn-primary">
-                <i class="bi bi-person-plus me-2"></i>
-                Nuevo paciente
-            </a>
+            <x-slot:actions>
 
-        </div>
+                <a href="{{ route('admin.pacientes.create') }}" class="btn sigac-btn-light">
 
+                    <i class="bi bi-person-plus"></i>
+                    Nuevo paciente
 
-        <div class="card border-0 shadow-sm">
+                </a>
 
-            <div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        {{ session('success') }}
+            </x-slot:actions>
 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-                <div class="table-responsive">
+        </x-sigac.page-header>
 
-                    <table class="table table-hover align-middle">
+        {{-- Mensajes --}}
 
-                        <thead>
+        @if (session('success'))
+            <x-sigac.alert variant="success" class="alert alert-dismissible fade show pe-5">
+
+                {{ session('success') }}
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar">
+                </button>
+
+            </x-sigac.alert>
+        @endif
+
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="No fue posible completar la operación">
+
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+
+            </x-sigac.alert>
+        @endif
+
+        {{-- Listado --}}
+
+        <x-sigac.card title="Pacientes registrados" subtitle="Información personal y estado de los pacientes.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Paciente</th>
+                            <th scope="col">Documento</th>
+                            <th scope="col">Teléfono</th>
+                            <th scope="col">Ciudad</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">
+                                Acciones
+                            </th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($pacientes as $paciente)
+                            @php
+                                $activo = $paciente->estadopaciente === 'Activo';
+
+                                $varianteEstado = $activo ? 'success' : 'neutral';
+                            @endphp
+
                             <tr>
-                                <th>ID</th>
-                                <th>Paciente</th>
-                                <th>Documento</th>
-                                <th>Teléfono</th>
-                                <th>Ciudad</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
+                                <td>{{ $paciente->idpaciente }}</td>
 
-                            @forelse ($pacientes as $paciente)
-                                <tr>
+                                <td>
 
-                                    <td>
-                                        {{ $paciente->idpaciente }}
-                                    </td>
+                                    <div class="sigac-table-entity">
 
-                                    <td>
-                                        <strong>
-                                            {{ $paciente->user?->name }}
-                                            {{ $paciente->user?->last_name }}
-                                        </strong>
+                                        <div class="sigac-icon sigac-icon-info">
+                                            <i class="bi bi-person" aria-hidden="true"></i>
+                                        </div>
 
-                                        <br>
+                                        <div>
 
-                                        <small class="text-muted">
-                                            {{ $paciente->user?->email }}
-                                        </small>
-                                    </td>
+                                            <strong>
+                                                {{ $paciente->user?->name }}
+                                                {{ $paciente->user?->last_name }}
+                                            </strong>
 
-                                    <td>
+                                            <div class="text-muted">
+                                                {{ $paciente->user?->email }}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="text-muted">
                                         {{ $paciente->tipodoc }}
-                                        <br>
-                                        <strong>
-                                            {{ $paciente->numdoc }}
-                                        </strong>
-                                    </td>
+                                    </div>
 
-                                    <td>
-                                        {{ $paciente->telefono }}
-                                    </td>
+                                    <strong>
+                                        {{ $paciente->numdoc }}
+                                    </strong>
 
-                                    <td>
-                                        {{ $paciente->ciudad }}
-                                    </td>
+                                </td>
 
-                                    <td>
+                                <td>{{ $paciente->telefono }}</td>
 
-                                        @if ($paciente->estadopaciente === 'Activo')
-                                            <span class="badge text-bg-success">
-                                                Activo
-                                            </span>
-                                        @else
-                                            <span class="badge text-bg-secondary">
-                                                Inactivo
-                                            </span>
-                                        @endif
+                                <td>{{ $paciente->ciudad }}</td>
 
-                                    </td>
+                                <td>
 
-                                    <td class="text-end">
+                                    <x-sigac.status :label="$paciente->estadopaciente" :variant="$varianteEstado" />
+
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
                                         <a href="{{ route('admin.pacientes.show', $paciente) }}"
-                                            class="btn btn-sm btn-outline-primary" title="Ver paciente">
+                                            class="btn btn-sm btn-outline-primary" title="Consultar paciente"
+                                            aria-label="Consultar paciente">
+
                                             <i class="bi bi-eye"></i>
+
                                         </a>
 
                                         <a href="{{ route('admin.pacientes.edit', $paciente) }}"
-                                            class="btn btn-sm btn-outline-warning" title="Editar paciente">
+                                            class="btn btn-sm btn-outline-warning" title="Editar paciente"
+                                            aria-label="Editar paciente">
+
                                             <i class="bi bi-pencil"></i>
+
                                         </a>
 
                                         <form method="POST"
                                             action="{{ route('admin.pacientes.toggleEstado', $paciente) }}"
                                             class="d-inline">
+
                                             @csrf
                                             @method('PATCH')
 
-                                            @if ($paciente->estadopaciente === 'Activo')
+                                            @if ($activo)
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    title="Desactivar paciente"
+                                                    title="Desactivar paciente" aria-label="Desactivar paciente"
                                                     onclick="return confirm('¿Está seguro de que desea desactivar este paciente?')">
+
                                                     <i class="bi bi-person-x"></i>
+
                                                 </button>
                                             @else
                                                 <button type="submit" class="btn btn-sm btn-outline-success"
-                                                    title="Activar paciente"
+                                                    title="Activar paciente" aria-label="Activar paciente"
                                                     onclick="return confirm('¿Desea activar nuevamente este paciente?')">
+
                                                     <i class="bi bi-person-check"></i>
+
                                                 </button>
                                             @endif
 
                                         </form>
 
-                                    </td>
+                                    </div>
 
-                                </tr>
+                                </td>
 
-                            @empty
+                            </tr>
 
-                                <tr>
+                        @empty
 
-                                    <td colspan="7" class="text-center py-5">
+                            <tr>
 
-                                        <i class="bi bi-people fs-1 text-muted"></i>
+                                <td colspan="7">
 
-                                        <p class="text-muted mt-3 mb-0">
-                                            No hay pacientes registrados.
-                                        </p>
+                                    <x-sigac.empty-state title="No hay pacientes registrados"
+                                        description="Los pacientes registrados aparecerán en este listado." icon="people">
 
-                                    </td>
+                                        <a href="{{ route('admin.pacientes.create') }}" class="btn sigac-btn-primary">
 
-                                </tr>
-                            @endforelse
+                                            <i class="bi bi-person-plus"></i>
+                                            Registrar paciente
 
-                        </tbody>
+                                        </a>
 
-                    </table>
+                                    </x-sigac.empty-state>
 
-                </div>
+                                </td>
+
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

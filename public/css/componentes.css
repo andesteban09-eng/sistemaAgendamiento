@@ -1,0 +1,906 @@
+/* ==================================================
+   SIGAC — Sistema de componentes visuales
+   ================================================== */
+
+/* Contenedor general de página */
+
+.sigac-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    font-size: 0.85rem;
+}
+
+/* Encabezados de página */
+
+.sigac-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border-radius: var(--sigac-radius-lg);
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+}
+
+.sigac-page-header-content {
+    min-width: 0;
+}
+
+.sigac-eyebrow {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    color: var(--aqua-claro);
+}
+
+.sigac-page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--blanco);
+    margin: 5px 0;
+    overflow-wrap: anywhere;
+}
+
+.sigac-page-header p {
+    font-size: 0.85rem;
+    color: #d1dff0;
+    margin: 0;
+}
+
+.sigac-page-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Tarjetas */
+
+.sigac-card,
+.sigac-metric {
+    background: var(--blanco);
+    border: 1px solid var(--sigac-border);
+    border-radius: var(--sigac-radius-lg);
+    box-shadow: var(--sigac-shadow);
+    min-width: 0;
+}
+
+.sigac-card {
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.sigac-card h2 {
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+/* Indicadores */
+
+.sigac-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.sigac-metric {
+    padding: 16px;
+}
+
+.sigac-metric-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--sigac-muted);
+}
+
+.sigac-metric-value {
+    display: block;
+    color: var(--azul-oscuro);
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Iconos de componentes */
+
+.sigac-icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: var(--sigac-radius-md);
+    font-size: 1.1rem;
+}
+
+.sigac-icon-navy {
+    background: #eaf0f9;
+    color: var(--azul-oscuro);
+}
+
+.sigac-icon-success {
+    background: var(--sigac-success-bg);
+    color: var(--sigac-success);
+}
+
+.sigac-icon-warning {
+    background: var(--sigac-warning-bg);
+    color: var(--sigac-warning);
+}
+
+.sigac-icon-info {
+    background: var(--sigac-info-bg);
+    color: var(--sigac-info);
+}
+
+.sigac-icon-danger {
+    background: var(--sigac-danger-bg);
+    color: var(--sigac-danger);
+}
+
+.sigac-icon-neutral {
+    background: var(--sigac-neutral-bg);
+    color: var(--sigac-neutral);
+}
+
+/* Botones institucionales */
+
+.btn.sigac-btn-primary,
+.btn.sigac-btn-light {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: var(--sigac-radius-md);
+}
+
+.btn.sigac-btn-primary {
+    background: var(--azul-oscuro);
+    border-color: var(--azul-oscuro);
+    color: var(--blanco);
+}
+
+.btn.sigac-btn-primary:hover {
+    background: var(--azul-medio);
+    border-color: var(--azul-medio);
+    color: var(--blanco);
+}
+
+.btn.sigac-btn-light {
+    background: var(--blanco);
+    border-color: var(--blanco);
+    color: var(--azul-oscuro);
+}
+
+.btn.sigac-btn-light:hover {
+    background: var(--sigac-info-bg);
+    border-color: var(--sigac-info-bg);
+    color: var(--azul-oscuro);
+}
+
+.btn.sigac-btn-primary:focus-visible,
+.btn.sigac-btn-light:focus-visible {
+    outline: 2px solid var(--aqua);
+    outline-offset: 3px;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .sigac-page {
+        padding: 12px;
+    }
+
+    .sigac-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px;
+        gap: 12px;
+    }
+
+    .sigac-page-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .sigac-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .sigac-metric {
+        padding: 12px;
+    }
+
+    .sigac-metric-heading {
+        font-size: 0.73rem;
+        overflow-wrap: anywhere;
+    }
+
+    .sigac-metric-value {
+        font-size: 1.5rem;
+    }
+
+    .sigac-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .sigac-card {
+        padding: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .sigac-metrics {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+/* ==================================================
+   SIGAC — Tarjetas y encabezados internos
+   ================================================== */
+
+.sigac-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.sigac-card-heading > div {
+    min-width: 0;
+}
+
+.sigac-card-heading h2 {
+    margin: 0 0 5px;
+}
+
+.sigac-card-heading p {
+    font-size: 0.8rem;
+    color: var(--sigac-muted);
+    margin: 0;
+}
+
+.sigac-card-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ==================================================
+   SIGAC — Estados
+   ================================================== */
+
+.sigac-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: var(--sigac-radius-sm);
+    white-space: nowrap;
+}
+
+.sigac-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.sigac-status-success,
+.sigac-alert-success {
+    color: var(--sigac-success);
+    background: var(--sigac-success-bg);
+}
+
+.sigac-status-warning,
+.sigac-alert-warning {
+    color: var(--sigac-warning);
+    background: var(--sigac-warning-bg);
+}
+
+.sigac-status-info,
+.sigac-alert-info {
+    color: var(--sigac-info);
+    background: var(--sigac-info-bg);
+}
+
+.sigac-status-danger,
+.sigac-alert-danger {
+    color: var(--sigac-danger);
+    background: var(--sigac-danger-bg);
+}
+
+.sigac-status-neutral,
+.sigac-alert-neutral {
+    color: var(--sigac-neutral);
+    background: var(--sigac-neutral-bg);
+}
+
+/* ==================================================
+   SIGAC — Estados vacíos
+   ================================================== */
+
+.sigac-empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: var(--sigac-muted);
+}
+
+.sigac-empty-state > i {
+    display: block;
+    font-size: 2rem;
+    color: #94a3b8;
+}
+
+.sigac-empty-state h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+    margin: 10px 0 6px;
+}
+
+.sigac-empty-state p {
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.sigac-empty-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* ==================================================
+   SIGAC — Accesos a módulos
+   ================================================== */
+
+.sigac-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+}
+
+.sigac-module {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    min-width: 0;
+    background: var(--blanco);
+    border: 1px solid var(--sigac-border);
+    border-radius: var(--sigac-radius-lg);
+    box-shadow: var(--sigac-shadow);
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.sigac-module:hover {
+    border-color: var(--aqua);
+    box-shadow: 0 4px 16px rgba(0, 180, 216, 0.08);
+}
+
+.sigac-module:focus-visible {
+    outline: 2px solid var(--azul-oscuro);
+    outline-offset: 3px;
+}
+
+.sigac-module-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.sigac-module h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+    margin: 0 0 5px;
+    overflow-wrap: anywhere;
+}
+
+.sigac-module p {
+    font-size: 0.78rem;
+    color: var(--sigac-muted);
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.sigac-module-arrow {
+    flex-shrink: 0;
+    color: var(--sigac-muted);
+}
+
+/* ==================================================
+   SIGAC — Alertas
+   ================================================== */
+
+.sigac-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border-radius: var(--sigac-radius-md);
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.sigac-alert > i {
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.sigac-alert > div {
+    min-width: 0;
+}
+
+.sigac-alert strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* ==================================================
+   SIGAC — Responsive
+   ================================================== */
+
+@media (max-width: 600px) {
+    .sigac-card-heading {
+        align-items: flex-start;
+    }
+
+    .sigac-modules {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sigac-module {
+        padding: 14px;
+        gap: 10px;
+    }
+
+    .sigac-empty-state {
+        padding: 25px 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sigac-module {
+        transition: none;
+    }
+}
+
+/* ==================================================
+   SIGAC — Identificación de entidades
+   ================================================== */
+
+.sigac-identity {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.sigac-identity > .sigac-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.4rem;
+}
+
+.sigac-identity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.sigac-identity-content h2 {
+    margin: 0 0 4px;
+    overflow-wrap: anywhere;
+}
+
+.sigac-description {
+    font-size: 0.8rem;
+    color: var(--sigac-muted);
+}
+
+/* ==================================================
+   SIGAC — Información detallada
+   ================================================== */
+
+.sigac-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 0;
+}
+
+.sigac-details > div {
+    min-width: 0;
+}
+
+.sigac-details dt {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--sigac-muted);
+    margin-bottom: 5px;
+}
+
+.sigac-details dd {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--azul-oscuro);
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+}
+
+.sigac-details-full {
+    grid-column: 1 / -1;
+}
+
+/* ==================================================
+   SIGAC — Recursos asociados
+   ================================================== */
+
+.sigac-resource {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--sigac-surface);
+    border-radius: var(--sigac-radius-md);
+}
+
+.sigac-resource span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--sigac-muted);
+}
+
+.sigac-resource strong {
+    display: block;
+    font-size: 1.4rem;
+    color: var(--azul-oscuro);
+    font-variant-numeric: tabular-nums;
+}
+/* Distribución reutilizable de tres columnas */
+
+.sigac-grid-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+    .sigac-grid-three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .sigac-modules.sigac-grid-three {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .sigac-grid-three {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .sigac-details {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+}
+/* Distribución reutilizable de cuatro columnas */
+
+.sigac-metrics.sigac-grid-four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+    .sigac-metrics.sigac-grid-four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 360px) {
+    .sigac-metrics.sigac-grid-four {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* =========================================================
+   SIGAC — INTERFACES COMPACTAS EN DISPOSITIVOS MÓVILES
+   ========================================================= */
+
+@media (max-width: 767px) {
+    /* Contenedor principal */
+
+    .sigac-page {
+        padding: 12px;
+        font-size: 0.8rem;
+    }
+
+    /* Encabezado de página */
+
+    .sigac-page .sigac-page-header {
+        padding: 14px;
+        margin-bottom: 12px;
+        border-radius: 9px;
+        gap: 10px;
+    }
+
+    .sigac-page .sigac-eyebrow {
+        font-size: 0.58rem;
+        letter-spacing: 0.8px;
+    }
+
+    .sigac-page .sigac-page-header h1 {
+        font-size: 1.2rem;
+        line-height: 1.25;
+        margin: 4px 0;
+    }
+
+    .sigac-page .sigac-page-header p {
+        font-size: 0.76rem;
+        line-height: 1.5;
+    }
+
+    .sigac-page-header-actions {
+        width: 100%;
+        gap: 6px;
+    }
+
+    /* Indicadores */
+
+    .sigac-page .sigac-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .sigac-page .sigac-metric {
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .sigac-page .sigac-metric-heading {
+        font-size: 0.72rem;
+        gap: 5px;
+        overflow-wrap: anywhere;
+    }
+
+    .sigac-page .sigac-metric-value {
+        font-size: 1.4rem;
+        line-height: 1.2;
+        margin-top: 6px;
+    }
+
+    .sigac-page .sigac-metric .sigac-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    /* Tarjetas */
+
+    .sigac-page .sigac-card {
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 9px;
+    }
+
+    .sigac-page .sigac-card-heading {
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .sigac-page .sigac-card-heading h2 {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    .sigac-page .sigac-card-heading p {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+
+    /* Iconos */
+
+    .sigac-page .sigac-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    /* Botones */
+
+    .sigac-page .sigac-btn-primary,
+    .sigac-page .sigac-btn-light {
+        font-size: 0.75rem;
+        padding: 7px 10px;
+        min-height: 40px;
+        border-radius: 6px;
+    }
+
+    /* Estados */
+
+    .sigac-page .sigac-status {
+        font-size: 0.68rem;
+        padding: 4px 7px;
+        gap: 4px;
+    }
+
+    /* Estados vacíos */
+
+    .sigac-page .sigac-empty-state {
+        padding: 20px 8px;
+    }
+
+    .sigac-page .sigac-empty-state i {
+        font-size: 1.5rem;
+    }
+
+    .sigac-page .sigac-empty-state h3 {
+        font-size: 0.9rem;
+        margin: 8px 0 5px;
+    }
+
+    .sigac-page .sigac-empty-state p {
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    /* Accesos a módulos */
+
+    .sigac-page .sigac-modules {
+        gap: 8px;
+    }
+
+    .sigac-page .sigac-module {
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 8px;
+        min-height: 48px;
+    }
+
+    .sigac-page .sigac-module h3 {
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+
+    .sigac-page .sigac-module p {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+
+    /* Información de identidad */
+
+    .sigac-page .sigac-identity {
+        gap: 10px;
+    }
+
+    .sigac-page .sigac-identity > .sigac-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+
+    .sigac-page .sigac-identity-content h2 {
+        font-size: 1rem;
+    }
+
+    .sigac-page .sigac-description {
+        font-size: 0.75rem;
+    }
+
+    /* Detalles */
+
+    .sigac-page .sigac-details {
+        gap: 12px;
+    }
+
+    .sigac-page .sigac-details dt {
+        font-size: 0.72rem;
+    }
+
+    .sigac-page .sigac-details dd {
+        font-size: 0.82rem;
+        overflow-wrap: anywhere;
+    }
+
+    /* Recursos */
+
+    .sigac-page .sigac-resource {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .sigac-page .sigac-resource span {
+        font-size: 0.75rem;
+    }
+
+    .sigac-page .sigac-resource strong {
+        font-size: 1.15rem;
+    }
+
+    /* Notificaciones */
+
+    .sigac-page .sigac-alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        gap: 8px;
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+}
+
+/* =========================================================
+   PANTALLAS PEQUEÑAS
+   ========================================================= */
+
+@media (max-width: 400px) {
+    .sigac-page {
+        padding: 8px;
+    }
+
+    .sigac-page .sigac-page-header {
+        padding: 12px;
+    }
+
+    .sigac-page .sigac-page-header h1 {
+        font-size: 1.1rem;
+    }
+
+    .sigac-page .sigac-card {
+        padding: 10px;
+    }
+
+    .sigac-page .sigac-metric {
+        padding: 8px;
+    }
+
+    .sigac-page .sigac-metric-value {
+        font-size: 1.3rem;
+    }
+
+    .sigac-page .sigac-metric-heading {
+        font-size: 0.7rem;
+    }
+
+    .sigac-page .sigac-metric .sigac-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 340px) {
+    .sigac-page .sigac-metrics {
+        grid-template-columns: 1fr;
+    }
+}

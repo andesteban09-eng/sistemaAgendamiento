@@ -1,0 +1,296 @@
+/* SIGAC — Módulo de perfil personal */
+
+.sigac-profile-page {
+    --profile-navy: var(--azul-oscuro, #0a2558);
+    --profile-aqua: var(--aqua, #00b4d8);
+    --profile-muted: #5b697c;
+    --profile-border: #dce6ef;
+
+    min-height: 70vh;
+    background: #f5f8fc;
+    padding: 28px 16px;
+}
+
+.sigac-profile-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Encabezado */
+
+.sigac-profile-banner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--profile-navy);
+    color: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.sigac-profile-avatar {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .12);
+    font-size: 32px;
+}
+
+.sigac-profile-eyebrow {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: #8ddcec;
+}
+
+.sigac-profile-banner h2 {
+    color: #fff;
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin: 3px 0 5px;
+}
+
+.sigac-profile-banner p {
+    color: #d1dff0;
+    font-size: .85rem;
+    margin: 0;
+}
+
+/* Tarjetas */
+
+.sigac-profile-card {
+    background: #fff;
+    border: 1px solid var(--profile-border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 16px rgba(10, 37, 88, .035);
+}
+
+.sigac-profile-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--profile-border);
+}
+
+.sigac-profile-section-header > i {
+    font-size: 1.5rem;
+    color: var(--profile-aqua);
+}
+
+.sigac-profile-section-header h5,
+.sigac-profile-page .sigac-password-change h5 {
+    color: var(--profile-navy);
+    font-size: 1.08rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.sigac-profile-section-header p {
+    color: var(--profile-muted);
+    font-size: .82rem;
+    margin: 0;
+}
+
+/* Distribución de campos */
+
+.sigac-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.sigac-profile-full {
+    grid-column: 1 / -1;
+}
+
+.sigac-profile-field {
+    min-width: 0;
+}
+
+.sigac-profile-field label,
+.sigac-profile-page .form-label {
+    display: block;
+    color: var(--profile-navy);
+    font-size: .82rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.sigac-profile-page .form-control,
+.sigac-profile-readonly {
+    min-height: 40px;
+    border: 1px solid var(--profile-border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: .87rem;
+    color: #26374e;
+    overflow-wrap: anywhere;
+}
+
+.sigac-profile-page .form-control:focus {
+    border-color: var(--profile-aqua);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, .10);
+}
+
+.sigac-profile-readonly {
+    background: #f4f7fa;
+    color: var(--profile-muted);
+}
+
+.sigac-profile-subtitle {
+    color: var(--profile-navy);
+    font-size: .9rem;
+    font-weight: 700;
+    margin: 24px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--profile-border);
+}
+
+/* Botones */
+
+.sigac-profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+.sigac-profile-btn,
+.sigac-profile-page .btn-primary {
+    background: var(--profile-navy);
+    color: #fff;
+    border: 1px solid var(--profile-navy);
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: background .2s ease;
+}
+
+.sigac-profile-btn:hover,
+.sigac-profile-page .btn-primary:hover {
+    background: #143b78;
+    color: #fff;
+}
+
+.sigac-profile-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* Correo electrónico */
+
+.sigac-profile-email {
+    background: #f0f7fc;
+    border: 1px solid var(--profile-border);
+    border-radius: 8px;
+    padding: 13px 16px;
+    font-size: .88rem;
+    overflow-wrap: anywhere;
+}
+
+.sigac-profile-email small {
+    font-size: .75rem;
+    margin-top: 4px;
+}
+
+.sigac-profile-hint {
+    color: var(--profile-muted);
+    font-size: .78rem;
+    margin: 10px 0 0;
+}
+
+/* Cambio de contraseña */
+
+.sigac-profile-page .sigac-password-change {
+    max-width: 100%;
+}
+
+.sigac-profile-page .sigac-password-change form {
+    max-width: 520px;
+}
+
+.sigac-profile-page .sigac-password-change .bg-primary {
+    background-color: var(--profile-navy) !important;
+}
+
+.sigac-profile-page .sigac-password-change input[inputmode="numeric"] {
+    max-width: 280px;
+    min-height: 48px;
+    font-family: monospace;
+    font-size: 1.4rem !important;
+    letter-spacing: .35em;
+    text-indent: .35em;
+}
+
+.sigac-profile-page .alert {
+    border-radius: 8px;
+    font-size: .82rem;
+}
+
+.sigac-profile-page .invalid-feedback,
+.sigac-profile-page .form-text {
+    font-size: .75rem;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+
+    .sigac-profile-page {
+        padding: 16px 12px;
+    }
+
+    .sigac-profile-banner {
+        padding: 18px;
+        gap: 12px;
+    }
+
+    .sigac-profile-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 25px;
+    }
+
+    .sigac-profile-banner h2 {
+        font-size: 1.35rem;
+    }
+
+    .sigac-profile-banner p {
+        font-size: .78rem;
+    }
+
+    .sigac-profile-card {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .sigac-profile-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .sigac-profile-actions .sigac-profile-btn {
+        width: 100%;
+    }
+
+    .sigac-profile-page .sigac-password-change .row small {
+        font-size: .68rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sigac-profile-btn,
+    .sigac-profile-page .btn-primary {
+        transition: none;
+    }
+}

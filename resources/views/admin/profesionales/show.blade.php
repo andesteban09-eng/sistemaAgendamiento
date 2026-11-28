@@ -2,291 +2,182 @@
 
 @section('contenido')
 
-    <div class="container-fluid px-4 py-4">
+    @php
+        $varianteEstado = $profesional->estadoprofesionalsalud === 'Activo' ? 'success' : 'neutral';
 
-        {{-- ========================================================= --}}
-        {{-- ENCABEZADO --}}
-        {{-- ========================================================= --}}
+        $perfilesActivos = $profesional->perfilesServicio->where('estadoperfil', 'Activo');
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        $cantidadServicios = $perfilesActivos->count();
+    @endphp
 
-            <div>
+    <div class="sigac-page">
 
-                <h1 class="fw-bold mb-1">
-                    Información del profesional
-                </h1>
+        <x-sigac.page-header title="Información del profesional"
+            subtitle="Consulta la información personal y los servicios asignados." eyebrow="SIGAC · GESTIÓN DE PROFESIONALES">
 
-                <p class="text-muted mb-0">
-                    Consulta la información y los servicios asignados.
-                </p>
+            <x-slot:actions>
 
-            </div>
+                <a href="{{ route('admin.profesionales.index') }}" class="btn sigac-btn-light">
 
-
-            <div class="d-flex gap-2">
-
-                <a href="{{ route('admin.profesionales.edit', $profesional) }}" class="btn btn-warning">
-
-                    <i class="bi bi-pencil me-1"></i>
-
-                    Editar
-
-                </a>
-
-
-                <a href="{{ route('admin.profesionales.index') }}" class="btn btn-secondary">
-
-                    <i class="bi bi-arrow-left me-1"></i>
-
+                    <i class="bi bi-arrow-left"></i>
                     Volver
 
                 </a>
 
-            </div>
+                <a href="{{ route('admin.profesionales.edit', $profesional) }}" class="btn sigac-btn-light">
 
-        </div>
+                    <i class="bi bi-pencil"></i>
+                    Editar profesional
 
+                </a>
 
-        {{-- ========================================================= --}}
-        {{-- DATOS PERSONALES Y DE ACCESO --}}
-        {{-- ========================================================= --}}
+            </x-slot:actions>
 
-        <div class="card border-0 shadow-sm mb-4">
+        </x-sigac.page-header>
 
-            <div class="card-header bg-white">
+        {{-- Identificación --}}
 
-                <h5 class="mb-0 fw-bold">
-                    Datos del profesional
-                </h5>
+        <x-sigac.card>
 
-            </div>
+            <div class="sigac-identity">
 
+                <div class="sigac-icon sigac-icon-info">
 
-            <div class="card-body">
-
-                <div class="row g-4">
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Nombre completo
-                        </small>
-
-                        <strong>
-                            {{ $profesional->user?->name }}
-                            {{ $profesional->user?->last_name }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Correo electrónico
-                        </small>
-
-                        <strong>
-                            {{ $profesional->user?->email }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Tipo de documento
-                        </small>
-
-                        <strong>
-                            {{ $profesional->tipodoc }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Número de documento
-                        </small>
-
-                        <strong>
-                            {{ $profesional->numdoc }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Teléfono
-                        </small>
-
-                        <strong>
-                            {{ $profesional->telefono }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted d-block">
-                            Estado
-                        </small>
-
-
-                        @if ($profesional->estadoprofesionalsalud === 'Activo')
-                            <span class="badge text-bg-success">
-                                Activo
-                            </span>
-                        @else
-                            <span class="badge text-bg-secondary">
-                                Inactivo
-                            </span>
-                        @endif
-
-                    </div>
-
+                    <i class="bi bi-person-badge" aria-hidden="true"></i>
 
                 </div>
 
-            </div>
+                <div class="sigac-identity-content">
 
-        </div>
+                    <h2>
+                        {{ $profesional->user?->name }}
+                        {{ $profesional->user?->last_name }}
+                    </h2>
 
-
-        {{-- ========================================================= --}}
-        {{-- SERVICIOS ASIGNADOS --}}
-        {{-- ========================================================= --}}
-
-        <div class="card border-0 shadow-sm">
-
-            <div class="card-header bg-white">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-
-                        <h5 class="mb-1 fw-bold">
-                            Servicios asignados
-                        </h5>
-
-                        <p class="text-muted mb-0 small">
-                            Servicios que este profesional está autorizado para prestar.
-                        </p>
-
-                    </div>
-
-
-                    <span class="badge text-bg-primary">
-
-                        {{ $profesional->perfilesServicio->count() }}
-
-                        {{ $profesional->perfilesServicio->count() === 1 ? 'servicio' : 'servicios' }}
-
-                    </span>
+                    <p class="sigac-description mb-0">
+                        Profesional #{{ $profesional->idprofesionalsalud }}
+                    </p>
 
                 </div>
 
+                <x-sigac.status :label="$profesional->estadoprofesionalsalud" :variant="$varianteEstado" />
+
             </div>
 
+            <hr>
 
-            <div class="card-body">
+            <dl class="sigac-details">
 
+                <div>
+                    <dt>Nombre completo</dt>
 
-                @forelse ($profesional->perfilesServicio
-                            ->where('estadoperfil', 'Activo')
-                            ->groupBy('tipoServicio.nombre')
-                        as $nombreTipo => $perfiles)
-                    <div class="mb-4">
+                    <dd>
+                        {{ $profesional->user?->name }}
+                        {{ $profesional->user?->last_name }}
+                    </dd>
+                </div>
 
+                <div>
+                    <dt>Correo electrónico</dt>
+                    <dd>{{ $profesional->user?->email }}</dd>
+                </div>
 
-                        <h6 class="fw-bold border-bottom pb-2 mb-3">
+                <div>
+                    <dt>Tipo de documento</dt>
+                    <dd>{{ $profesional->tipodoc }}</dd>
+                </div>
 
-                            {{ $nombreTipo }}
+                <div>
+                    <dt>Número de documento</dt>
+                    <dd>{{ $profesional->numdoc }}</dd>
+                </div>
 
-                        </h6>
+                <div>
+                    <dt>Teléfono</dt>
+                    <dd>{{ $profesional->telefono }}</dd>
+                </div>
 
+                <div>
+                    <dt>Estado del profesional</dt>
 
-                        <div class="row g-3">
+                    <dd>
+                        <x-sigac.status :label="$profesional->estadoprofesionalsalud" :variant="$varianteEstado" />
+                    </dd>
+                </div>
 
+            </dl>
 
-                            @foreach ($perfiles as $perfil)
-                                <div class="col-md-6 col-lg-4">
+        </x-sigac.card>
 
+        {{-- Indicadores profesionales --}}
 
-                                    <div class="border rounded p-3 h-100">
+        <section class="sigac-metrics">
 
+            <x-sigac.metric-card label="Servicios asignados activos" :value="$cantidadServicios" icon="clipboard2-check"
+                color="success" />
 
-                                        <div class="d-flex align-items-start gap-2">
+        </section>
 
+        {{-- Servicios asignados --}}
 
-                                            <i class="bi bi-check-circle-fill text-success"></i>
+        <x-sigac.card title="Servicios asignados" subtitle="Servicios asociados al profesional mediante perfiles activos.">
 
+            @forelse ($perfilesActivos->groupBy('tipoServicio.nombre') as $nombreTipo => $perfiles)
+                <div class="mb-4">
 
-                                            <div>
+                    <h3 class="fs-6 fw-semibold border-bottom pb-2 mb-3">
 
+                        {{ $nombreTipo }}
 
-                                                <div class="fw-semibold">
+                    </h3>
 
-                                                    {{ $perfil->servicio?->nombre }}
+                    <div class="row g-3">
 
-                                                </div>
+                        @foreach ($perfiles as $perfil)
+                            <div class="col-12 col-md-6 col-lg-4">
 
+                                <div class="sigac-resource h-100">
 
-                                                @if ($perfil->servicio?->precio !== null)
-                                                    <small class="text-muted">
+                                    <div class="sigac-icon sigac-icon-success">
 
-                                                        ${{ number_format($perfil->servicio->precio, 0, ',', '.') }}
-
-                                                    </small>
-                                                @endif
-
-
-                                            </div>
-
-
-                                        </div>
-
+                                        <i class="bi bi-check-circle" aria-hidden="true"></i>
 
                                     </div>
 
+                                    <div>
+
+                                        <div class="fw-semibold">
+
+                                            {{ $perfil->servicio?->nombre }}
+
+                                        </div>
+
+                                        @if ($perfil->servicio?->precio !== null)
+                                            <span>
+
+                                                ${{ number_format($perfil->servicio->precio, 0, ',', '.') }}
+
+                                            </span>
+                                        @endif
+
+                                    </div>
 
                                 </div>
-                            @endforeach
 
-
-                        </div>
-
+                            </div>
+                        @endforeach
 
                     </div>
 
+                </div>
 
-                @empty
+            @empty
 
+                <x-sigac.empty-state title="No hay servicios asignados"
+                    description="Este profesional no tiene perfiles de servicio activos." icon="clipboard-x" />
+            @endforelse
 
-                    <div class="text-center text-muted py-5">
-
-                        <i class="bi bi-clipboard-x fs-1"></i>
-
-                        <p class="mt-3 mb-0">
-
-                            Este profesional no tiene servicios asignados.
-
-                        </p>
-
-                    </div>
-                @endforelse
-
-
-            </div>
-
-        </div>
+        </x-sigac.card>
 
     </div>
 

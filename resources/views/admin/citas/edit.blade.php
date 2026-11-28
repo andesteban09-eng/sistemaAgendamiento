@@ -1,260 +1,351 @@
-
 @extends('layouts.admin')
 
 @section('contenido')
-<div class="container-fluid px-4 py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="fw-bold mb-1">
-                <i class="bi bi-pencil-square me-2"></i>
-                Editar cita
-            </h1>
+    @php
+        $subtitulo = 'Modificar el agendamiento #' . $cita->idcita;
 
-            <p class="text-muted mb-0">
-                Modificar el agendamiento #{{ $cita->idcita }}
-            </p>
-        </div>
+        $varianteReprogramacion = $puedeReprogramar
+            ? 'info'
+            : 'warning';
 
-        <a href="{{ route('admin.citas.show', $cita) }}"
-           class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            Volver al detalle
-        </a>
-    </div>
+        $etiquetaReprogramacion = ($cita->numreprogramaciones ?? 0) . ' de 3';
+    @endphp
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close"
+    <div class="sigac-page">
+
+        <x-sigac.page-header
+            title="Editar cita"
+            :subtitle="$subtitulo"
+            eyebrow="SIGAC · GESTIÓN DE CITAS">
+
+            <x-slot:actions>
+
+                <a href="{{ route('admin.citas.show', $cita) }}"
+                    class="btn sigac-btn-light">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Volver al detalle
+
+                </a>
+
+            </x-slot:actions>
+
+        </x-sigac.page-header>
+
+        {{-- Mensajes de error --}}
+
+        @if (session('error'))
+
+            <x-sigac.alert
+                variant="danger"
+                class="alert alert-dismissible fade show pe-5">
+
+                {{ session('error') }}
+
+                <button type="button"
+                    class="btn-close"
                     data-bs-dismiss="alert"
-                    aria-label="Cerrar"></button>
-        </div>
-    @endif
+                    aria-label="Cerrar">
+                </button>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>No se pudo actualizar la cita.</strong>
-            <ul class="mb-0 mt-2">
+            </x-sigac.alert>
+
+        @endif
+
+        @if ($errors->any())
+
+            <x-sigac.alert
+                variant="danger"
+                title="No se pudo actualizar la cita">
+
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                    <div>{{ $error }}</div>
                 @endforeach
-            </ul>
-        </div>
-    @endif
 
-    <div class="row g-4">
+            </x-sigac.alert>
 
-        {{-- Información actual --}}
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
+        @endif
 
-                    <h5 class="fw-bold mb-4">
-                        <i class="bi bi-calendar-check me-2"></i>
-                        Cita actual
-                    </h5>
+        <div class="row g-3 align-items-start">
 
-                    <p class="mb-3">
-                        <strong>Paciente</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->paciente?->user?->name ?? 'Sin información' }}
-                            {{ $cita->paciente?->user?->last_name ?? '' }}
-                        </span>
-                    </p>
+            {{-- Información actual --}}
 
-                    <p class="mb-3">
-                        <strong>Servicio</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->servicio?->nombre ?? 'Sin información' }}
-                        </span>
-                    </p>
+            <div class="col-12 col-lg-4">
 
-                    <p class="mb-3">
-                        <strong>Fecha y hora</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->fechacita?->format('d/m/Y h:i A') }}
-                        </span>
-                    </p>
+                <x-sigac.card
+                    title="Cita actual"
+                    subtitle="Información del agendamiento antes de la modificación.">
 
-                    <p class="mb-3">
-                        <strong>Profesional</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
-                            {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
-                        </span>
-                    </p>
+                    <dl class="sigac-details">
 
-                    <p class="mb-3">
-                        <strong>Sede</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
-                        </span>
-                    </p>
+                        <div class="sigac-details-full">
 
-                    <p class="mb-3">
-                        <strong>Consultorio</strong>
-                        <span class="d-block text-muted">
-                            {{ $cita->agenda?->consultorio ?? 'Sin información' }}
-                        </span>
-                    </p>
+                            <dt>Paciente</dt>
 
-                    <p class="mb-0">
-                        <strong>Reprogramaciones realizadas</strong>
-                        <span class="d-block mt-1">
-                            <span class="badge bg-{{ $puedeReprogramar ? 'primary' : 'warning text-dark' }}">
-                                {{ $cita->numreprogramaciones ?? 0 }} de 3
-                            </span>
-                        </span>
-                    </p>
+                            <dd>
+                                {{ $cita->paciente?->user?->name ?? 'Sin información' }}
+                                {{ $cita->paciente?->user?->last_name ?? '' }}
+                            </dd>
 
-                </div>
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Servicio</dt>
+
+                            <dd>
+                                {{ $cita->servicio?->nombre ?? 'Sin información' }}
+                            </dd>
+
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Fecha y hora</dt>
+
+                            <dd>
+                                {{ $cita->fechacita?->format('d/m/Y h:i A') }}
+                            </dd>
+
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Profesional</dt>
+
+                            <dd>
+                                {{ $cita->agenda?->profesional?->user?->name ?? 'Sin información' }}
+                                {{ $cita->agenda?->profesional?->user?->last_name ?? '' }}
+                            </dd>
+
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Sede</dt>
+
+                            <dd>
+                                {{ $cita->agenda?->sede?->nombre ?? 'Sin información' }}
+                            </dd>
+
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Consultorio</dt>
+
+                            <dd>
+                                {{ $cita->agenda?->consultorio ?? 'Sin información' }}
+                            </dd>
+
+                        </div>
+
+                        <div class="sigac-details-full">
+
+                            <dt>Reprogramaciones realizadas</dt>
+
+                            <dd>
+
+                                <x-sigac.status
+                                    :label="$etiquetaReprogramacion"
+                                    :variant="$varianteReprogramacion"
+                                />
+
+                            </dd>
+
+                        </div>
+
+                    </dl>
+
+                </x-sigac.card>
+
             </div>
-        </div>
 
-        {{-- Formulario --}}
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
+            {{-- Formulario de modificación --}}
 
-                    <h5 class="fw-bold mb-4">
-                        <i class="bi bi-calendar-plus me-2"></i>
-                        Modificar agendamiento
-                    </h5>
+            <div class="col-12 col-lg-8">
 
-                    <form action="{{ route('admin.citas.update', $cita) }}"
-                          method="POST">
+                <form
+                    action="{{ route('admin.citas.update', $cita) }}"
+                    method="POST"
+                    class="sigac-form">
 
-                        @csrf
-                        @method('PUT')
+                    @csrf
+                    @method('PUT')
 
-                        <div class="mb-4">
-                            <label for="idhorariodispo" class="form-label fw-semibold">
-                                Horario de la cita
-                            </label>
+                    <x-sigac.card
+                        title="Modificar agendamiento"
+                        subtitle="Actualiza el horario disponible o las observaciones de la cita.">
 
-                            @if ($puedeReprogramar)
+                        <div class="sigac-form-grid">
 
-                                <select name="idhorariodispo"
+                            {{-- Horario de la cita --}}
+
+                            <div class="sigac-form-full">
+
+                                <label for="idhorariodispo"
+                                    class="form-label">
+
+                                    Horario de la cita
+
+                                </label>
+
+                                @if ($puedeReprogramar)
+
+                                    <select
+                                        name="idhorariodispo"
                                         id="idhorariodispo"
                                         class="form-select @error('idhorariodispo') is-invalid @enderror"
                                         required>
 
-                                    <option value="{{ $cita->idhorariodispo }}"
-                                        @selected(
-                                            (string) old('idhorariodispo', $cita->idhorariodispo)
-                                            === (string) $cita->idhorariodispo
-                                        )>
-                                        Mantener horario actual:
-                                        {{ $cita->fechacita?->format('d/m/Y h:i A') }}
-                                    </option>
+                                        <option value="{{ $cita->idhorariodispo }}"
+                                            @selected((string) old('idhorariodispo', $cita->idhorariodispo) === (string) $cita->idhorariodispo)>
 
-                                    @foreach ($horarios as $horario)
-                                        @if ((string) $horario->idhorariodispo !== (string) $cita->idhorariodispo)
-                                            @php
-                                                $horaIntervalo = (string) $horario->getRawOriginal('horainicio');
+                                            Mantener horario actual:
+                                            {{ $cita->fechacita?->format('d/m/Y h:i A') }}
 
-                                                $horaTexto = preg_match(
-                                                    '/(\d{2}):(\d{2})/',
-                                                    $horaIntervalo,
-                                                    $partesHora
-                                                )
-                                                    ? $partesHora[1] . ':' . $partesHora[2]
-                                                    : 'Hora no disponible';
-                                            @endphp
+                                        </option>
 
-                                            <option value="{{ $horario->idhorariodispo }}"
-                                                @selected(
-                                                    (string) old('idhorariodispo')
-                                                    === (string) $horario->idhorariodispo
-                                                )>
-                                                {{ \Carbon\Carbon::parse($horario->fecha)->format('d/m/Y') }}
-                                                - {{ $horaTexto }}
-                                                |
-                                                {{ $horario->profesional?->user?->name ?? 'Profesional' }}
-                                                {{ $horario->profesional?->user?->last_name ?? '' }}
-                                                |
-                                                {{ $horario->sede?->nombre ?? 'Sin sede' }}
-                                            </option>
-                                        @endif
-                                    @endforeach
+                                        @foreach ($horarios as $horario)
 
-                                </select>
+                                            @if ((string) $horario->idhorariodispo !== (string) $cita->idhorariodispo)
 
-                                <div class="form-text">
-                                    Selecciona otro horario para reprogramar la cita
-                                    o conserva el actual para editar únicamente las observaciones.
-                                </div>
+                                                @php
+                                                    $horaIntervalo = (string) $horario->getRawOriginal('horainicio');
 
-                            @else
+                                                    $horaTexto = preg_match(
+                                                        '/(\d{2}):(\d{2})/',
+                                                        $horaIntervalo,
+                                                        $partesHora
+                                                    )
+                                                        ? $partesHora[1] . ':' . $partesHora[2]
+                                                        : 'Hora no disponible';
+                                                @endphp
 
-                                <input type="hidden"
-                                       name="idhorariodispo"
-                                       value="{{ $cita->idhorariodispo }}">
+                                                <option value="{{ $horario->idhorariodispo }}"
+                                                    @selected((string) old('idhorariodispo') === (string) $horario->idhorariodispo)>
 
-                                <input type="text"
-                                       class="form-control"
-                                       value="{{ $cita->fechacita?->format('d/m/Y h:i A') }}"
-                                       disabled>
+                                                    {{ \Carbon\Carbon::parse($horario->fecha)->format('d/m/Y') }}
+                                                    - {{ $horaTexto }}
+                                                    |
+                                                    {{ $horario->profesional?->user?->name ?? 'Profesional' }}
+                                                    {{ $horario->profesional?->user?->last_name ?? '' }}
+                                                    |
+                                                    {{ $horario->sede?->nombre ?? 'Sin sede' }}
 
-                                <div class="alert alert-warning mt-3 mb-0">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>
-                                    Esta cita alcanzó el máximo de tres reprogramaciones.
-                                    Solo puedes modificar las observaciones.
-                                </div>
+                                                </option>
 
-                            @endif
+                                            @endif
 
-                            @error('idhorariodispo')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
+                                        @endforeach
 
-                        <div class="mb-4">
-                            <label for="detalle" class="form-label fw-semibold">
-                                Observaciones
-                            </label>
+                                    </select>
 
-                            <textarea name="detalle"
-                                      id="detalle"
-                                      rows="4"
-                                      maxlength="100"
-                                      class="form-control @error('detalle') is-invalid @enderror"
-                                      placeholder="Escribe las observaciones de la cita...">{{ old('detalle', $cita->detalle) }}</textarea>
+                                    <div class="form-text">
 
-                            <div class="form-text">
-                                Máximo 100 caracteres.
+                                        Selecciona otro horario para reprogramar la cita
+                                        o conserva el actual para editar únicamente
+                                        las observaciones.
+
+                                    </div>
+
+                                @else
+
+                                    <input type="hidden"
+                                        name="idhorariodispo"
+                                        value="{{ $cita->idhorariodispo }}">
+
+                                    <input type="text"
+                                        id="idhorariodispo"
+                                        class="form-control"
+                                        value="{{ $cita->fechacita?->format('d/m/Y h:i A') }}"
+                                        disabled>
+
+                                    <x-sigac.alert
+                                        variant="warning"
+                                        title="Límite de reprogramaciones alcanzado"
+                                        class="mt-3 mb-0">
+
+                                        Esta cita alcanzó el máximo de tres
+                                        reprogramaciones. Solo puedes modificar
+                                        las observaciones.
+
+                                    </x-sigac.alert>
+
+                                @endif
+
+                                @error('idhorariodispo')
+
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+
+                                @enderror
+
                             </div>
 
-                            @error('detalle')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                            {{-- Observaciones --}}
+
+                            <div class="sigac-form-full">
+
+                                <label for="detalle" class="form-label">
+                                    Observaciones
+                                </label>
+
+                                <textarea
+                                    name="detalle"
+                                    id="detalle"
+                                    rows="4"
+                                    maxlength="100"
+                                    class="form-control @error('detalle') is-invalid @enderror"
+                                    placeholder="Escribe las observaciones de la cita...">{{ old('detalle', $cita->detalle) }}</textarea>
+
+                                <div class="form-text">
+                                    Máximo 100 caracteres.
                                 </div>
-                            @enderror
+
+                                @error('detalle')
+
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+
+                                @enderror
+
+                            </div>
+
                         </div>
 
-                        <div class="d-flex justify-content-end gap-2">
+                        {{-- Acciones --}}
+
+                        <div class="sigac-form-actions">
 
                             <a href="{{ route('admin.citas.show', $cita) }}"
-                               class="btn btn-outline-secondary">
+                                class="btn btn-outline-secondary">
+
                                 Cancelar edición
+
                             </a>
 
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i>
+                            <button type="submit"
+                                class="btn sigac-btn-primary">
+
+                                <i class="bi bi-check-circle"></i>
                                 Guardar cambios
+
                             </button>
 
                         </div>
 
-                    </form>
+                    </x-sigac.card>
 
-                </div>
+                </form>
+
             </div>
+
         </div>
 
     </div>
-</div>
+
 @endsection
