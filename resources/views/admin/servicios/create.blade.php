@@ -1,137 +1,62 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="mb-4">
+    <div class="sigac-page">
 
-            <h1 class="fw-bold mb-1">
-                Nuevo servicio
-            </h1>
+        <x-sigac.page-header title="Registrar servicio" subtitle="Registra un nuevo servicio ofrecido por la institución."
+            eyebrow="SIGAC · GESTIÓN DE SERVICIOS">
 
-            <p class="text-muted mb-0">
-                Registra un nuevo servicio ofrecido por el laboratorio.
-            </p>
+            <x-slot:actions>
 
-        </div>
+                <a href="{{ route('admin.servicios.index') }}" class="btn sigac-btn-light">
 
-        <div class="card border-0 shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-            <div class="card-body p-4">
+                </a>
 
-                <form action="{{ route('admin.servicios.store') }}" method="POST">
+            </x-slot:actions>
 
-                    @csrf
+        </x-sigac.page-header>
 
-                    <div class="row g-4">
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="Revisa la información ingresada">
 
-                        {{-- Tipo de servicio --}}
-                        <div class="col-12">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                            <label for="idtiposervicio" class="form-label">
-                                Tipo de servicio
-                            </label>
+            </x-sigac.alert>
+        @endif
 
-                            <select name="idtiposervicio" id="idtiposervicio"
-                                class="form-select @error('idtiposervicio') is-invalid @enderror" required>
+        <form method="POST" action="{{ route('admin.servicios.store') }}" class="sigac-form sigac-form-card">
 
-                                <option value="">
-                                    Seleccione un tipo de servicio
-                                </option>
+            @csrf
 
-                                @foreach ($tiposServicio as $tipoServicio)
-                                    <option value="{{ $tipoServicio->idtiposervicio }}"
-                                        {{ old('idtiposervicio') == $tipoServicio->idtiposervicio ? 'selected' : '' }}>
-                                        {{ $tipoServicio->nombre }}
-                                    </option>
-                                @endforeach
+            @include('admin.servicios.partials.form', [
+                'servicio' => null,
+            ])
 
-                            </select>
+            <div class="sigac-form-actions">
 
-                            @error('idtiposervicio')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                <a href="{{ route('admin.servicios.index') }}" class="btn btn-outline-secondary">
 
-                        </div>
+                    Cancelar
 
-                        {{-- Nombre --}}
-                        <div class="col-md-6">
+                </a>
 
-                            <label for="nombre" class="form-label">
-                                Nombre del servicio
-                            </label>
+                <button type="submit" class="btn sigac-btn-primary">
 
-                            <input type="text" name="nombre" id="nombre"
-                                class="form-control @error('nombre') is-invalid @enderror" value="{{ old('nombre') }}"
-                                maxlength="80" required>
+                    <i class="bi bi-floppy"></i>
+                    Guardar servicio
 
-                            @error('nombre')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                        {{-- Precio --}}
-                        <div class="col-md-6">
-
-                            <label for="precio" class="form-label">
-                                Precio
-                            </label>
-
-                            <input type="number" name="precio" id="precio"
-                                class="form-control @error('precio') is-invalid @enderror" value="{{ old('precio') }}"
-                                min="0" step="0.01" required>
-
-                            @error('precio')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                        {{-- Prerrequisitos --}}
-                        <div class="col-12">
-
-                            <label for="prerequisitos" class="form-label">
-                                Prerrequisitos
-                            </label>
-
-                            <textarea name="prerequisitos" id="prerequisitos" class="form-control @error('prerequisitos') is-invalid @enderror"
-                                rows="4" placeholder="Indique los requisitos necesarios para realizar el servicio...">{{ old('prerequisitos') }}</textarea>
-
-                            @error('prerequisitos')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    <div class="mt-4 d-flex gap-2">
-
-                        <a href="{{ route('admin.servicios.index') }}" class="btn btn-secondary">
-                            Cancelar
-                        </a>
-
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-1"></i>
-                            Guardar servicio
-                        </button>
-
-                    </div>
-
-                </form>
+                </button>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
+
 @endsection

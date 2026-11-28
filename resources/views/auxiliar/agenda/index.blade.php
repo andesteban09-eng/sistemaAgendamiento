@@ -1,123 +1,176 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Gestión de agenda
-                </h1>
+        <x-sigac.page-header title="Gestión de agenda" subtitle="Disponibilidad de los profesionales de la salud."
+            eyebrow="SIGAC · GESTIÓN OPERATIVA">
 
-                <p class="text-muted mb-0">
-                    Disponibilidad de los profesionales de la salud.
-                </p>
-            </div>
+            <x-slot:actions>
 
-            <a href="{{ route('auxiliar.agenda.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>
-                Nueva disponibilidad
-            </a>
+                <a href="{{ route('dashboard') }}" class="btn sigac-btn-light">
 
-        </div>
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
+                </a>
+
+                <a href="{{ route('auxiliar.agenda.create') }}" class="btn sigac-btn-light">
+
+                    <i class="bi bi-plus-lg"></i>
+                    Nueva disponibilidad
+
+                </a>
+
+            </x-slot:actions>
+
+        </x-sigac.page-header>
 
         @if (session('success'))
-            <div class="alert alert-success">
+            <x-sigac.alert variant="success">
                 {{ session('success') }}
-            </div>
+            </x-sigac.alert>
         @endif
+
         @if (session('error'))
-            <div class="alert alert-danger">
+            <x-sigac.alert variant="danger">
                 {{ session('error') }}
-            </div>
+            </x-sigac.alert>
         @endif
 
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="No fue posible completar la operación">
 
-        <div class="card border-0 shadow-sm">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-            <div class="card-body">
+            </x-sigac.alert>
+        @endif
 
-                <div class="table-responsive">
+        <x-sigac.card title="Disponibilidades registradas"
+            subtitle="Consulta y administra los horarios de los profesionales.">
 
-                    <table class="table table-hover align-middle">
+            <div class="table-responsive">
 
-                        <thead>
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Profesional</th>
+                            <th scope="col">Sede</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Consultorio</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($agendas as $agenda)
                             <tr>
-                                <th>Profesional</th>
-                                <th>Sede</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Consultorio</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
+                                <td>
 
-                            @forelse ($agendas as $agenda)
-                                <tr>
+                                    <div class="sigac-table-entity">
 
-                                    <td>
-                                        {{ $agenda->profesional->user->name }}
-                                        {{ $agenda->profesional->user->last_name }}
-                                    </td>
+                                        <div class="sigac-icon sigac-icon-info">
+                                            <i class="bi bi-person-badge" aria-hidden="true"></i>
+                                        </div>
 
-                                    <td>
-                                        {{ $agenda->sede->nombre }}
-                                    </td>
+                                        <strong>
+                                            {{ $agenda->profesional->user->name }}
+                                            {{ $agenda->profesional->user->last_name }}
+                                        </strong>
 
-                                    <td>
-                                        {{ $agenda->fecha->format('d/m/Y') }}
-                                    </td>
+                                    </div>
 
-                                    <td>
-                                        {{ $agenda->horainicio }}
-                                    </td>
+                                </td>
 
-                                    <td>
-                                        {{ $agenda->consultorio }}
-                                    </td>
-                                    <td>
+                                <td>
+                                    {{ $agenda->sede->nombre }}
+                                </td>
+
+                                <td class="text-nowrap">
+                                    {{ $agenda->fecha->format('d/m/Y') }}
+                                </td>
+
+                                <td class="text-nowrap">
+                                    {{ $agenda->horainicio }}
+                                </td>
+
+                                <td>
+                                    {{ $agenda->consultorio }}
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
+                                        <a href="{{ route('auxiliar.agenda.edit', $agenda) }}"
+                                            class="btn btn-sm btn-outline-warning" title="Editar disponibilidad"
+                                            aria-label="Editar disponibilidad">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
                                         <form action="{{ route('auxiliar.agenda.destroy', $agenda) }}" method="POST"
+                                            class="d-inline"
                                             onsubmit="return confirm('¿Está seguro de eliminar esta disponibilidad?');">
 
                                             @csrf
                                             @method('DELETE')
 
-                                            <a href="{{ route('auxiliar.agenda.edit', $agenda) }}"
-                                                class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Eliminar disponibilidad" aria-label="Eliminar disponibilidad">
 
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i>
+
                                             </button>
 
                                         </form>
-                                    </td>
 
-                                </tr>
+                                    </div>
 
-                            @empty
+                                </td>
 
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
-                                        No hay disponibilidades registradas.
-                                    </td>
-                                </tr>
-                            @endforelse
+                            </tr>
 
-                        </tbody>
+                        @empty
 
-                    </table>
+                            <tr>
 
-                </div>
+                                <td colspan="6">
+
+                                    <x-sigac.empty-state title="No hay disponibilidades registradas"
+                                        description="Los horarios registrados aparecerán en este listado."
+                                        icon="calendar-x">
+
+                                        <a href="{{ route('auxiliar.agenda.create') }}" class="btn sigac-btn-primary">
+
+                                            <i class="bi bi-calendar-plus"></i>
+                                            Registrar disponibilidad
+
+                                        </a>
+
+                                    </x-sigac.empty-state>
+
+                                </td>
+
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

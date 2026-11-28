@@ -1,142 +1,210 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        ```
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Gestión de auxiliares
-                </h1>
+        <x-sigac.page-header
+            title="Gestión de auxiliares"
+            subtitle="Consulta y administra los auxiliares registrados en el sistema."
+            eyebrow="SIGAC · ADMINISTRACIÓN">
 
-                <p class="text-muted mb-0">
-                    Consulta y administra los auxiliares registrados en el sistema.
-                </p>
-            </div>
+            <x-slot:actions>
 
-            <a href="{{ route('admin.auxiliares.create') }}" class="btn btn-info">
+                <a href="{{ route('admin.auxiliares.create') }}"
+                    class="btn sigac-btn-light">
 
-                <i class="bi bi-person-plus me-2"></i>
+                    <i class="bi bi-person-plus"></i>
+                    Nuevo auxiliar
 
-                Nuevo auxiliar
+                </a>
 
-            </a>
+            </x-slot:actions>
 
-        </div>
+        </x-sigac.page-header>
+
+        {{-- Mensajes --}}
 
         @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
 
-                <i class="bi bi-check-circle me-2"></i>
+            <x-sigac.alert variant="success"
+                class="alert alert-dismissible fade show pe-5">
 
                 {{ session('success') }}
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+                </button>
 
-            </div>
+            </x-sigac.alert>
+
         @endif
 
-        <div class="card border-0 shadow-sm">
+        @if ($errors->any())
 
-            <div class="card-body">
+            <x-sigac.alert variant="danger"
+                title="No fue posible completar la operación">
 
-                <div class="table-responsive">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                    <table class="table table-hover align-middle">
+            </x-sigac.alert>
 
-                        <thead>
+        @endif
+
+        {{-- Listado --}}
+
+        <x-sigac.card
+            title="Auxiliares registrados"
+            subtitle="Información y estado de las cuentas de auxiliares.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Auxiliar</th>
+                            <th scope="col">Correo electrónico</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($auxiliares as $auxiliar)
+
+                            @php
+                                $activo = $auxiliar->estado === 'activo';
+
+                                $varianteEstado = $activo
+                                    ? 'success'
+                                    : 'neutral';
+
+                                $etiquetaEstado = $activo
+                                    ? 'Activo'
+                                    : 'Inactivo';
+                            @endphp
 
                             <tr>
-                                <th>ID</th>
-                                <th>Auxiliar</th>
-                                <th>Correo electrónico</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
 
-                        </thead>
+                                <td>{{ $auxiliar->id }}</td>
 
-                        <tbody>
+                                <td>
 
-                            @forelse ($auxiliares as $auxiliar)
-                                <tr>
+                                    <div class="sigac-table-entity">
 
-                                    <td>
-                                        {{ $auxiliar->id }}
-                                    </td>
+                                        <div class="sigac-icon sigac-icon-info">
 
-                                    <td>
+                                            <i class="bi bi-person-gear"
+                                                aria-hidden="true"></i>
+
+                                        </div>
 
                                         <strong>
                                             {{ $auxiliar->name }}
                                             {{ $auxiliar->last_name }}
                                         </strong>
 
-                                    </td>
+                                    </div>
 
-                                    <td>
-                                        {{ $auxiliar->email }}
-                                    </td>
+                                </td>
 
-                                    <td>
+                                <td>{{ $auxiliar->email }}</td>
 
-                                        @if ($auxiliar->estado === 'activo')
-                                            <span class="badge text-bg-success">
-                                                Activo
-                                            </span>
-                                        @else
-                                            <span class="badge text-bg-secondary">
-                                                Inactivo
-                                            </span>
-                                        @endif
+                                <td>
 
-                                    </td>
+                                    <x-sigac.status
+                                        :label="$etiquetaEstado"
+                                        :variant="$varianteEstado"
+                                    />
 
-                                    <td class="text-end">
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
+                                        {{-- Consultar --}}
 
                                         <a href="{{ route('admin.auxiliares.show', $auxiliar) }}"
-                                            class="btn btn-sm btn-outline-primary" title="Ver">
+                                            class="btn btn-sm btn-outline-primary"
+                                            title="Consultar auxiliar"
+                                            aria-label="Consultar auxiliar">
 
                                             <i class="bi bi-eye"></i>
 
                                         </a>
 
+                                        {{-- Editar --}}
+
                                         <a href="{{ route('admin.auxiliares.edit', $auxiliar) }}"
-                                            class="btn btn-sm btn-outline-warning" title="Editar">
+                                            class="btn btn-sm btn-outline-warning"
+                                            title="Editar auxiliar"
+                                            aria-label="Editar auxiliar">
 
                                             <i class="bi bi-pencil"></i>
 
                                         </a>
 
-                                        <form action="{{ route('admin.auxiliares.toggleEstado', $auxiliar) }}"
-                                            method="POST" class="d-inline">
+                                        {{-- Activar / Desactivar --}}
+
+                                        <form method="POST"
+                                            action="{{ route('admin.auxiliares.toggleEstado', $auxiliar) }}"
+                                            class="d-inline">
 
                                             @csrf
                                             @method('PATCH')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary"
-                                                title="{{ $auxiliar->estado === 'activo' ? 'Inactivar' : 'Activar' }}">
+                                            @if ($activo)
 
-                                                @if ($auxiliar->estado === 'activo')
-                                                    <i class="bi bi-person-slash"></i>
-                                                @else
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Desactivar auxiliar"
+                                                    aria-label="Desactivar auxiliar"
+                                                    onclick="return confirm('¿Está seguro de que desea desactivar este auxiliar?')">
+
+                                                    <i class="bi bi-person-x"></i>
+
+                                                </button>
+
+                                            @else
+
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-success"
+                                                    title="Activar auxiliar"
+                                                    aria-label="Activar auxiliar"
+                                                    onclick="return confirm('¿Desea activar nuevamente este auxiliar?')">
+
                                                     <i class="bi bi-person-check"></i>
-                                                @endif
 
-                                            </button>
+                                                </button>
+
+                                            @endif
 
                                         </form>
 
-                                        <form action="{{ route('admin.auxiliares.destroy', $auxiliar) }}" method="POST"
+                                        {{-- Eliminar --}}
+
+                                        <form method="POST"
+                                            action="{{ route('admin.auxiliares.destroy', $auxiliar) }}"
                                             class="d-inline"
                                             onsubmit="return confirm('¿Está seguro de eliminar este auxiliar?');">
 
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="Eliminar auxiliar"
+                                                aria-label="Eliminar auxiliar">
 
                                                 <i class="bi bi-trash"></i>
 
@@ -144,37 +212,47 @@
 
                                         </form>
 
-                                    </td>
+                                    </div>
 
-                                </tr>
+                                </td>
 
-                            @empty
+                            </tr>
 
-                                <tr>
+                        @empty
 
-                                    <td colspan="5" class="text-center py-5">
+                            <tr>
 
-                                        <i class="bi bi-person-gear fs-1 text-muted"></i>
+                                <td colspan="5">
 
-                                        <p class="text-muted mt-3 mb-0">
-                                            No hay auxiliares registrados.
-                                        </p>
+                                    <x-sigac.empty-state
+                                        title="No hay auxiliares registrados"
+                                        description="Los auxiliares registrados aparecerán en este listado."
+                                        icon="person-gear">
 
-                                    </td>
+                                        <a href="{{ route('admin.auxiliares.create') }}"
+                                            class="btn sigac-btn-primary">
 
-                                </tr>
-                            @endforelse
+                                            <i class="bi bi-person-plus"></i>
+                                            Registrar auxiliar
 
-                        </tbody>
+                                        </a>
 
-                    </table>
+                                    </x-sigac.empty-state>
 
-                </div>
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
-    ```
+
 @endsection

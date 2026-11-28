@@ -58,3 +58,19 @@ footer a {
     max-width: 100%;
     height: auto;
 }
+
+
+/* Footer compacto para autenticación */
+footer.auth-footer {
+    padding: 0;
+}
+
+.auth-footer .footer-info {
+    font-size: 0.78rem;
+    margin-top:2rem;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}

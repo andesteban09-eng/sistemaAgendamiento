@@ -1,122 +1,185 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="sigac-page">
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Tipos de servicio
-                </h1>
+        <x-sigac.page-header title="Tipos de servicio"
+            subtitle="Administra las categorías de los servicios ofrecidos por la institución."
+            eyebrow="SIGAC · ADMINISTRACIÓN">
 
-                <p class="text-muted mb-0">
-                    Administra las categorías de los servicios ofrecidos por el laboratorio.
-                </p>
-            </div>
+            <x-slot:actions>
 
-            <a href="{{ route('admin.tiposervicios.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>
-                Nuevo tipo de servicio
-            </a>
+                <a href="{{ route('admin.tiposervicios.create') }}" class="btn sigac-btn-light">
 
-        </div>
+                    <i class="bi bi-plus-lg"></i>
+                    Nuevo tipo de servicio
+
+                </a>
+
+            </x-slot:actions>
+
+        </x-sigac.page-header>
+
+        {{-- Mensajes --}}
 
         @if (session('success'))
-            <div class="alert alert-success">
+            <x-sigac.alert variant="success">
                 {{ session('success') }}
-            </div>
+            </x-sigac.alert>
         @endif
 
-        <div class="card border-0 shadow-sm">
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="No fue posible completar la operación">
 
-            <div class="card-body">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                <div class="table-responsive">
+            </x-sigac.alert>
+        @endif
 
-                    <table class="table table-hover align-middle">
+        {{-- Listado --}}
 
-                        <thead>
+        <x-sigac.card title="Tipos de servicio registrados"
+            subtitle="Consulta y administra las categorías de servicios disponibles.">
+
+            <div class="table-responsive">
+
+                <table class="table sigac-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($tiposServicio as $tipoServicio)
+                            @php
+                                $activo = $tipoServicio->estadotiposervicio === 'Activo';
+
+                                $varianteEstado = $activo ? 'success' : 'neutral';
+
+                                $etiquetaEstado = $activo ? 'Activo' : 'Inactivo';
+                            @endphp
+
                             <tr>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
+                                <td>
 
-                            @forelse ($tiposServicio as $tipoServicio)
-                                <tr>
+                                    <div class="sigac-table-entity">
 
-                                    <td class="fw-semibold">
-                                        {{ $tipoServicio->nombre }}
-                                    </td>
+                                        <div class="sigac-icon sigac-icon-info">
 
-                                    <td>
-                                        {{ $tipoServicio->descripcion ?: 'Sin descripción' }}
-                                    </td>
+                                            <i class="bi bi-grid" aria-hidden="true"></i>
 
-                                    <td>
-                                        @if ($tipoServicio->estadotiposervicio === 'Activo')
-                                            <span class="badge bg-success">
-                                                Activo
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary">
-                                                Inactivo
-                                            </span>
-                                        @endif
-                                    </td>
+                                        </div>
 
-                                    <td class="text-end">
+                                        <strong>
+                                            {{ $tipoServicio->nombre }}
+                                        </strong>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    {{ $tipoServicio->descripcion ?: 'Sin descripción' }}
+                                </td>
+
+                                <td>
+
+                                    <x-sigac.status :label="$etiquetaEstado" :variant="$varianteEstado" />
+
+                                </td>
+
+                                <td>
+
+                                    <div class="sigac-table-actions">
+
+                                        {{-- Editar --}}
 
                                         <a href="{{ route('admin.tiposervicios.edit', ['tipoServicio' => $tipoServicio->idtiposervicio]) }}"
-                                            class="btn btn-sm btn-outline-primary">
+                                            class="btn btn-sm btn-outline-warning" title="Editar tipo de servicio"
+                                            aria-label="Editar tipo de servicio">
+
                                             <i class="bi bi-pencil"></i>
-                                            Editar
+
                                         </a>
+
+                                        {{-- Activar / Desactivar --}}
+
                                         <form
                                             action="{{ route('admin.tiposervicios.toggleEstado', ['tipoServicio' => $tipoServicio->idtiposervicio]) }}"
                                             method="POST" class="d-inline">
+
                                             @csrf
                                             @method('PATCH')
-                                            <td>
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                @if ($tipoServicio->estadotiposervicio === 'Activo')
+
+                                            @if ($activo)
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    title="Desactivar tipo de servicio"
+                                                    aria-label="Desactivar tipo de servicio"
+                                                    onclick="return confirm('¿Está seguro de que desea desactivar este tipo de servicio?')">
+
                                                     <i class="bi bi-toggle-off"></i>
-                                                    Desactivar
-                                                @else
+
+                                                </button>
+                                            @else
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    title="Activar tipo de servicio" aria-label="Activar tipo de servicio"
+                                                    onclick="return confirm('¿Desea activar nuevamente este tipo de servicio?')">
+
                                                     <i class="bi bi-toggle-on"></i>
-                                                    Activar
-                                                @endif
-                                            </button>
+
+                                                </button>
+                                            @endif
+
                                         </form>
-                                    </td>
 
-                                    </td>
+                                    </div>
 
-                                </tr>
+                                </td>
 
-                            @empty
+                            </tr>
 
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
-                                        No hay tipos de servicio registrados.
-                                    </td>
-                                </tr>
-                            @endforelse
+                        @empty
 
-                        </tbody>
+                            <tr>
 
-                    </table>
+                                <td colspan="4">
 
-                </div>
+                                    <x-sigac.empty-state title="No hay tipos de servicio registrados"
+                                        description="Las categorías de servicios registradas aparecerán en este listado."
+                                        icon="grid">
+
+                                        <a href="{{ route('admin.tiposervicios.create') }}" class="btn sigac-btn-primary">
+
+                                            <i class="bi bi-plus-lg"></i>
+                                            Registrar tipo de servicio
+
+                                        </a>
+
+                                    </x-sigac.empty-state>
+
+                                </td>
+
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-        </div>
+        </x-sigac.card>
 
     </div>
+
 @endsection

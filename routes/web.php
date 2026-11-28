@@ -8,9 +8,11 @@ use App\Http\Controllers\Admin\AuxiliarController;
 use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\ServicioController;
 use App\Http\Controllers\Admin\CitaController as AdminCitaController;
+use App\Http\Controllers\Admin\SedeController;
 use App\Http\Controllers\Auxiliar\AgendaController;
 use App\Http\Controllers\Paciente\CitaController;
 use App\Http\Controllers\Auxiliar\CitaController as AuxiliarCitaController;
+use App\Http\Controllers\Profesional\ProfesionalDashboardController;
 use App\Livewire\Actions\Logout;
 use Illuminate\Http\Request;
 
@@ -122,6 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin/citas/{cita}/cancelar',
             [AdminCitaController::class, 'cancelar']
         )->name('admin.citas.cancelar');
+
 
 
         /*
@@ -293,6 +296,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin/servicios/{servicio}/estado',
             [ServicioController::class, 'toggleEstado']
         )->name('admin.servicios.toggleEstado');
+
+        /*
+|--------------------------------------------------------------------------
+| SEDES
+|--------------------------------------------------------------------------
+*/
+
+        Route::get(
+            'admin/sedes',
+            [SedeController::class, 'index']
+        )->name('admin.sedes.index');
+
+        Route::get(
+            'admin/sedes/create',
+            [SedeController::class, 'create']
+        )->name('admin.sedes.create');
+
+        Route::post(
+            'admin/sedes',
+            [SedeController::class, 'store']
+        )->name('admin.sedes.store');
+
+        Route::get(
+            'admin/sedes/{sede}',
+            [SedeController::class, 'show']
+        )->name('admin.sedes.show');
     });
 
 
@@ -397,22 +426,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('Paciente.citas.show');
     });
 
+    Route::middleware('role:profesional')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | LOGOUT
-    |--------------------------------------------------------------------------
-    */
-
-    Route::post(
-        'logout',
-        function (Request $request, Logout $logout) {
-
-            $logout();
-
-            return redirect('/');
-        }
-    )->name('logout');
+        Route::patch(
+            'profesional/citas/{cita}/realizar',
+            [ProfesionalDashboardController::class, 'realizar']
+        )->name('profesional.citas.realizar');
+    });
 
 
     /*
@@ -427,5 +447,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->name('profile');
 });
 
+Route::middleware('auth')->group(function () {
+
+    Route::post('logout', function (Logout $logout) {
+
+        $logout();
+
+        return redirect()->route('login');
+    })->name('logout');
+});
 
 require __DIR__ . '/auth.php';

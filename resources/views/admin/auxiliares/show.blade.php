@@ -1,121 +1,152 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
+    @php
+        $activo = $auxiliar->estado === 'activo';
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        $varianteEstado = $activo ? 'success' : 'neutral';
 
-            <div>
-                <h1 class="fw-bold mb-1">
-                    Información del auxiliar
-                </h1>
+        $etiquetaEstado = $activo ? 'Activo' : 'Inactivo';
+    @endphp
 
-                <p class="text-muted mb-0">
-                    Consulta la información del usuario auxiliar.
-                </p>
-            </div>
+    <div class="sigac-page">
 
-            <a href="{{ route('admin.auxiliares.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left me-2"></i>
-                Volver
-            </a>
+        <x-sigac.page-header title="Información del auxiliar" subtitle="Consulta la información del usuario auxiliar."
+            eyebrow="SIGAC · GESTIÓN DE AUXILIARES">
 
-        </div>
+            <x-slot:actions>
 
-        <div class="card border-0 shadow-sm">
+                <a href="{{ route('admin.auxiliares.index') }}" class="btn sigac-btn-light">
 
-            <div class="card-body p-4">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-                <div class="row g-4">
+                </a>
 
-                    <div class="col-md-6">
+                <a href="{{ route('admin.auxiliares.edit', $auxiliar) }}" class="btn sigac-btn-light">
 
-                        <small class="text-muted">
-                            Nombre
-                        </small>
+                    <i class="bi bi-pencil"></i>
+                    Editar auxiliar
 
-                        <h5 class="fw-bold">
-                            {{ $auxiliar->name }}
-                            {{ $auxiliar->last_name }}
-                        </h5>
+                </a>
 
-                    </div>
+            </x-slot:actions>
 
-                    <div class="col-md-6">
+        </x-sigac.page-header>
 
-                        <small class="text-muted">
-                            Correo electrónico
-                        </small>
+        {{-- Identificación --}}
 
-                        <h5>
-                            {{ $auxiliar->email }}
-                        </h5>
+        <x-sigac.card>
 
-                    </div>
+            <div class="sigac-identity">
 
-                    <div class="col-md-6">
+                <div class="sigac-icon sigac-icon-info">
 
-                        <small class="text-muted">
-                            Rol
-                        </small>
-
-                        <h5>
-                            Auxiliar
-                        </h5>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted">
-                            Estado
-                        </small>
-
-                        <div>
-
-                            @if ($auxiliar->estado === 'activo')
-                                <span class="badge text-bg-success">
-                                    Activo
-                                </span>
-                            @else
-                                <span class="badge text-bg-secondary">
-                                    Inactivo
-                                </span>
-                            @endif
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted">
-                            Fecha de registro
-                        </small>
-
-                        <h6>
-                            {{ $auxiliar->created_at?->format('d/m/Y H:i') }}
-                        </h6>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <small class="text-muted">
-                            Última actualización
-                        </small>
-
-                        <h6>
-                            {{ $auxiliar->updated_at?->format('d/m/Y H:i') }}
-                        </h6>
-
-                    </div>
+                    <i class="bi bi-person-gear" aria-hidden="true"></i>
 
                 </div>
 
+                <div class="sigac-identity-content">
+
+                    <h2>
+                        {{ $auxiliar->name }}
+                        {{ $auxiliar->last_name }}
+                    </h2>
+
+                    <p class="sigac-description mb-0">
+                        Auxiliar #{{ $auxiliar->id }}
+                    </p>
+
+                </div>
+
+                <x-sigac.status :label="$etiquetaEstado" :variant="$varianteEstado" />
+
             </div>
 
-        </div>
+            <hr>
+
+            <dl class="sigac-details">
+
+                <div>
+
+                    <dt>Nombre completo</dt>
+
+                    <dd>
+                        {{ $auxiliar->name }}
+                        {{ $auxiliar->last_name }}
+                    </dd>
+
+                </div>
+
+                <div>
+
+                    <dt>Correo electrónico</dt>
+
+                    <dd>{{ $auxiliar->email }}</dd>
+
+                </div>
+
+                <div>
+
+                    <dt>Rol</dt>
+
+                    <dd>Auxiliar</dd>
+
+                </div>
+
+                <div>
+
+                    <dt>Estado de la cuenta</dt>
+
+                    <dd>
+
+                        <x-sigac.status :label="$etiquetaEstado" :variant="$varianteEstado" />
+
+                    </dd>
+
+                </div>
+
+            </dl>
+
+        </x-sigac.card>
+
+        {{-- Información del registro --}}
+
+        <x-sigac.card title="Información del registro" subtitle="Datos de creación y actualización de la cuenta.">
+
+            <dl class="sigac-details">
+
+                <div>
+
+                    <dt>ID usuario</dt>
+
+                    <dd>{{ $auxiliar->id }}</dd>
+
+                </div>
+
+                <div>
+
+                    <dt>Fecha de registro</dt>
+
+                    <dd>
+                        {{ $auxiliar->created_at?->format('d/m/Y H:i') ?? 'No registrada' }}
+                    </dd>
+
+                </div>
+
+                <div>
+
+                    <dt>Última actualización</dt>
+
+                    <dd>
+                        {{ $auxiliar->updated_at?->format('d/m/Y H:i') ?? 'No registrada' }}
+                    </dd>
+
+                </div>
+
+            </dl>
+
+        </x-sigac.card>
 
     </div>
 @endsection

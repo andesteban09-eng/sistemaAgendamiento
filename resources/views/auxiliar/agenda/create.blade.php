@@ -1,348 +1,193 @@
 @extends('layouts.admin')
 
 @section('contenido')
-    <div class="container-fluid px-4 py-4">
 
-        ```
-        <div class="mb-4">
-            <h1 class="fw-bold mb-1">
-                Registrar disponibilidad
-            </h1>
+    @php
+        $serviciosPorProfesional = [];
 
-            <p class="text-muted mb-0">
-                Asigne un horario disponible a un profesional de la salud.
-            </p>
-        </div>
+        foreach ($profesionales as $profesional) {
+            $serviciosPorProfesional[$profesional->idprofesionalsalud] = [];
 
-        <div class="card border-0 shadow-sm">
+            foreach ($profesional->perfilesServicio as $perfil) {
+                if (
+                    $perfil->estadoperfil === 'Activo' &&
+                    $perfil->servicio &&
+                    $perfil->servicio->estadoservicio === 'Activo'
+                ) {
+                    $serviciosPorProfesional[$profesional->idprofesionalsalud][] = [
+                        'id' => $perfil->servicio->idservicio,
+                        'nombre' => $perfil->servicio->nombre,
+                        'tipo' => $perfil->tipoServicio?->nombre,
+                    ];
+                }
+            }
+        }
+    @endphp
 
-            <div class="card-body p-4">
+    <div class="sigac-page">
 
-                <form action="{{ route('auxiliar.agenda.store') }}" method="POST">
+        <x-sigac.page-header title="Registrar disponibilidad"
+            subtitle="Asigna un horario disponible a un profesional de la salud." eyebrow="SIGAC · GESTIÓN DE AGENDA">
 
-                    @csrf
+            <x-slot:actions>
 
-                    <div class="row g-4">
+                <a href="{{ route('auxiliar.agenda.index') }}" class="btn sigac-btn-light">
 
-                        {{-- PROFESIONAL --}}
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
 
-                        <div class="col-md-6">
+                </a>
 
-                            <label for="IDPROFESIONALSALUD" class="form-label fw-semibold">
-                                Profesional
-                            </label>
+            </x-slot:actions>
 
-                            <select name="IDPROFESIONALSALUD" id="IDPROFESIONALSALUD"
-                                class="form-select @error('IDPROFESIONALSALUD') is-invalid @enderror" required>
+        </x-sigac.page-header>
 
-                                <option value="">
-                                    Seleccione un profesional
-                                </option>
+        @if (session('error'))
+            <x-sigac.alert variant="danger">
+                {{ session('error') }}
+            </x-sigac.alert>
+        @endif
 
-                                @foreach ($profesionales as $profesional)
-                                    <option value="{{ $profesional->idprofesionalsalud }}" @selected(old('IDPROFESIONALSALUD') == $profesional->idprofesionalsalud)>
-                                        {{ $profesional->user->name }}
-                                        {{ $profesional->user->last_name }}
-                                    </option>
-                                @endforeach
+        @if ($errors->any())
+            <x-sigac.alert variant="danger" title="Revisa la información ingresada">
 
-                            </select>
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
 
-                            @error('IDPROFESIONALSALUD')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+            </x-sigac.alert>
+        @endif
 
-                        </div>
+        <form action="{{ route('auxiliar.agenda.store') }}" method="POST" class="sigac-form sigac-form-card">
 
+            @csrf
 
-                        {{-- SERVICIO --}}
+            @include('auxiliar.agenda.partials.form', [
+                'agenda' => null,
+            ])
 
-                        <div class="col-md-6">
+            <div class="sigac-form-actions">
 
-                            <label for="IDSERVICIO" class="form-label fw-semibold">
-                                Servicio
-                            </label>
+                <a href="{{ route('auxiliar.agenda.index') }}" class="btn btn-outline-secondary">
 
-                            <select name="IDSERVICIO" id="IDSERVICIO"
-                                class="form-select @error('IDSERVICIO') is-invalid @enderror" required disabled>
+                    Cancelar
 
-                                <option value="">
-                                    Seleccione primero un profesional
-                                </option>
+                </a>
 
-                            </select>
+                <button type="submit" class="btn sigac-btn-primary">
 
-                            @error('IDSERVICIO')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                    <i class="bi bi-calendar-plus"></i>
+                    Registrar disponibilidad
 
-                            <div id="mensaje-servicio" class="form-text">
-                                Seleccione un profesional para consultar sus servicios.
-                            </div>
-
-                        </div>
-
-
-                        {{-- SEDE --}}
-
-                        <div class="col-md-6">
-
-                            <label for="IDSEDE" class="form-label fw-semibold">
-                                Sede
-                            </label>
-
-                            <select name="IDSEDE" id="IDSEDE" class="form-select @error('IDSEDE') is-invalid @enderror"
-                                required>
-
-                                <option value="">
-                                    Seleccione una sede
-                                </option>
-
-                                @foreach ($sedes as $sede)
-                                    <option value="{{ $sede->idsede }}" @selected(old('IDSEDE') == $sede->idsede)>
-                                        {{ $sede->nombre }} — {{ $sede->ciudad }}
-                                    </option>
-                                @endforeach
-
-                            </select>
-
-                            @error('IDSEDE')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-
-                        {{-- FECHA --}}
-
-                        <div class="col-md-6">
-
-                            <label for="FECHA" class="form-label fw-semibold">
-                                Fecha
-                            </label>
-
-                            <input type="date" name="FECHA" id="FECHA" value="{{ old('FECHA') }}"
-                                class="form-control @error('FECHA') is-invalid @enderror" required>
-
-                            @error('FECHA')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-
-                        {{-- HORA --}}
-
-                        <div class="col-md-6">
-
-                            <label for="HORAINICIO" class="form-label fw-semibold">
-                                Hora de inicio
-                            </label>
-
-                            <input type="time" name="HORAINICIO" id="HORAINICIO" value="{{ old('HORAINICIO') }}"
-                                class="form-control @error('HORAINICIO') is-invalid @enderror" required>
-
-                            @error('HORAINICIO')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-
-                        {{-- CONSULTORIO --}}
-
-                        <div class="col-md-6">
-
-                            <label for="CONSULTORIO" class="form-label fw-semibold">
-                                Consultorio
-                            </label>
-
-                            <input type="text" name="CONSULTORIO" id="CONSULTORIO" value="{{ old('CONSULTORIO') }}"
-                                class="form-control @error('CONSULTORIO') is-invalid @enderror" maxlength="45"
-                                placeholder="Ej. Consultorio 101" required>
-
-                            @error('CONSULTORIO')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-
-                    <hr class="my-4">
-
-
-                    <div class="d-flex gap-2">
-
-                        <a href="{{ route('auxiliar.agenda.index') }}" class="btn btn-secondary">
-                            Cancelar
-                        </a>
-
-                        <button type="submit" class="btn btn-primary">
-
-                            <i class="bi bi-calendar-plus me-1"></i>
-
-                            Registrar disponibilidad
-
-                        </button>
-
-                    </div>
-
-                </form>
+                </button>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
 
-
     <script>
-        const serviciosPorProfesional = {};
+        (() => {
 
-        @foreach ($profesionales as $profesional)
+            const serviciosPorProfesional =
+                {{ \Illuminate\Support\Js::from($serviciosPorProfesional) }};
 
-            serviciosPorProfesional["{{ $profesional->idprofesionalsalud }}"] = [];
+            const servicioAnterior =
+                {{ \Illuminate\Support\Js::from(old('IDSERVICIO')) }};
 
-            @foreach ($profesional->perfilesServicio as $perfil)
+            const profesionalSelect =
+                document.getElementById('IDPROFESIONALSALUD');
 
-                @if ($perfil->estadoperfil === 'Activo' && $perfil->servicio && $perfil->servicio->estadoservicio === 'Activo')
+            const servicioSelect =
+                document.getElementById('IDSERVICIO');
 
-                    serviciosPorProfesional["{{ $profesional->idprofesionalsalud }}"].push({
-                        id: "{{ $perfil->servicio->idservicio }}",
-                        nombre: @json($perfil->servicio->nombre),
-                        tipo: @json($perfil->tipoServicio?->nombre)
-                    });
-                @endif
-            @endforeach
-        @endforeach
+            const mensajeServicio =
+                document.getElementById('mensaje-servicio');
 
+            function cargarServicios(servicioSeleccionado = null) {
 
-        const profesionalSelect =
-            document.getElementById('IDPROFESIONALSALUD');
+                const profesionalId = profesionalSelect.value;
 
-        const servicioSelect =
-            document.getElementById('IDSERVICIO');
-
-        const mensajeServicio =
-            document.getElementById('mensaje-servicio');
-
-
-        function cargarServicios() {
-
-            const profesionalId = profesionalSelect.value;
-
-            servicioSelect.innerHTML = '';
-
-
-            if (!profesionalId) {
-
+                servicioSelect.replaceChildren();
                 servicioSelect.disabled = true;
 
-                const opcion =
-                    document.createElement('option');
+                if (!profesionalId) {
 
-                opcion.value = '';
-                opcion.textContent =
-                    'Seleccione primero un profesional';
+                    servicioSelect.add(
+                        new Option(
+                            'Seleccione primero un profesional',
+                            ''
+                        )
+                    );
 
-                servicioSelect.appendChild(opcion);
+                    mensajeServicio.textContent =
+                        'Seleccione un profesional para consultar sus servicios.';
 
-                mensajeServicio.textContent =
-                    'Seleccione un profesional para consultar sus servicios.';
-
-                return;
-            }
-
-
-            const servicios =
-                serviciosPorProfesional[profesionalId] || [];
-
-
-            const opcionInicial =
-                document.createElement('option');
-
-            opcionInicial.value = '';
-            opcionInicial.textContent =
-                'Seleccione un servicio';
-
-            servicioSelect.appendChild(opcionInicial);
-
-
-            if (servicios.length === 0) {
-
-                servicioSelect.disabled = true;
-
-                mensajeServicio.textContent =
-                    'Este profesional no tiene servicios activos asignados.';
-
-                return;
-            }
-
-
-            servicioSelect.disabled = false;
-
-
-            servicios.forEach(function(servicio) {
-
-                const opcion =
-                    document.createElement('option');
-
-                opcion.value = servicio.id;
-
-                if (servicio.tipo) {
-
-                    opcion.textContent =
-                        servicio.nombre + ' — ' + servicio.tipo;
-
-                } else {
-
-                    opcion.textContent =
-                        servicio.nombre;
+                    return;
 
                 }
 
-                servicioSelect.appendChild(opcion);
+                const servicios =
+                    serviciosPorProfesional[profesionalId] || [];
+
+                servicioSelect.add(
+                    new Option('Seleccione un servicio', '')
+                );
+
+                if (servicios.length === 0) {
+
+                    mensajeServicio.textContent =
+                        'Este profesional no tiene servicios activos asignados.';
+
+                    return;
+
+                }
+
+                servicioSelect.disabled = false;
+
+                servicios.forEach(servicio => {
+
+                    const etiqueta = servicio.tipo ?
+                        `${servicio.nombre} — ${servicio.tipo}` :
+                        servicio.nombre;
+
+                    servicioSelect.add(
+                        new Option(etiqueta, servicio.id)
+                    );
+
+                });
+
+                if (servicioSeleccionado !== null) {
+
+                    const servicioValido = servicios.some(
+                        servicio =>
+                        String(servicio.id) === String(servicioSeleccionado)
+                    );
+
+                    if (servicioValido) {
+
+                        servicioSelect.value =
+                            String(servicioSeleccionado);
+
+                    }
+
+                }
+
+                mensajeServicio.textContent =
+                    `${servicios.length} servicio(s) autorizado(s) para este profesional.`;
+
+            }
+
+            profesionalSelect.addEventListener('change', () => {
+
+                cargarServicios();
 
             });
 
+            cargarServicios(servicioAnterior);
 
-            mensajeServicio.textContent =
-                servicios.length +
-                ' servicio(s) autorizado(s) para este profesional.';
-        }
-
-
-        profesionalSelect.addEventListener(
-            'change',
-            cargarServicios
-        );
-
-
-        document.addEventListener(
-            'DOMContentLoaded',
-            function() {
-
-                if (profesionalSelect.value) {
-
-                    cargarServicios();
-
-                }
-
-            }
-        );
+        })();
     </script>
+
 @endsection

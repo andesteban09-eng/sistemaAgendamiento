@@ -1,0 +1,209 @@
+/* ==================================================
+   SIGAC — Filtros de búsqueda
+   ================================================== */
+
+.sigac-filters {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 2fr)
+        minmax(0, 1fr)
+        auto;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sigac-filters > div {
+    min-width: 0;
+}
+
+.sigac-filter-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ==================================================
+   SIGAC — Tablas
+   ================================================== */
+
+.sigac-table {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+
+    --bs-table-color: #334155;
+    --bs-table-border-color: #edf1f5;
+    --bs-table-hover-bg: #f8fafc;
+}
+
+.sigac-table thead th {
+    background-color: var(--sigac-surface);
+    color: var(--azul-oscuro);
+    font-weight: 700;
+    padding: 12px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--sigac-border);
+}
+
+.sigac-table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.sigac-table tbody tr:hover > td {
+    background-color: #f8fafc;
+}
+
+.sigac-table .btn-sm {
+    font-size: 0.75rem;
+    padding: 5px 9px;
+    border-radius: var(--sigac-radius-sm);
+}
+
+/* Identificación de registros */
+
+.sigac-table-entity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sigac-table-entity strong {
+    color: var(--azul-oscuro);
+}
+
+/* Acciones por registro */
+
+.sigac-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* ==================================================
+   SIGAC — Paginación
+   ================================================== */
+
+.sigac-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.sigac-pagination .pagination {
+    margin-bottom: 0;
+    flex-wrap: wrap;
+
+    --bs-pagination-font-size: 0.78rem;
+    --bs-pagination-color: var(--azul-oscuro);
+    --bs-pagination-border-color: var(--sigac-border);
+    --bs-pagination-active-bg: var(--azul-oscuro);
+    --bs-pagination-active-border-color: var(--azul-oscuro);
+}
+
+.sigac-results {
+    color: var(--sigac-muted);
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+/* ==================================================
+   SIGAC — Responsive
+   ================================================== */
+
+@media (max-width: 1100px) {
+    .sigac-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sigac-filter-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .sigac-filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sigac-filter-actions > .btn {
+        flex: 1 1 auto;
+    }
+
+    .sigac-table thead th,
+    .sigac-table tbody td {
+        padding: 10px;
+    }
+
+    .sigac-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* =========================================================
+   SIGAC — TABLAS COMPACTAS
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .sigac-table {
+        font-size: 0.75rem;
+    }
+
+    .sigac-table th {
+        padding: 8px 10px;
+        font-size: 0.72rem;
+    }
+
+    .sigac-table td {
+        padding: 8px 10px;
+        line-height: 1.4;
+    }
+
+    .sigac-table-entity {
+        gap: 7px;
+    }
+
+    .sigac-table-entity .sigac-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+
+    .sigac-table-actions {
+        gap: 5px;
+    }
+
+    .sigac-table-actions .btn {
+        padding: 6px 8px;
+        font-size: 0.72rem;
+        min-height: 36px;
+        white-space: nowrap;
+    }
+
+    .sigac-filters {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .sigac-pagination {
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .sigac-table-results {
+        font-size: 0.72rem;
+    }
+
+    .sigac-pagination .page-link {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}

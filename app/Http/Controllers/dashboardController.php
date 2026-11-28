@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Profesional\ProfesionalDashboardController;
+use App\Http\Controllers\Auxiliar\AuxiliarDashboardController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Models\Cita;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+
 
 
 
@@ -87,10 +90,14 @@ class DashboardController extends Controller
             )->index(),
 
             'administrador' =>
-            view('admin.dashboard-admin'),
+            app(
+                AdminDashboardController::class
+            )->index(),
 
             'auxiliar' =>
-            view('auxiliar.dashboard-auxiliar'),
+            app(
+                AuxiliarDashboardController::class
+            )->index(),
 
             default => abort(403, 'Rol no autorizado.'),
         };

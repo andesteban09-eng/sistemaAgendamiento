@@ -1,0 +1,148 @@
+/* SIGAC — Encabezado público compacto.
+   Cargar DESPUÉS de principal.css. No modifica principal.css.
+   Todas las reglas usan sigac-topbar/sigac-navbar para limitar su alcance. */
+
+/* Barra auxiliar: más fina y legible. */
+.sigac-topbar.topbar {
+    padding: 3px 0;
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+.sigac-topbar .sigac-topbar-inner {
+    min-height: 26px;
+}
+.sigac-topbar .sigac-topbar-contact,
+.sigac-topbar .sigac-topbar-links {
+    gap: 10px;
+}
+
+.sigac-topbar .sigac-topbar-links a {
+    margin-left: 0;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.sigac-topbar .sigac-topbar-separator {
+    opacity: 0.35;
+}
+
+/* Navegación principal: altura controlada, logo proporcionado. */
+.sigac-navbar.navbar {
+    min-height: 62px;
+    padding: 5px 0;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(10, 37, 88, 0.075);
+}
+
+.sigac-navbar .navbar-brand {
+    padding: 0;
+    margin-right: 18px;
+}
+
+.sigac-navbar .navbar-brand img {
+    display: block;
+    height: 42px;
+    width: auto;
+    max-width: 180px;
+    max-height: 42px;
+    object-fit: contain;
+}
+
+.sigac-navbar .navbar-nav .nav-link {
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    line-height: 1.25;
+    letter-spacing: 0.025em;
+}
+
+.sigac-navbar .navbar-nav .nav-link:focus-visible,
+.sigac-navbar .sigac-login-button:focus-visible,
+.sigac-navbar .navbar-toggler:focus-visible {
+    outline: 2px solid var(--aqua, #00b4d8);
+    outline-offset: 3px;
+}
+
+.sigac-navbar .sigac-login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 36px;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--aqua, #00b4d8);
+    color: var(--azul-oscuro, #0a2558);
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.sigac-navbar .sigac-login-button:hover {
+    color: var(--azul-oscuro, #0a2558);
+    background: var(--azul-oscuro, #0a2558);
+}
+
+.sigac-navbar .navbar-toggler {
+    padding: 5px 8px;
+    font-size: 1rem;
+    border-color: #d8e3ee;
+}
+
+/* Evitar que el menú de servicios exceda la altura disponible. */
+.sigac-navbar .dropdown-menu {
+    max-height: min(68dvh, 480px);
+    overflow-y: auto;
+}
+
+@media (max-width: 991.98px) {
+    .sigac-navbar.navbar {
+        min-height: 58px;
+    }
+
+    .sigac-navbar .navbar-brand img {
+        height: 38px;
+        max-height: 38px;
+        max-width: 165px;
+    }
+
+    .sigac-navbar .navbar-collapse {
+        max-height: calc(100dvh - 72px);
+        overflow-y: auto;
+        padding: 8px 0 14px;
+    }
+
+    .sigac-navbar .navbar-nav .nav-link {
+        padding: 10px 8px;
+    }
+
+    .sigac-navbar .sigac-nav-action {
+        padding: 8px;
+    }
+
+    .sigac-navbar .sigac-login-button {
+        width: 100%;
+    }
+
+    .sigac-navbar .dropdown-menu {
+        max-height: 42dvh;
+        overflow-y: auto;
+    }
+}
+
+/* En móviles priorizar la navegación frente a la barra informativa. */
+@media (max-width: 767.98px) {
+    .sigac-topbar.topbar {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sigac-navbar .sigac-login-button {
+        transition: none;
+    }
+}

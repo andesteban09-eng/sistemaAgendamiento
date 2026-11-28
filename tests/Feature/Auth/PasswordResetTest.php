@@ -1,73 +1,150 @@
 <?php
 
-namespace Tests\Feature\Auth;
-
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Volt\Volt;
+use Tests\Support\OtpTestHelper;
 
-test('reset password link screen can be rendered', function () {
-    $response = $this->get('/forgot-password');
-
-    $response
-        ->assertSeeVolt('pages.auth.forgot-password')
-        ->assertStatus(200);
+beforeEach(function () {
+    OtpTestHelper::configure();
 });
 
-test('reset password link can be requested', function () {
-    Notification::fake();
+test('password recovery screen can be rendered', function () {
+    $this->get('/forgot-password')
+        ->assertOk()
+        ->assertSeeVolt('pages.auth.forgot-password');
+});
 
+test('password recovery otp can be requested', function () {
     $user = User::factory()->create();
 
     Volt::test('pages.auth.forgot-password')
         ->set('email', $user->email)
-        ->call('sendPasswordResetLink');
+        ->call('requestOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 2);
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    OtpTestHelper::sentCode();
+
+    expect(Hash::check(
+        'password',
+        $user->fresh()->password
+    ))->toBeTrue();
 });
 
-test('reset password screen can be rendered', function () {
-    Notification::fake();
+test('password can be reset after otp verification', function () {
+    $user = User::factory()->create();
 
+    $component = Volt::test('pages.auth.forgot-password')
+        ->set('email', $user->email)
+        ->call('requestOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 2);
+
+    $code = OtpTestHelper::sentCode();
+
+    $component
+        ->set('otp', $code)
+        ->call('verifyOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 3);
+
+    expect(Hash::check(
+        'password',
+        $user->fresh()->password
+    ))->toBeTrue();
+
+    $component
+        ->set('password', 'NewPassword2026!')
+        ->set('password_confirmation', 'NewPassword2026!')
+        ->call('resetPassword')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('login'));
+
+    expect(Hash::check(
+        'NewPassword2026!',
+        $user->fresh()->password
+    ))->toBeTrue();
+
+    $this->assertGuest();
+});
+
+test('invalid otp does not authorize password recovery', function () {
+    $user = User::factory()->create();
+
+    $component = Volt::test('pages.auth.forgot-password')
+        ->set('email', $user->email)
+        ->call('requestOtp')
+        ->assertSet('step', 2);
+
+    $code = OtpTestHelper::invalidCode(
+        OtpTestHelper::sentCode()
+    );
+
+    $component
+        ->set('otp', $code)
+        ->call('verifyOtp')
+        ->assertHasErrors(['otp'])
+        ->assertSet('step', 2)
+        ->assertNoRedirect();
+
+    expect(Hash::check(
+        'password',
+        $user->fresh()->password
+    ))->toBeTrue();
+});
+
+test('password cannot be reset before otp verification', function () {
     $user = User::factory()->create();
 
     Volt::test('pages.auth.forgot-password')
         ->set('email', $user->email)
-        ->call('sendPasswordResetLink');
+        ->call('requestOtp')
+        ->assertSet('step', 2)
+        ->set('password', 'NewPassword2026!')
+        ->set('password_confirmation', 'NewPassword2026!')
+        ->call('resetPassword')
+        ->assertNoRedirect();
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get('/reset-password/'.$notification->token);
-
-        $response
-            ->assertSeeVolt('pages.auth.reset-password')
-            ->assertStatus(200);
-
-        return true;
-    });
+    expect(Hash::check(
+        'password',
+        $user->fresh()->password
+    ))->toBeTrue();
 });
 
-test('password can be reset with valid token', function () {
-    Notification::fake();
+test('password recovery does not disclose unknown accounts', function () {
+    Volt::test('pages.auth.forgot-password')
+        ->set('email', 'unknown@example.com')
+        ->call('requestOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 2);
 
-    $user = User::factory()->create();
+    Notification::assertNothingSent();
+});
+
+test('password recovery does not disclose inactive accounts', function () {
+    $user = User::factory()->create([
+        'estado' => 'inactivo',
+    ]);
 
     Volt::test('pages.auth.forgot-password')
         ->set('email', $user->email)
-        ->call('sendPasswordResetLink');
+        ->call('requestOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 2);
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $component = Volt::test('pages.auth.reset-password', ['token' => $notification->token])
-            ->set('email', $user->email)
-            ->set('password', 'password')
-            ->set('password_confirmation', 'password');
+    Notification::assertNothingSent();
+});
 
-        $component->call('resetPassword');
+test('password recovery does not disclose unverified accounts', function () {
+    $user = User::factory()->unverified()->create();
 
-        $component
-            ->assertRedirect('/login')
-            ->assertHasNoErrors();
+    Volt::test('pages.auth.forgot-password')
+        ->set('email', $user->email)
+        ->call('requestOtp')
+        ->assertHasNoErrors()
+        ->assertSet('step', 2);
 
-        return true;
-    });
+    Notification::assertNothingSent();
 });

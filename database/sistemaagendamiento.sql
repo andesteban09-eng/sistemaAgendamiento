@@ -419,4 +419,68 @@ alter table users
 alter table users
    add constraint chk_users_estado check ( estado in ( 'activo',
                                                        'inactivo' ) );
+create table otp_challenges (
+   id           varchar2(36) not null,
+   user_id      number(19,0) not null,
+   purpose      varchar2(40) not null,
+   channel      varchar2(20) default 'EMAIL' not null,
+   destination  varchar2(255) not null,
+   code_hash    varchar2(64) not null,
+   session_hash varchar2(64) not null,
+   attempts     number(3,0) default 0 not null,
+   expires_at   timestamp(6) not null,
+   verified_at  timestamp(6),
+   consumed_at  timestamp(6),
+   revoked_at   timestamp(6),
+   created_at   timestamp(6) not null,
+   updated_at   timestamp(6) not null,
+   constraint otp_challenges_pk primary key ( id ),
+   constraint otp_challenges_user_fk foreign key ( user_id )
+      references users ( id ),
+   constraint ck_otp_purpose
+      check ( purpose in ( 'EMAIL_VERIFICATION',
+                           'PASSWORD_RESET',
+                           'PASSWORD_CHANGE' ) ),
+   constraint ck_otp_channel check ( channel in ( 'EMAIL' ) ),
+   constraint ck_otp_attempts check ( attempts between 0 and 5 ),
+   constraint ck_otp_expiration check ( expires_at > created_at ),
+   constraint ck_otp_consumption
+      check ( consumed_at is null
+          or verified_at is not null )
+);
+create index idx_otp_user_purpose on
+   otp_challenges (
+      user_id,
+      purpose
+   );
+
+create index idx_otp_expiration on
+   otp_challenges (
+      expires_at
+   );
+
+alter table otp_challenges
+   add constraint ck_otp_terminal check ( consumed_at is null
+       or revoked_at is null );
+
+create table otp_attempts (
+   id           varchar2(36) not null,
+   challenge_id varchar2(36) not null,
+   attempted_at timestamp(6) not null,
+   constraint otp_attempts_pk primary key ( id ),
+   constraint otp_attempts_challenge_fk foreign key ( challenge_id )
+      references otp_challenges ( id )
+);
+
+create index idx_otp_attempt_challenge on
+   otp_attempts (
+      challenge_id,
+      attempted_at
+   );
+
+create index idx_otp_attempt_date on
+   otp_attempts (
+      attempted_at
+   );
+
 commit;
