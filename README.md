@@ -13,9 +13,12 @@
 ![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
 ![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-087E98)
 
-**Estado:** consolidación funcional, fortalecimiento de seguridad y validación integral.  
-**Último hito de desarrollo:** renovación de autenticación, perfiles e interfaces de los cuatro roles, protección del historial tras el cierre de sesión y validación automatizada (noviembre de 2026).  
-**Versión objetivo:** SIGAC 1.0 — diciembre de 2026; todavía no corresponde a una versión liberada para producción.  
+**Estado:** consolidación funcional, fortalecimiento de seguridad y validación progresiva.
+
+**Último hito de desarrollo:** renovación de autenticación, perfiles e interfaces de los cuatro roles, protección del historial tras el cierre de sesión, edición de sedes y validación automatizada (noviembre de 2026).
+
+**Versión objetivo:** SIGAC 1.0 — diciembre de 2026; todavía no corresponde a una versión liberada para producción.
+
 **Origen:** proyecto formativo del Tecnólogo en Análisis y Desarrollo de Software (ADSO), SENA.
 
 ## Contenido
@@ -50,12 +53,20 @@ El alcance actual es administrativo y operativo. No sustituye una historia clín
 
 | Rol | Funcionalidades desarrolladas |
 |---|---|
-| **Administrador** | Panel de indicadores y actividad de citas; gestión de pacientes, profesionales, auxiliares, sedes, tipos de servicio y servicios; asignación de servicios a profesionales; consulta y gestión administrativa de citas. |
+| **Administrador** | Panel de indicadores y actividad de citas; gestión de pacientes, profesionales, auxiliares, tipos de servicio y servicios; registro, listado, consulta y edición de sedes; asignación de servicios a profesionales; consulta y gestión administrativa de citas. |
 | **Auxiliar** | Panel operativo; gestión de agendas y disponibilidades; consulta y filtrado de citas; búsqueda por documento del paciente; consulta de información del paciente y confirmación de citas pendientes. |
 | **Profesional de salud** | Panel de actividad diaria; calendario mensual, semanal y diario; consulta de citas asignadas, próxima cita y pacientes por atender; registro de una cita confirmada como realizada. |
 | **Paciente** | Panel personal; selección de tipo de servicio y servicio; consulta de horarios disponibles; agendamiento, historial y detalle de citas; modificación de observaciones, reprogramación y cancelación conforme a las reglas del negocio. |
 
 Los cuatro roles cuentan con acceso a su perfil, cambio seguro de contraseña y un encabezado compartido que identifica al usuario autenticado y su rol. Las operaciones están sujetas a los permisos y validaciones de la aplicación. El desarrollo de una interfaz no implica que todos sus escenarios de autorización hayan sido validados.
+
+### Gestión administrativa de sedes
+
+El módulo de sedes permite al administrador registrar ubicaciones de atención, consultar su información, filtrar por nombre, ciudad, dirección y estado, y actualizar sus datos. El listado incorpora indicadores y paginación; la consulta individual muestra la cantidad de horarios asociados.
+
+La edición reutiliza el formulario de registro, precarga los valores existentes y conserva los datos ingresados cuando se produce un error de validación. El acceso se realiza desde el listado o la vista de detalle.
+
+La activación e inactivación de sedes permanece pendiente de implementación y validación de sus efectos sobre agendas y citas.
 
 ### Experiencia de usuario
 
@@ -117,6 +128,15 @@ flowchart LR
 
 El diagrama representa el flujo principal desarrollado, no una máquina de estados exhaustiva. Las transiciones administrativas y las restricciones de cada operación deben verificarse en el código y las pruebas. Algunas interfaces contemplan también la denominación histórica `Atendida`.
 
+### Gestión de sedes
+
+- Las operaciones administrativas de sedes se reservan al rol `administrador`.
+- Una sede nueva se registra con estado `Activo`.
+- El registro y la edición comparten las mismas validaciones del lado servidor: nombre (80 caracteres), ciudad (100), dirección (60) y detalles (150), todos obligatorios.
+- La actualización admite únicamente estos cuatro atributos. El identificador `idsede`, el estado `estadosede` y las relaciones con las agendas existentes se conservan.
+- La edición se destina a corregir o actualizar la información de la ubicación. Como las citas consultan la sede relacionada con la agenda, cambiar la dirección puede modificar la información visible de citas históricas y futuras.
+- Para un traslado físico se recomienda registrar una nueva sede. La gestión de estados y las restricciones relacionadas con citas y horarios pendientes deben definirse y validarse antes de habilitar la inactivación.
+
 ## Arquitectura y organización
 
 SIGAC se desarrolla como una aplicación web Laravel de arquitectura monolítica, organizada por responsabilidades y contextos funcionales. La presentación utiliza Blade, Livewire y Volt; la lógica de aplicación se distribuye entre controladores, servicios y componentes, y la persistencia utiliza Eloquent con Oracle mediante Yajra OCI8.
@@ -176,6 +196,17 @@ tests/
 docs/
 ```
 
+### Implementación del módulo de sedes
+
+| Componente | Responsabilidad |
+|---|---|
+| `app/Http/Controllers/Admin/SedeController.php` | Listado, consulta, registro y actualización; validaciones compartidas para creación y edición. |
+| `App\Models\Sede` | Modelo Eloquent de la tabla `sede`, clave primaria `idsede` y relación con agendas. |
+| `routes/web.php` | Rutas administrativas, incluyendo `admin.sedes.edit` (GET) y `admin.sedes.update` (PUT), con resolución de la sede mediante Route Model Binding. |
+| `resources/views/admin/sedes/` | Vistas de listado, detalle, registro y edición; formulario reutilizable en `partials/form.blade.php`. |
+
+La edición reutiliza los componentes Blade, los layouts y los estilos del sistema de diseño existente. No requiere nuevas tablas ni cambios en la clave primaria de la sede.
+
 ### Sistema de diseño
 
 | Hoja de estilos | Responsabilidad |
@@ -206,7 +237,7 @@ flowchart TD
     U[USERS] --> PA
     U --> P
     U --> OTP[OTP_CHALLENGES]
-    U --> OA[OTP_ATTEMPTS]
+    OTP --> OA[OTP_ATTEMPTS]
 ```
 
 Este esquema es conceptual y no sustituye el modelo físico ni sus cardinalidades. La base de datos también contempla entidades de órdenes de laboratorio (`ORDENLABORATORIO`, `ORDENLABORATORIOSERVICIO`); su existencia no implica que esté implementada una plataforma de gestión clínica o resultados diagnósticos.
@@ -296,7 +327,7 @@ Aplicar únicamente las migraciones pendientes que correspondan al esquema, una 
 
 - Revisar `.env.example`, `config/mail.php`, `config/services.php` y `config/otp.php`.
 - Configurar un transporte de correo de desarrollo (por ejemplo, Mailpit) o un proveedor autorizado.
-- Generar una clave OTP aleatoria e independiente y configurarla mediante la variable de entorno indicada en `config/otp.php`. No reutilizar claves ni publicar sus valores.
+- Generar una clave OTP aleatoria e independiente y configurarla mediante la variable de entorno `OTP_SECRET`, declarada en `.env.example` y utilizada por `config/otp.php`. No reutilizar claves ni publicar sus valores.
 
 Para generar 32 bytes aleatorios representados en hexadecimal:
 
@@ -319,7 +350,7 @@ Abrir la URL indicada por Artisan (habitualmente `http://127.0.0.1:8000`). Tambi
 
 El proyecto incorpora pruebas unitarias y de funcionalidad para criptografía OTP, límites de uso, servicios de seguridad, autenticación, verificación de correo, recuperación y cambio de contraseña, gestión de perfiles y cierre de sesión. Las pruebas de autenticación comprueban la ruta HTTP de logout, el rechazo de solicitudes privadas posteriores, la eliminación de datos previos de sesión y las cabeceras de control de caché.
 
-**Última ejecución local reportada (28 de noviembre de 2026):**
+**Última ejecución local confirmada (28 de noviembre de 2026, anterior a la incorporación de la edición de sedes):**
 
 | Indicador | Resultado |
 |---|---:|
@@ -327,6 +358,24 @@ El proyecto incorpora pruebas unitarias y de funcionalidad para criptografía OT
 | Aserciones | 598 |
 | Fallos | 0 |
 | Duración | 11,92 s |
+
+### Pruebas del módulo de sedes
+
+Se ha preparado una suite adicional en `tests/Feature/Admin/SedeTest.php`, con nueve casos previstos para comprobar:
+
+- Acceso del administrador al formulario y actualización válida de una sede.
+- Rechazo de datos obligatorios vacíos.
+- Conservación del identificador y del estado ante campos adicionales enviados en la solicitud.
+- Rechazo de solicitudes de usuarios no autenticados y de los roles paciente, auxiliar y profesional.
+- Respuesta de recurso no encontrado ante una sede inexistente.
+
+```bash
+php artisan test tests/Feature/Admin/SedeTest.php
+```
+
+Con estas pruebas, la suite completa alcanzaría 122 casos. Su ejecución y número de aserciones aún no han sido confirmados; también queda pendiente comprobar la edición y la conservación de relaciones con agendas en Oracle.
+
+### Validación complementaria
 
 La prueba exploratoria del retroceso después del cierre de sesión fue satisfactoria en el navegador utilizado durante el desarrollo. La navegación de Livewire se conserva. La validación en múltiples pestañas y otros navegadores, las pruebas funcionales integrales de los cuatro roles y la validación específica sobre Oracle continúan pendientes.
 
@@ -356,16 +405,19 @@ Los resultados corresponden a la ejecución local indicada; no equivalen a un po
 - [x] Panel operativo del auxiliar, búsqueda por documento y confirmación de citas.
 - [x] Panel profesional, calendario y registro de atenciones realizadas.
 - [x] Panel administrativo con indicadores y actividad de citas.
+- [x] Registro, listado, consulta y edición de sedes con formularios reutilizables y validaciones compartidas.
 - [x] Sistema de diseño compartido, encabezados unificados y renovación responsive.
 - [x] Incorporación de pruebas automatizadas de seguridad OTP.
 - [x] Protección contra la reutilización de respuestas privadas en caché y revalidación complementaria del historial tras el logout.
-- [x] Adaptación de la suite a los flujos actuales de autenticación y perfiles: 113 pruebas superadas en la última ejecución local.
+- [x] Adaptación de la suite a los flujos actuales de autenticación y perfiles: 113 pruebas superadas en la última ejecución local confirmada, anterior a la edición de sedes.
 
 Las marcas representan trabajo desarrollado, no una certificación de que todos los escenarios funcionan en producción.
 
 ### Próximo hito: SIGAC 1.0 (objetivo diciembre de 2026)
 
-- [ ] Completar y verificar las operaciones administrativas pendientes, incluida la gestión del ciclo de vida de sedes.
+- [ ] Completar la activación e inactivación de sedes y definir sus restricciones respecto a agendas y citas asociadas.
+- [ ] Ejecutar las nueve pruebas adicionales de edición y autorización de sedes y validar el flujo completo en Oracle.
+- [ ] Completar y verificar las demás operaciones administrativas pendientes.
 - [ ] Consolidar las reglas de disponibilidad, estados, reprogramación y concurrencia.
 - [ ] Revisar autorización por rol y propiedad de los recursos, protección de datos y gestión de sesiones.
 - [ ] Ejecutar pruebas integrales en los cuatro roles, pruebas específicas sobre Oracle y pruebas de historial y sesiones en múltiples navegadores y pestañas.
@@ -389,8 +441,10 @@ La documentación técnica y académica se organiza en [`docs/`](docs/). Compren
 
 El proyecto utiliza Git y GitHub para registrar cambios y revisar integraciones. Se recomienda conservar commits coherentes, evitar archivos sensibles y verificar las modificaciones antes de integrarlas en `main`.
 
-**Desarrollador:** Andersson Esteban Peña Romero.  
-**Contexto académico:** Tecnólogo en Análisis y Desarrollo de Software, Servicio Nacional de Aprendizaje (SENA), Centro de Gestión Administrativa y Fortalecimiento Empresarial (CEGAFE), Regional Boyacá.  
+**Desarrollador:** Andersson Esteban Peña Romero.
+
+**Contexto académico:** Tecnólogo en Análisis y Desarrollo de Software, Servicio Nacional de Aprendizaje (SENA), Centro de Gestión Administrativa y Fortalecimiento Empresarial (CEGAFE), Regional Boyacá.
+
 **Repositorio:** [andesteban09-eng/sistemaAgendamiento](https://github.com/andesteban09-eng/sistemaAgendamiento).
 
 El origen académico no implica que el SENA o la organización utilizada como caso de estudio sean propietarios, clientes o responsables del producto.
