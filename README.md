@@ -1,348 +1,277 @@
+<p align="center">
+  <img src="public/img/logo-SIGAC.png" alt="SIGAC — Sistema de Agendamiento de Citas Médicas" width="360">
+</p>
+
 # SIGAC — Sistema Integral Web de Gestión, Automatización y Agendamiento de Citas
 
-**Sistema web de gestión administrativa y agendamiento de citas, desarrollado con Laravel y Oracle Database.**
+**Aplicación web para centralizar la gestión administrativa, la disponibilidad de profesionales y el agendamiento de citas médicas.**
 
-**Estado:** En desarrollo — consolidación funcional y validación  
-**Versión objetivo:** SIGAC 1.0 — Diciembre de 2026  
-**Origen:** Proyecto formativo del Tecnólogo en Análisis y Desarrollo de Software — SENA
+![Laravel 13](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-Backend-777BB4?logo=php&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle-Database-F80000)
+![Livewire](https://img.shields.io/badge/Livewire-Volt-FB70A9)
+![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
+![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-087E98)
 
----
+**Estado:** consolidación funcional, fortalecimiento de seguridad y validación integral.  
+**Último hito de desarrollo:** renovación de autenticación, perfiles e interfaces de los cuatro roles, protección del historial tras el cierre de sesión y validación automatizada (noviembre de 2026).  
+**Versión objetivo:** SIGAC 1.0 — diciembre de 2026; todavía no corresponde a una versión liberada para producción.  
+**Origen:** proyecto formativo del Tecnólogo en Análisis y Desarrollo de Software (ADSO), SENA.
 
-## 1. Descripción general
+## Contenido
 
-SIGAC es una aplicación web orientada a centralizar y organizar la gestión administrativa de citas, mediante la administración de usuarios, profesionales de salud, pacientes, servicios, sedes, agendas y disponibilidades.
+- [Descripción y alcance](#descripción-y-alcance)
+- [Funcionalidades por rol](#funcionalidades-por-rol)
+- [Autenticación y seguridad](#autenticación-y-seguridad)
+- [Reglas del negocio](#reglas-del-negocio)
+- [Arquitectura y organización](#arquitectura-y-organización)
+- [Modelo de datos](#modelo-de-datos)
+- [Tecnologías](#tecnologías)
+- [Instalación local](#instalación-local)
+- [Pruebas y calidad](#pruebas-y-calidad)
+- [Estado y hoja de ruta](#estado-y-hoja-de-ruta)
+- [Documentación y autoría](#documentación-y-autoría)
 
-El sistema permite relacionar los servicios solicitados con profesionales habilitados y horarios disponibles, aplicando reglas de negocio para controlar la asignación, modificación y cancelación de citas.
+## Descripción y alcance
 
-SIGAC se desarrolla como un **proyecto de software independiente**, con una arquitectura y un modelo funcional susceptibles de adaptación a distintos entornos organizacionales que requieran gestionar citas.
+SIGAC busca reducir la fragmentación de los procesos administrativos de agendamiento mediante una plataforma que relaciona pacientes, profesionales de salud, servicios, sedes, agendas y citas. El paciente puede consultar disponibilidades y gestionar sus reservas, mientras que los perfiles internos administran los recursos y las operaciones que les corresponden.
 
-### Origen del proyecto
+El sistema propone una alternativa a los procesos manuales y a la coordinación dispersa de solicitudes, con un modelo relacional, reglas de negocio explícitas, controles de acceso y una interfaz web adaptable a diferentes dispositivos.
 
-La iniciativa surgió a partir de un ejercicio académico de investigación y diagnóstico realizado en el contexto de Laboratorios Carvajal IPS S.A.S., que permitió identificar oportunidades de mejora relacionadas con la organización de solicitudes, el registro de información y la asignación de citas.
+### Origen y contexto
 
-Dicho diagnóstico constituye un **antecedente de investigación y caso de estudio**, no una relación comercial, contractual o institucional vigente.
+El proyecto surgió de un ejercicio académico de investigación y diagnóstico en el contexto de Laboratorios Carvajal IPS S.A.S. Este antecedente constituye un caso de estudio, no una relación comercial, contractual o institucional vigente.
 
-SIGAC no representa a Laboratorios Carvajal, no es un producto oficial de dicha organización y no se desarrolla actualmente por encargo de ninguna IPS.
+SIGAC es un proyecto independiente, adaptable a diferentes organizaciones que gestionen citas. No representa a dicha IPS, no es su producto oficial ni se desarrolla actualmente por encargo de una institución prestadora de salud.
 
----
+El alcance actual es administrativo y operativo. No sustituye una historia clínica electrónica, un sistema de resultados diagnósticos, un ERP ni una plataforma contable. Las integraciones externas y el cliente móvil forman parte de la evolución prevista.
 
-## 2. Objetivo general
+## Funcionalidades por rol
 
-Desarrollar y consolidar un sistema web para gestionar los procesos administrativos de agendamiento de citas mediante la administración de usuarios, roles, pacientes, profesionales, sedes, servicios y disponibilidades, aplicando reglas de negocio, controles de acceso y mecanismos de integridad de la información.
-
-### Objetivos específicos
-
-- Organizar la información de usuarios, profesionales, pacientes, sedes y servicios mediante un modelo de datos relacional.
-- Administrar las disponibilidades de los profesionales según los servicios que tienen asignados.
-- Permitir la creación, consulta, modificación y cancelación de citas conforme a reglas de negocio.
-- Establecer permisos diferenciados según los roles del sistema.
-- Verificar el funcionamiento mediante pruebas funcionales y de integración.
-- Documentar los componentes, requisitos, decisiones técnicas y procedimientos de operación del sistema.
-
----
-
-## 3. Alcance funcional
-
-La versión 1.0 se concentra en la gestión administrativa de citas y sus entidades relacionadas.
-
-Comprende:
-
-- Autenticación y control de acceso.
-- Administración de usuarios y perfiles.
-- Gestión de pacientes y profesionales de salud.
-- Gestión de auxiliares.
-- Administración de sedes.
-- Gestión de tipos de servicio y servicios.
-- Asignación de servicios a profesionales.
-- Administración de agendas y disponibilidades.
-- Agendamiento, consulta, reprogramación y cancelación de citas.
-- Gestión operativa de citas según los permisos de cada rol.
-
-SIGAC no pretende sustituir sistemas de historia clínica electrónica, gestión de resultados diagnósticos, contabilidad, nómina o inventario.
-
-La facturación electrónica, la asistencia conversacional y el cliente móvil se contemplan como ampliaciones posteriores, no como funcionalidades terminadas de SIGAC 1.0.
-
----
-
-## 4. Roles del sistema
-
-| Rol | Responsabilidades |
+| Rol | Funcionalidades desarrolladas |
 |---|---|
-| Administrador | Administración de usuarios, perfiles, profesionales, pacientes, auxiliares, servicios y otras entidades autorizadas. |
-| Auxiliar | Gestión administrativa de agendas, disponibilidades y operaciones de citas habilitadas para su perfil. |
-| Profesional | Consulta y gestión de información relacionada con su agenda y las citas asignadas, según los permisos implementados. |
-| Paciente | Consulta de servicios, agendamiento y administración de sus propias citas. |
+| **Administrador** | Panel de indicadores y actividad de citas; gestión de pacientes, profesionales, auxiliares, sedes, tipos de servicio y servicios; asignación de servicios a profesionales; consulta y gestión administrativa de citas. |
+| **Auxiliar** | Panel operativo; gestión de agendas y disponibilidades; consulta y filtrado de citas; búsqueda por documento del paciente; consulta de información del paciente y confirmación de citas pendientes. |
+| **Profesional de salud** | Panel de actividad diaria; calendario mensual, semanal y diario; consulta de citas asignadas, próxima cita y pacientes por atender; registro de una cita confirmada como realizada. |
+| **Paciente** | Panel personal; selección de tipo de servicio y servicio; consulta de horarios disponibles; agendamiento, historial y detalle de citas; modificación de observaciones, reprogramación y cancelación conforme a las reglas del negocio. |
 
-Las operaciones disponibles para cada perfil están sujetas a los permisos y validaciones definidos en la aplicación.
+Los cuatro roles cuentan con acceso a su perfil, cambio seguro de contraseña y un encabezado compartido que identifica al usuario autenticado y su rol. Las operaciones están sujetas a los permisos y validaciones de la aplicación. El desarrollo de una interfaz no implica que todos sus escenarios de autorización hayan sido validados.
 
----
+### Experiencia de usuario
 
-## 5. Funcionalidades principales
+- Identidad visual institucional y sistema de diseño basado en variables CSS.
+- Componentes Blade reutilizables para tarjetas, métricas, estados, alertas, módulos y encabezados de página.
+- Layouts y recursos compartidos; separación de estilos por responsabilidad.
+- Interfaces compactas y responsive para los cuatro roles, incluyendo autenticación y perfil.
+- Calendario interactivo del profesional con FullCalendar, disponible incluso sin citas registradas.
+- Agendamiento con selectores dependientes, consulta asíncrona de disponibilidades y selección visual de horarios.
 
-### 5.1. Autenticación y usuarios
+## Autenticación y seguridad
 
-El sistema contempla autenticación mediante correo electrónico y contraseña, manejo de sesiones y acceso diferenciado según el rol.
+La aplicación utiliza autenticación por correo electrónico y contraseña, sesiones de Laravel y controles de acceso por rol. La renovación de seguridad incorpora flujos de códigos de un solo uso (OTP) para la verificación del correo, el restablecimiento de contraseña y el cambio de contraseña autenticado.
 
-La administración de usuarios permite gestionar los perfiles correspondientes a pacientes, profesionales y auxiliares.
+### Mecanismos desarrollados
 
-### 5.2. Gestión de servicios
-
-Los servicios se organizan mediante dos niveles:
-
-```text
-TIPOSERVICIO
-    |
-    └── SERVICIO
-```
-
-Esta estructura permite clasificar los servicios y administrar su información y estado.
-
-### 5.3. Asignación de servicios a profesionales
-
-La entidad `PERFILSERVICIO` representa la relación entre profesionales de salud y servicios habilitados.
-
-```text
-PROFESIONALSALUD
-        |
-        v
-  PERFILSERVICIO
-        |
-        v
-     SERVICIO
-```
-
-Esta relación permite verificar qué profesionales pueden prestar un servicio determinado.
-
-### 5.4. Gestión de agenda
-
-Las disponibilidades se registran en `AGENDA` y relacionan:
-
-- Profesional de salud.
-- Sede.
-- Fecha.
-- Hora de inicio.
-- Consultorio.
-
-Las disponibilidades constituyen la base para asignar citas.
-
-### 5.5. Agendamiento de citas
-
-El paciente selecciona el servicio requerido y posteriormente una disponibilidad válida.
-
-```text
-Tipo de servicio
-       |
-       v
-    Servicio
-       |
-       v
-Disponibilidades válidas
-       |
-       v
-Selección de horario
-       |
-       v
-Detalle de la solicitud
-       |
-       v
-Confirmación de la cita
-```
-
-La relación con el profesional y la sede se obtiene a partir de la agenda seleccionada.
-
-### 5.6. Gestión de citas del paciente
-
-El módulo del paciente permite:
-
-- Consultar sus citas registradas.
-- Visualizar el detalle de una cita.
-- Modificar observaciones.
-- Reprogramar citas pendientes.
-- Cancelar citas pendientes.
-
-Las cancelaciones se realizan mediante cambios de estado, conservando los registros para consulta e historial.
-
-### 5.7. Reglas de reprogramación y cancelación
-
-La implementación actual del módulo del paciente contempla las siguientes reglas:
-
-1. Solo se permite modificar o cancelar citas en estado `Pendiente`.
-2. La modificación o cancelación debe solicitarse con al menos 24 horas de anticipación al inicio de la cita.
-3. Una cita puede reprogramarse como máximo tres veces.
-4. El contador `NUMREPROGRAMACIONES` aumenta únicamente cuando cambia la disponibilidad asignada.
-5. La modificación exclusiva del detalle no consume una reprogramación.
-6. La nueva disponibilidad debe cumplir las condiciones de fecha, servicio, profesional habilitado y ocupación.
-7. Las operaciones críticas utilizan transacciones y bloqueo de registros cuando corresponde.
-
-El cumplimiento integral de estas reglas forma parte de las pruebas funcionales del proyecto.
-
----
-
-## 6. Modelo funcional
-
-El núcleo del sistema se fundamenta en las relaciones entre las siguientes entidades:
-
-```text
-SERVICIO <── PERFILSERVICIO ──> PROFESIONALSALUD
-                                     |
-                                     v
-                                   AGENDA
-                                     |
-                                     v
-                                    CITA
-                                     |
-                                     v
-                                  PACIENTE
-```
-
-- `SERVICIO` representa la prestación solicitada.
-- `PERFILSERVICIO` determina las asignaciones de servicios a profesionales.
-- `PROFESIONALSALUD` identifica al profesional responsable.
-- `AGENDA` representa la disponibilidad.
-- `CITA` registra la reserva.
-- `PACIENTE` identifica al usuario que solicita la cita.
-
-El sistema utiliza reglas de negocio y mecanismos de integridad para controlar las relaciones entre estas entidades.
-
----
-
-## 7. Base de datos
-
-SIGAC utiliza **Oracle Database**, integrado con Laravel mediante Yajra OCI8.
-
-Entre las entidades principales del modelo se encuentran:
-
-```text
-USERS
-PACIENTE
-PROFESIONALSALUD
-SEDE
-TIPOSERVICIO
-SERVICIO
-PERFILSERVICIO
-AGENDA
-CITA
-ORDENLABORATORIO
-ORDENLABORATORIOSERVICIO
-```
-
-La existencia de entidades relacionadas con órdenes de laboratorio no implica que SIGAC implemente un sistema de gestión clínica o de resultados diagnósticos.
-
-El diseño utiliza relaciones, claves y restricciones de integridad, complementadas por validaciones en la lógica de aplicación.
-
----
-
-## 8. Tecnologías
-
-| Componente | Tecnología |
+| Área | Implementación |
 |---|---|
-| Lenguaje backend | PHP |
-| Framework backend | Laravel 13 |
-| ORM | Eloquent |
-| Componentes reactivos | Livewire y Livewire Volt |
-| Motor de base de datos | Oracle Database |
-| Integración Oracle | Yajra Laravel OCI8 |
-| Interfaz | HTML5, CSS3, JavaScript |
-| Framework CSS | Bootstrap 5 |
-| Iconografía | Bootstrap Icons |
-| Gestión de dependencias | Composer, npm |
-| Control de versiones | Git y GitHub |
-| Entorno local de desarrollo | Laragon |
+| Identidad | Verificación de correo electrónico mediante OTP y controles de estado de cuenta. |
+| Recuperación | Restablecimiento mediante OTP, con respuestas que buscan evitar la enumeración de cuentas. |
+| Cambio de contraseña | Validación de la contraseña actual y verificación mediante OTP. |
+| Protección de OTP | Códigos de seis dígitos, protección criptográfica mediante HMAC-SHA-256, expiración, uso único y vinculación al propósito y a la sesión. |
+| Límites de uso | Control de frecuencia de solicitudes, intentos de verificación y tiempos de espera entre envíos. |
+| Sesiones | Revocación de sesiones y rotación del token de recuerdo en los flujos de contraseña implementados; cierre de sesión por POST con CSRF, invalidación de la sesión y regeneración del token CSRF. |
+| Caché e historial | Middleware `PreventBackHistory` en el grupo `web`, cabeceras `Cache-Control: no-store` y protección JavaScript complementaria para la restauración de páginas (BFCache e historial de Livewire). |
+| Persistencia | Registro de desafíos e intentos OTP; transacciones y bloqueos en operaciones críticas. |
+| Interfaz y datos | Protección CSRF, validación del lado servidor y escape de contenido mediante Blade y manipulación segura del DOM donde corresponde. |
 
----
+La configuración de correo y OTP se mantiene separada del código mediante variables de entorno y archivos de configuración. No deben publicarse claves, contraseñas, tokens, códigos OTP ni datos personales reales.
 
-## 9. Arquitectura y organización
+Estos mecanismos no constituyen una auditoría de seguridad, una certificación ni una garantía de cumplimiento normativo. La revisión de autorización, concurrencia, sesiones y protección de datos continúa siendo una prioridad antes del despliegue.
 
-SIGAC utiliza una aplicación web basada en Laravel, organizada en capas de presentación, lógica de aplicación y persistencia de datos.
+## Reglas del negocio
 
-La estructura general comprende:
+### Agendamiento y disponibilidad
+
+1. El paciente selecciona un tipo de servicio, un servicio y una disponibilidad.
+2. El profesional debe estar habilitado para prestar el servicio solicitado mediante la relación `PERFILSERVICIO`.
+3. La disponibilidad debe cumplir las condiciones de fecha, servicio, profesional y ocupación definidas por el sistema.
+4. La cita conserva la relación con la agenda, de la cual se obtiene la información del profesional, sede y consultorio.
+5. Las operaciones críticas deben preservar la integridad de las reservas mediante validaciones y transacciones; la cobertura de escenarios concurrentes requiere pruebas adicionales.
+
+### Modificación y cancelación por el paciente
+
+- Solo pueden modificarse o cancelarse citas en estado `Pendiente`, con al menos 24 horas de anticipación.
+- Se permiten como máximo tres reprogramaciones por cita.
+- `NUMREPROGRAMACIONES` aumenta únicamente al cambiar la disponibilidad asignada.
+- Modificar exclusivamente las observaciones no consume una reprogramación.
+- Las cancelaciones conservan el registro y su historial mediante un cambio de estado.
+
+### Flujo operativo de citas
+
+```mermaid
+flowchart LR
+    A[Pendiente] -->|Confirmación por auxiliar| B[Confirmada]
+    B -->|Registro por profesional asignado| C[Realizada]
+    A -->|Cancelación autorizada| D[Cancelada]
+```
+
+El diagrama representa el flujo principal desarrollado, no una máquina de estados exhaustiva. Las transiciones administrativas y las restricciones de cada operación deben verificarse en el código y las pruebas. Algunas interfaces contemplan también la denominación histórica `Atendida`.
+
+## Arquitectura y organización
+
+SIGAC se desarrolla como una aplicación web Laravel de arquitectura monolítica, organizada por responsabilidades y contextos funcionales. La presentación utiliza Blade, Livewire y Volt; la lógica de aplicación se distribuye entre controladores, servicios y componentes, y la persistencia utiliza Eloquent con Oracle mediante Yajra OCI8.
+
+```mermaid
+flowchart TD
+    U[Usuarios y navegador] --> P[Blade / Livewire / Bootstrap / JavaScript]
+    P --> R[Rutas y controles de acceso]
+    R --> C[Controladores y componentes Livewire]
+    C --> S[Servicios de aplicación y seguridad]
+    C --> M[Modelos Eloquent]
+    S --> M
+    S --> N[Notificaciones y correo]
+    M --> O[(Oracle Database)]
+```
+
+### Estructura principal
 
 ```text
 app/
-├── Http/
-│   └── Controllers/
-└── Models/
-
-resources/
-└── views/
-
-routes/
-└── web.php
-
+├── Http/Controllers/
+│   ├── Admin/
+│   ├── Auxiliar/
+│   ├── Paciente/
+│   └── Profesional/
+├── Livewire/
+├── Models/
+├── Notifications/
+└── Services/
+    ├── Profile/
+    └── Security/
+config/
+├── mail.php
+└── otp.php
 database/
-
+├── migrations/
+└── sistemaagendamiento.sql
 public/
-
+├── css/
+├── img/
+└── js/
+resources/views/
+├── components/sigac/
+├── layouts/
+├── partials/
+├── admin/
+├── auxiliar/
+├── Paciente/
+├── profesional/
+└── livewire/
+routes/
+├── auth.php
+└── web.php
+tests/
+├── Feature/
+└── Unit/
 docs/
 ```
 
-Los controladores se organizan por contexto funcional:
+### Sistema de diseño
 
-```text
-Controllers/
-├── Admin/
-├── Auxiliar/
-├── Paciente/
-└── Profesional/
+| Hoja de estilos | Responsabilidad |
+|---|---|
+| `principal.css` | Identidad visual, variables globales y estilos generales. |
+| `componentes.css` | Componentes reutilizables y densidad visual. |
+| `formularios.css` | Formularios, campos y selección de horarios. |
+| `tablas.css` | Tablas, filtros, acciones y paginación. |
+| `dashboard.css` | Encabezados y elementos específicos de los paneles, incluido el calendario. |
+| `auth-layout.css`, `menu-compacto.css`, `profile.css`, `footer.css` | Estilos específicos de autenticación, navegación, perfil y pie de página. |
+
+El encabezado privado se centraliza en `resources/views/partials/dashboard-header.blade.php`, reutilizado por los parciales de los diferentes layouts. Los componentes de negocio y presentación se mantienen dentro de una misma aplicación; no se atribuye al proyecto una arquitectura de microservicios ni una API pública que todavía no se ha desarrollado.
+
+## Modelo de datos
+
+Oracle Database es el motor principal. El modelo relacional representa usuarios, perfiles, servicios, sedes, disponibilidades y citas, además de los registros asociados a la seguridad OTP.
+
+```mermaid
+flowchart TD
+    T[TIPOSERVICIO] --> S[SERVICIO]
+    P[PROFESIONALSALUD] --> PS[PERFILSERVICIO]
+    S --> PS
+    P --> A[AGENDA]
+    SE[SEDE] --> A
+    A --> C[CITA]
+    PA[PACIENTE] --> C
+    S --> C
+    U[USERS] --> PA
+    U --> P
+    U --> OTP[OTP_CHALLENGES]
+    U --> OA[OTP_ATTEMPTS]
 ```
 
-Esta distribución permite separar las responsabilidades de cada perfil sin atribuir al proyecto una arquitectura de microservicios que no ha sido implementada.
+Este esquema es conceptual y no sustituye el modelo físico ni sus cardinalidades. La base de datos también contempla entidades de órdenes de laboratorio (`ORDENLABORATORIO`, `ORDENLABORATORIOSERVICIO`); su existencia no implica que esté implementada una plataforma de gestión clínica o resultados diagnósticos.
 
----
+El script `database/sistemaagendamiento.sql` y las migraciones deben revisarse conjuntamente al preparar el esquema de desarrollo.
 
-## 10. Instalación local
+## Tecnologías
 
-### Requisitos previos
+| Capa | Tecnología |
+|---|---|
+| Backend | PHP, Laravel 13 |
+| ORM y conexión | Eloquent, Yajra Laravel OCI8, extensión PHP OCI8 |
+| Base de datos | Oracle Database XE 21c (entorno de desarrollo) |
+| Presentación | Blade, Livewire, Livewire Volt |
+| Frontend | HTML5, CSS3, JavaScript, Bootstrap 5, Bootstrap Icons |
+| Calendario | FullCalendar |
+| Correo | Laravel Notifications y transporte de correo configurable |
+| Dependencias y recursos | Composer, npm, Vite |
+| Pruebas | Pest, PHPUnit, herramientas de testing de Laravel y SQLite en memoria |
+| Versionamiento | Git y GitHub |
+| Entorno local | Laragon / Windows; servidor de desarrollo de Laravel |
 
-- PHP compatible con Laravel 13.
-- Composer.
-- Node.js y npm.
-- Oracle Database.
-- Extensión OCI8 para PHP.
-- Git.
-- Un entorno de desarrollo web compatible.
+Las versiones exactas de las dependencias se encuentran en los manifiestos y archivos de bloqueo del repositorio.
 
-### Clonar el repositorio
+## Instalación local
+
+> La instalación requiere un esquema Oracle compatible. Esta guía describe el procedimiento general; la preparación completa del esquema y el despliegue reproducible todavía requieren validación en un entorno limpio.
+
+### 1. Requisitos
+
+- PHP compatible con las restricciones de `composer.json`, Composer y extensión OCI8 habilitada.
+- Oracle Database y cliente Oracle compatible con OCI8.
+- Node.js, npm y Git.
+- Un servicio de correo de desarrollo para probar los flujos OTP.
+
+### 2. Clonar e instalar dependencias
 
 ```bash
 git clone https://github.com/andesteban09-eng/sistemaAgendamiento.git
 cd sistemaAgendamiento
-```
-
-### Instalar dependencias
-
-```bash
 composer install
 npm install
 ```
 
-### Configurar el entorno
+### 3. Configurar el entorno
 
 En PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
-```
-
-En sistemas compatibles con `cp`:
-
-```bash
-cp .env.example .env
-```
-
-Generar la clave de aplicación:
-
-```bash
 php artisan key:generate
 ```
 
-### Configurar Oracle Database
+En Linux o macOS:
 
-Establecer los parámetros de conexión correspondientes al entorno local.
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Ejemplo orientativo:
+Configurar la conexión Oracle según las variables reconocidas por el proyecto. Ejemplo orientativo, sin credenciales reales:
 
 ```dotenv
+APP_ENV=local
+APP_DEBUG=true
 DB_CONNECTION=oracle
 DB_HOST=127.0.0.1
 DB_PORT=1521
@@ -351,198 +280,121 @@ DB_USERNAME=usuario_local
 DB_PASSWORD=contraseña_local
 ```
 
-La configuración exacta debe corresponder al controlador Oracle, servicio y variables reconocidas por la versión del proyecto.
+Revisar `.env.example` y la configuración de conexión para determinar el nombre del servicio Oracle y los parámetros específicos del controlador. Utilizar un usuario de desarrollo con los permisos necesarios, no una cuenta administrativa de producción.
 
-**Importante:** la instalación requiere disponer del esquema y los objetos de base de datos necesarios. Los procedimientos de creación o importación del esquema deberán documentarse según los scripts disponibles en el repositorio.
+### 4. Preparar la base de datos
 
-No deben publicarse contraseñas reales ni archivos `.env`.
-
-### Ejecutar la aplicación
+Revisar `database/sistemaagendamiento.sql` y las migraciones existentes antes de ejecutarlos. Preparar un esquema de desarrollo dedicado, evitando recrear objetos ya existentes. Las migraciones OTP incorporan las tablas de desafíos e intentos y requieren las dependencias de esquema correspondientes.
 
 ```bash
-php artisan serve
+php artisan migrate:status
 ```
 
-Para compilar los recursos frontend:
+Aplicar únicamente las migraciones pendientes que correspondan al esquema, una vez revisadas. No ejecutar `migrate:fresh`, `db:wipe` ni comandos destructivos sobre una base de datos Oracle que contenga información necesaria.
+
+### 5. Configurar correo y OTP
+
+- Revisar `.env.example`, `config/mail.php`, `config/services.php` y `config/otp.php`.
+- Configurar un transporte de correo de desarrollo (por ejemplo, Mailpit) o un proveedor autorizado.
+- Generar una clave OTP aleatoria e independiente y configurarla mediante la variable de entorno indicada en `config/otp.php`. No reutilizar claves ni publicar sus valores.
+
+Para generar 32 bytes aleatorios representados en hexadecimal:
+
+```bash
+php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+```
+
+Comprobar que el transporte de correo funcione antes de probar registro, recuperación o cambio de contraseña. Mantener `.env` fuera del repositorio.
+
+### 6. Compilar y ejecutar
 
 ```bash
 npm run build
+php artisan serve
 ```
 
-También puede utilizarse Laragon como entorno de ejecución local.
+Abrir la URL indicada por Artisan (habitualmente `http://127.0.0.1:8000`). También es posible utilizar Laragon, configurando el directorio público de Laravel como raíz web.
 
----
+## Pruebas y calidad
 
-## 11. Estado de desarrollo
+El proyecto incorpora pruebas unitarias y de funcionalidad para criptografía OTP, límites de uso, servicios de seguridad, autenticación, verificación de correo, recuperación y cambio de contraseña, gestión de perfiles y cierre de sesión. Las pruebas de autenticación comprueban la ruta HTTP de logout, el rechazo de solicitudes privadas posteriores, la eliminación de datos previos de sesión y las cabeceras de control de caché.
 
-### Implementado en el núcleo web
+**Última ejecución local reportada (28 de noviembre de 2026):**
 
-- [x] Autenticación y sesiones.
-- [x] Gestión administrativa básica de usuarios.
-- [x] Gestión de pacientes.
-- [x] Gestión de profesionales.
-- [x] Gestión de auxiliares.
-- [x] Tipos de servicio y servicios.
-- [x] Asignación de servicios a profesionales.
-- [x] Gestión de agendas.
-- [x] Agendamiento de citas del paciente.
-- [x] Consulta y detalle de citas del paciente.
-- [x] Reprogramación de citas del paciente.
-- [x] Cancelación de citas del paciente.
-- [x] Validaciones de disponibilidad.
-- [x] Límite de tres reprogramaciones.
-- [x] Restricción de 24 horas para modificación y cancelación.
+| Indicador | Resultado |
+|---|---:|
+| Pruebas superadas | 113 de 113 |
+| Aserciones | 598 |
+| Fallos | 0 |
+| Duración | 11,92 s |
 
-### Pendiente de consolidación y validación
+La prueba exploratoria del retroceso después del cierre de sesión fue satisfactoria en el navegador utilizado durante el desarrollo. La navegación de Livewire se conserva. La validación en múltiples pestañas y otros navegadores, las pruebas funcionales integrales de los cuatro roles y la validación específica sobre Oracle continúan pendientes.
 
-- [ ] Completar y verificar la gestión operativa de citas del auxiliar.
-- [ ] Completar y verificar las operaciones del profesional.
-- [ ] Revisar los flujos de estados y reasignación.
-- [ ] Ejecutar pruebas funcionales e integrales.
-- [ ] Revisar autorización y seguridad.
-- [ ] Mejorar el tratamiento de errores y las validaciones.
-- [ ] Revisar la experiencia de usuario.
-- [ ] Completar documentación técnica y funcional.
-- [ ] Preparar una demostración estable de SIGAC 1.0.
+Antes de ejecutar la suite, comprobar que el entorno de pruebas utiliza una base de datos aislada (por ejemplo, SQLite en memoria para las pruebas compatibles) y nunca el esquema Oracle de desarrollo o producción con información que deba conservarse. SQLite no sustituye las pruebas específicas de Oracle, sus restricciones ni su comportamiento de bloqueo.
 
-Las funcionalidades señaladas como implementadas corresponden al avance de desarrollo registrado; la validación integral de la versión continúa pendiente.
+```bash
+php artisan test
+php artisan view:clear
+php artisan view:cache
+php artisan route:list
+```
 
----
+La compilación de vistas y las pruebas automatizadas deben complementarse con pruebas en navegador: autenticación y OTP, autorización por rol, gestión de agendas, disponibilidad y reprogramación, confirmación y realización de citas, navegación y responsive.
 
-## 12. Hoja de ruta
+Los resultados corresponden a la ejecución local indicada; no equivalen a un porcentaje de cobertura del código, a una auditoría de seguridad ni a una garantía de funcionamiento en producción.
 
-### Diciembre de 2026 — SIGAC 1.0
+## Estado y hoja de ruta
 
-**Objetivo:** consolidar el sistema web de gestión y agendamiento de citas.
+### Avances desarrollados
 
-Prioridades:
+- [x] Autenticación, sesiones y acceso por roles.
+- [x] Verificación de correo, recuperación y cambio de contraseña mediante OTP.
+- [x] Gestión del perfil y actualización de información personal.
+- [x] Gestión de pacientes, profesionales, auxiliares, tipos de servicio y servicios.
+- [x] Asignación de servicios a profesionales y gestión de agendas.
+- [x] Agendamiento, consulta, reprogramación y cancelación de citas del paciente.
+- [x] Panel operativo del auxiliar, búsqueda por documento y confirmación de citas.
+- [x] Panel profesional, calendario y registro de atenciones realizadas.
+- [x] Panel administrativo con indicadores y actividad de citas.
+- [x] Sistema de diseño compartido, encabezados unificados y renovación responsive.
+- [x] Incorporación de pruebas automatizadas de seguridad OTP.
+- [x] Protección contra la reutilización de respuestas privadas en caché y revalidación complementaria del historial tras el logout.
+- [x] Adaptación de la suite a los flujos actuales de autenticación y perfiles: 113 pruebas superadas en la última ejecución local.
 
-- Finalizar las funcionalidades pendientes del núcleo.
-- Corregir errores detectados.
-- Verificar las reglas de negocio.
-- Ejecutar pruebas.
-- Revisar controles de acceso.
-- Actualizar la documentación.
-- Preparar las evidencias académicas.
-- Disponer de una demostración funcional.
+Las marcas representan trabajo desarrollado, no una certificación de que todos los escenarios funcionan en producción.
 
-**Hito académico:** presentación de evidencias de avance prevista para el 3 o 4 de diciembre de 2026.
+### Próximo hito: SIGAC 1.0 (objetivo diciembre de 2026)
 
-### 2027 — Evolución del producto
+- [ ] Completar y verificar las operaciones administrativas pendientes, incluida la gestión del ciclo de vida de sedes.
+- [ ] Consolidar las reglas de disponibilidad, estados, reprogramación y concurrencia.
+- [ ] Revisar autorización por rol y propiedad de los recursos, protección de datos y gestión de sesiones.
+- [ ] Ejecutar pruebas integrales en los cuatro roles, pruebas específicas sobre Oracle y pruebas de historial y sesiones en múltiples navegadores y pestañas.
+- [ ] Completar manuales, evidencias académicas y procedimientos de instalación.
+- [ ] Preparar un entorno de demostración estable con datos ficticios y configuración segura.
 
-Las siguientes iniciativas forman parte de la hoja de ruta futura y no de las funcionalidades implementadas en SIGAC 1.0.
+### Evolución prevista para 2027
 
-#### Aplicación móvil
+| Iniciativa | Alcance previsto |
+|---|---|
+| Cliente móvil | Flutter, API Laravel y evaluación de Laravel Sanctum para autenticación de solicitudes. |
+| Facturación electrónica | Evaluación e integración de Factus, con análisis de requisitos, trazabilidad y pruebas en sandbox. |
+| Órdenes médicas | Evaluar la viabilidad y condiciones de acceso a servicios de validación de órdenes, incluido MIPRES cuando resulte aplicable. |
+| Asistente conversacional | Evaluación de modelos de lenguaje, preferentemente locales, con límites de acceso, privacidad y validación de respuestas. |
 
-Desarrollo de un cliente móvil mediante **Flutter**, con comunicación con el backend de Laravel a través de una API.
+Estas iniciativas no son funcionalidades terminadas ni forman parte de una oferta comercial vigente. Su desarrollo depende de requisitos, permisos, viabilidad técnica y validación de seguridad.
 
-Se contempla utilizar **Laravel Sanctum** para la autenticación de solicitudes y el control de acceso a los recursos autorizados.
+## Documentación y autoría
 
-La implementación deberá definir los casos de uso móviles, los endpoints, las políticas de autorización y los mecanismos de gestión de sesiones o tokens correspondientes.
+La documentación técnica y académica se organiza en [`docs/`](docs/). Comprende o contempla ingeniería de requisitos, casos de uso, modelos de datos, diagramas UML, reglas de negocio, decisiones técnicas, pruebas y manuales de operación. Debe mantenerse sincronizada con el código.
 
-#### Facturación electrónica
+El proyecto utiliza Git y GitHub para registrar cambios y revisar integraciones. Se recomienda conservar commits coherentes, evitar archivos sensibles y verificar las modificaciones antes de integrarlas en `main`.
 
-Evaluación e integración de la **API de Factus** para incorporar funcionalidades de facturación electrónica asociadas a los procesos administrativos que se definan.
+**Desarrollador:** Andersson Esteban Peña Romero.  
+**Contexto académico:** Tecnólogo en Análisis y Desarrollo de Software, Servicio Nacional de Aprendizaje (SENA), Centro de Gestión Administrativa y Fortalecimiento Empresarial (CEGAFE), Regional Boyacá.  
+**Repositorio:** [andesteban09-eng/sistemaAgendamiento](https://github.com/andesteban09-eng/sistemaAgendamiento).
 
-Esta ampliación requerirá analizar:
+El origen académico no implica que el SENA o la organización utilizada como caso de estudio sean propietarios, clientes o responsables del producto.
 
-- Requisitos funcionales y normativos aplicables.
-- Autenticación con el proveedor.
-- Información de clientes, servicios y documentos.
-- Manejo de respuestas y errores.
-- Persistencia y trazabilidad de las operaciones.
-- Pruebas en el entorno habilitado por el proveedor.
+### Licencia
 
-La integración no implica desarrollar un sistema contable o ERP completo.
-
-#### Asistente conversacional con inteligencia artificial
-
-Diseño de un asistente conversacional para orientar a los usuarios en las operaciones autorizadas del sistema.
-
-Se priorizará la evaluación de modelos de lenguaje ejecutados localmente, considerando requisitos de rendimiento, privacidad, seguridad y recursos disponibles.
-
-Antes de su implementación deberán definirse:
-
-- Alcance funcional y permisos.
-- Fuentes de información autorizadas.
-- Protección de información personal.
-- Límites de acceso a datos.
-- Validación de respuestas.
-- Tratamiento de errores.
-- Evaluación de riesgos y pruebas.
-
-El asistente no se considera implementado ni se presupone que tenga autorización para ejecutar operaciones sobre datos del sistema.
-
----
-
-## 13. Calidad y seguridad
-
-El proyecto considera la seguridad y la calidad del software como actividades que deben verificarse durante su desarrollo.
-
-Entre los aspectos prioritarios se encuentran:
-
-- Autenticación y autorización por rol.
-- Validación de datos recibidos.
-- Protección de información personal.
-- Control de acceso a recursos propios de cada usuario.
-- Integridad de las relaciones entre entidades.
-- Uso de transacciones en operaciones críticas.
-- Prevención de reservas incompatibles.
-- Manejo de errores.
-- Pruebas funcionales y de integración.
-- Mantenibilidad y documentación.
-
-Como referencias conceptuales para la evolución del proyecto se consideran la ingeniería de requisitos, los modelos de calidad de software y las recomendaciones de seguridad para aplicaciones web.
-
-La adopción de estos criterios no constituye por sí sola una certificación de seguridad o calidad.
-
----
-
-## 14. Documentación
-
-La documentación académica, funcional y técnica del proyecto comprende o contempla:
-
-- Marco referencial.
-- Especificación de requisitos.
-- Casos de uso.
-- Modelo de datos.
-- Diagramas UML.
-- Documentación de reglas de negocio.
-- Casos y resultados de prueba.
-- Manual de usuario.
-- Manual técnico.
-- Guía de instalación y despliegue.
-- Documentación de futuras integraciones.
-
-Los documentos deben mantener correspondencia con el estado real del código y distinguir las funcionalidades implementadas de las propuestas.
-
----
-
-## 15. Control de versiones
-
-El proyecto utiliza Git para el seguimiento de cambios y GitHub como plataforma de alojamiento del repositorio.
-
-Se recomienda mantener cambios coherentes y verificables, evitando incluir archivos de configuración sensibles, credenciales, dependencias generadas o artefactos locales innecesarios.
-
-Antes de registrar una modificación deben revisarse los archivos afectados y comprobarse, cuando corresponda, el funcionamiento de los componentes modificados.
-
----
-
-## 16. Contexto académico y autoría
-
-SIGAC se desarrolla como proyecto formativo del programa **Tecnólogo en Análisis y Desarrollo de Software**, del Servicio Nacional de Aprendizaje (SENA), Centro de Gestión Administrativa y Fortalecimiento Empresarial — CEGAFE, Regional Boyacá.
-
-**Desarrollador:** Andersson Esteban Peña Romero  
-**Ficha:** 3230746
-
-**Repositorio:** https://github.com/andesteban09-eng/sistemaAgendamiento
-
-El origen académico del proyecto no implica que el SENA o la organización utilizada como caso de estudio sean propietarios, clientes o responsables de las funcionalidades del producto.
-
----
-
-## 17. Licencia
-
-La licencia de distribución del proyecto está pendiente de definición.
-
-Hasta que se incorpore un archivo de licencia explícito, no debe asumirse que el código dispone de una licencia de software libre u otra autorización general de reutilización.
+La licencia de distribución está pendiente de definición. La disponibilidad del repositorio no constituye por sí sola una autorización general de reutilización, modificación o distribución del código.
