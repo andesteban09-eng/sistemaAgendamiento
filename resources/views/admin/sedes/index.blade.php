@@ -189,6 +189,14 @@
 
                                         </a>
 
+                                        <a href="{{ route('admin.sedes.edit', $sede) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="Editar sede">
+
+                                            <i class="bi bi-pencil-square"></i>
+                                            Editar
+
+                                        </a>
+
                                     </div>
 
                                 </td>

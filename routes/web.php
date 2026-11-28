@@ -298,6 +298,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('admin.servicios.toggleEstado');
 
         /*
+/*
 |--------------------------------------------------------------------------
 | SEDES
 |--------------------------------------------------------------------------
@@ -317,6 +318,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin/sedes',
             [SedeController::class, 'store']
         )->name('admin.sedes.store');
+
+        Route::get(
+            'admin/sedes/{sede}/edit',
+            [SedeController::class, 'edit']
+        )->name('admin.sedes.edit');
+
+        Route::put(
+            'admin/sedes/{sede}',
+            [SedeController::class, 'update']
+        )->name('admin.sedes.update');
 
         Route::get(
             'admin/sedes/{sede}',

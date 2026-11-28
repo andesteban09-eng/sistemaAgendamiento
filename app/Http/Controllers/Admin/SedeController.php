@@ -73,12 +73,7 @@ class SedeController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:80'],
-            'ciudad' => ['required', 'string', 'max:100'],
-            'direccion' => ['required', 'string', 'max:60'],
-            'detalles' => ['required', 'string', 'max:150'],
-        ]);
+        $validated = $this->validarDatos($request);
 
         Sede::create([
             ...$validated,
@@ -88,5 +83,33 @@ class SedeController extends Controller
         return redirect()
             ->route('admin.sedes.index')
             ->with('success', 'Sede registrada correctamente.');
+    }
+
+    public function edit(Sede $sede): View
+    {
+        return view('admin.sedes.edit', compact('sede'));
+    }
+
+    public function update(
+        Request $request,
+        Sede $sede
+    ): RedirectResponse {
+        $validated = $this->validarDatos($request);
+
+        $sede->update($validated);
+
+        return redirect()
+            ->route('admin.sedes.index')
+            ->with('success', 'Sede actualizada correctamente.');
+    }
+
+    private function validarDatos(Request $request): array
+    {
+        return $request->validate([
+            'nombre' => ['required', 'string', 'max:80'],
+            'ciudad' => ['required', 'string', 'max:100'],
+            'direccion' => ['required', 'string', 'max:60'],
+            'detalles' => ['required', 'string', 'max:150'],
+        ]);
     }
 }
